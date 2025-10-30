@@ -1,0 +1,57 @@
+{
+  "common": {
+    "close": "Close",
+    "error": "Error",
+    "loading": "Loading...",
+    "notFound": "Not found",
+    "search": "Search",
+    "title": "<base>Document</base> Generator"
+  },
+  "endpoint": {
+    "authentication": "Authentication Required",
+    "curl": "cURL",
+    "examples": "Examples",
+    "javascript": "JavaScript",
+    "parameters": "Parameters",
+    "pathParameters": "Path Parameters",
+    "python": "Python",
+    "queryParameters": "Query Parameters",
+    "requestBody": "Request Body",
+    "response": "Response",
+    "tryIt": "Try It"
+  },
+  "errors": {
+    "404": "404 - Page Not Found",
+    "404-description": "The page you are looking for does not exist.",
+    "500": "500 - Server Error",
+    "500-description": "An error occurred on the server. Please try again.",
+    "pageNotFound": "Page Not Found",
+    "retry": "Try again",
+    "somethingWentWrong": "Something went wrong"
+  },
+  "header": {
+    "language": "Language",
+    "search": "Search",
+    "searchPlaceholder": "Search in documentation...",
+    "title": "Smart Financial Solutions Saman"
+  },
+  "navigation": {
+    "documentation": "Documentation",
+    "endpoints": "Endpoints",
+    "home": "Home",
+    "main": "Home Page"
+  },
+  "search": {
+    "description": "Search through endpoints and documentation",
+    "emptyState": "Type to search in the documentation...",
+    "noResults": "No results found.",
+    "placeholder": "Type to search...",
+    "results": "Search Results",
+    "searching": "Searching...",
+    "title": "Search Documentation"
+  },
+  "sidebar": {
+    "endpoints": "Endpoints",
+    "sections": "Sections"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "common": {
+    "close": "بستن",
+    "error": "خطا",
+    "loading": "در حال بارگذاری...",
+    "notFound": "یافت نشد",
+    "search": "جستجو",
+    "title": "<base>مستند</base> ساز"
+  },
+  "endpoint": {
+    "authentication": "احراز هویت مورد نیاز",
+    "curl": "cURL",
+    "examples": "مثال‌ها",
+    "javascript": "جاوا اسکریپت",
+    "parameters": "پارامترها",
+    "pathParameters": "پارامترهای مسیر",
+    "python": "پایتون",
+    "queryParameters": "پارامترهای Query",
+    "requestBody": "بدنه درخواست",
+    "response": "پاسخ",
+    "tryIt": "اجرا کن"
+  },
+  "errors": {
+    "404": "404 - صفحه یافت نشد",
+    "404-description": "صفحه مورد نظر شما یافت نشد.",
+    "500": "500 - خطای سرور",
+    "500-description": "خطایی در سرور رخ داده است. لطفا دوباره تلاش کنید.",
+    "pageNotFound": "صفحه یافت نشد",
+    "retry": "دوباره تلاش کنید",
+    "somethingWentWrong": "مشکلی پیش آمده است"
+  },
+  "header": {
+    "language": "زبان",
+    "search": "جستجو",
+    "searchPlaceholder": "جستجو در مستندات...",
+    "title": "اپلیکیشن مستندات فنی"
+  },
+  "navigation": {
+    "documentation": "مستندات",
+    "endpoints": "نقاط پایانی",
+    "home": "خانه",
+    "main": "صفحه اصلی"
+  },
+  "search": {
+    "description": "جستجو در بین endpoint ها و مستندات",
+    "emptyState": "برای جستجو در مستندات تایپ کنید...",
+    "noResults": "نتیجه‌ای یافت نشد.",
+    "placeholder": "جستجو کنید...",
+    "results": "نتایج جستجو",
+    "searching": "در حال جستجو...",
+    "title": "جستجو در مستندات"
+  },
+  "sidebar": {
+    "endpoints": "نقاط پایانی",
+    "sections": "بخش‌ها"
+  }
+}

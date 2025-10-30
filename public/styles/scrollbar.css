@@ -1,0 +1,33 @@
+html {
+  scroll-behavior: smooth;
+}
+
+/* ClassNames */
+.hide-scrollbar {
+  scrollbar-width: none;
+  ::-webkit-scrollbar {
+    width: var(--scrollbar-width);
+    height: var(--scrollbar-height);
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: var(--color-brand-primary-pale);
+    border-radius: 10px;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-brand-primary-main);
+    border-radius: 10px;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-brand-primary-hover);
+    border-radius: 10px;
+  }
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}

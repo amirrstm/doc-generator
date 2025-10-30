@@ -1,0 +1,1897 @@
+openapi: 3.1.0
+info:
+  title: Interaction History Service
+  version: 0.1.0
+servers:
+  - url: https://stage.server.url
+    description: Stage Server
+  - url: https://api.server.url
+    description: Production Server
+paths:
+  /api/v1/enduser/interactions/:
+    post:
+      tags:
+        - Enduser - Interactions
+      summary: Create my interaction
+      description: Create a new interaction. The user_id in request body must match
+        the authenticated user.
+      operationId: create_my_interaction_api_v1_enduser_interactions__post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateInteractionRequestSchema"
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InteractionCreatedResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    get:
+      tags:
+        - Enduser - Interactions
+      summary: List my interactions
+      description: Retrieve a paginated list of your own interactions with secure filtering.
+      operationId: list_my_interactions_api_v1_enduser_interactions__get
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Page number (1-indexed)
+            default: 1
+            title: Page
+          description: Page number (1-indexed)
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            description: Items per page
+            default: 20
+            title: Page Size
+          description: Items per page
+        - name: search_term
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            description: "Search term for full-text 'contains' search (case-insensitive)
+              across title, description, tags, status, state, interaction_type,
+              and agent. Example: searching 'setup' will find 'account setup',
+              'Setup wizard', etc."
+            title: Search Term
+          description: "Search term for full-text 'contains' search (case-insensitive)
+            across title, description, tags, status, state, interaction_type,
+            and agent. Example: searching 'setup' will find 'account setup',
+            'Setup wizard', etc."
+        - name: sort_by
+          in: query
+          required: false
+          schema:
+            type: string
+            description: Sort field(s)
+            default: created_at
+            title: Sort By
+          description: Sort field(s)
+        - name: sort_order
+          in: query
+          required: false
+          schema:
+            type: string
+            description: "Sort order(s): asc or desc"
+            default: desc
+            title: Sort Order
+          description: "Sort order(s): asc or desc"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListInteractionsResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/enduser/interactions/{interaction_id}:
+    get:
+      tags:
+        - Enduser - Interactions
+      summary: Get my interaction by ID
+      description: Retrieve a single interaction. You can only access your own interactions.
+      operationId: get_my_interaction_api_v1_enduser_interactions__interaction_id__get
+      parameters:
+        - name: interaction_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Interaction Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InteractionResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    patch:
+      tags:
+        - Enduser - Interactions
+      summary: Update my interaction
+      description: Update your own interaction with partial data.
+      operationId: update_my_interaction_api_v1_enduser_interactions__interaction_id__patch
+      parameters:
+        - name: interaction_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Interaction Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateInteractionRequestSchema"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InteractionUpdatedResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - Enduser - Interactions
+      summary: Delete my interaction
+      description: Permanently delete your own interaction.
+      operationId: delete_my_interaction_api_v1_enduser_interactions__interaction_id__delete
+      parameters:
+        - name: interaction_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Interaction Id
+        - name: reason
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            description: Reason for deletion
+            title: Reason
+          description: Reason for deletion
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InteractionDeletedResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/enduser/interactions/{interaction_id}/archive:
+    post:
+      tags:
+        - Enduser - Interactions
+      summary: Archive my interaction
+      description: Archive your own interaction (soft delete).
+      operationId: archive_my_interaction_api_v1_enduser_interactions__interaction_id__archive_post
+      parameters:
+        - name: interaction_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Interaction Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArchiveInteractionRequestSchema"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InteractionUpdatedResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/enduser/interactions/{interaction_id}/messages:
+    post:
+      tags:
+        - Enduser - Messages
+      summary: Create message in interaction
+      description: Create a new message within a specific interaction. User field is
+        automatically set to authenticated user.
+      operationId: create_message_in_interaction_api_v1_enduser_interactions__interaction_id__messages_post
+      parameters:
+        - name: interaction_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Interaction Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMessageRequestSchema"
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageSerializer"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    get:
+      tags:
+        - Enduser - Messages
+      summary: List messages in interaction
+      description: Retrieve all messages for a specific interaction (only if user owns
+        the interaction).
+      operationId: list_messages_in_interaction_api_v1_enduser_interactions__interaction_id__messages_get
+      parameters:
+        - name: interaction_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Interaction Id
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Page number
+            default: 1
+            title: Page
+          description: Page number
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            description: Items per page
+            default: 50
+            title: Page Size
+          description: Items per page
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListMessagesResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/enduser/{message_id}:
+    get:
+      tags:
+        - Enduser - Messages
+      summary: Get message by ID
+      description: Retrieve a specific message by its ID (only if user owns it).
+      operationId: get_message_api_v1_enduser__message_id__get
+      parameters:
+        - name: message_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Message Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageSerializer"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    put:
+      tags:
+        - Enduser - Messages
+      summary: Update message
+      description: Update an existing message's content or metadata (only if user owns it).
+      operationId: update_message_api_v1_enduser__message_id__put
+      parameters:
+        - name: message_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Message Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMessageRequestSchema"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageSerializer"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - Enduser - Messages
+      summary: Delete message
+      description: Soft delete a message (only if user owns it).
+      operationId: delete_message_api_v1_enduser__message_id__delete
+      parameters:
+        - name: message_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Message Id
+      responses:
+        "204":
+          description: Successful Response
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/org/interactions/:
+    post:
+      tags:
+        - Organization - Interactions
+      summary: Create interaction for organization
+      description: Create a new interaction for any user in the organization.
+      operationId: create_org_interaction_api_v1_org_interactions__post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateInteractionRequestSchema"
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InteractionCreatedResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    get:
+      tags:
+        - Organization - Interactions
+      summary: List organization interactions
+      description: Retrieve a paginated list of all interactions in the organization
+        with secure filtering.
+      operationId: list_org_interactions_api_v1_org_interactions__get
+      parameters:
+        - name: user_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            description: Filter by specific user (optional)
+            title: User Id
+          description: Filter by specific user (optional)
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Page number (1-indexed)
+            default: 1
+            title: Page
+          description: Page number (1-indexed)
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            description: Items per page
+            default: 20
+            title: Page Size
+          description: Items per page
+        - name: search_term
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            description: "Search term for full-text 'contains' search (case-insensitive)
+              across title, description, tags, status, state, interaction_type,
+              and agent. Example: searching 'setup' will find 'account setup',
+              'Setup wizard', etc."
+            title: Search Term
+          description: "Search term for full-text 'contains' search (case-insensitive)
+            across title, description, tags, status, state, interaction_type,
+            and agent. Example: searching 'setup' will find 'account setup',
+            'Setup wizard', etc."
+        - name: sort_by
+          in: query
+          required: false
+          schema:
+            type: string
+            description: Sort field(s)
+            default: created_at
+            title: Sort By
+          description: Sort field(s)
+        - name: sort_order
+          in: query
+          required: false
+          schema:
+            type: string
+            description: "Sort order(s): asc or desc"
+            default: desc
+            title: Sort Order
+          description: "Sort order(s): asc or desc"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListInteractionsResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/org/interactions/{interaction_id}:
+    get:
+      tags:
+        - Organization - Interactions
+      summary: Get organization interaction by ID
+      description: Retrieve any interaction within the organization realm.
+      operationId: get_org_interaction_api_v1_org_interactions__interaction_id__get
+      parameters:
+        - name: interaction_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Interaction Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InteractionResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    patch:
+      tags:
+        - Organization - Interactions
+      summary: Update organization interaction
+      description: Update any interaction within the organization realm.
+      operationId: update_org_interaction_api_v1_org_interactions__interaction_id__patch
+      parameters:
+        - name: interaction_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Interaction Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateInteractionRequestSchema"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InteractionUpdatedResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - Organization - Interactions
+      summary: Delete organization interaction
+      description: Permanently delete any interaction within the organization realm.
+      operationId: delete_org_interaction_api_v1_org_interactions__interaction_id__delete
+      parameters:
+        - name: interaction_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Interaction Id
+        - name: reason
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            description: Reason for deletion
+            title: Reason
+          description: Reason for deletion
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InteractionDeletedResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/org/interactions/{interaction_id}/archive:
+    post:
+      tags:
+        - Organization - Interactions
+      summary: Archive organization interaction
+      description: Archive any interaction within the organization realm.
+      operationId: archive_org_interaction_api_v1_org_interactions__interaction_id__archive_post
+      parameters:
+        - name: interaction_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Interaction Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArchiveInteractionRequestSchema"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InteractionUpdatedResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/interactions/:
+    get:
+      tags:
+        - Staff - Interactions
+      summary: List all interactions (staff)
+      description: Retrieve interactions across all realms with secure filtering.
+        Staff-only endpoint with full access.
+      operationId: list_all_interactions_api_v1_staff_interactions__get
+      parameters:
+        - name: realm
+          in: query
+          required: true
+          schema:
+            type: string
+            description: Filter by realm (required)
+            title: Realm
+          description: Filter by realm (required)
+        - name: user_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            description: Filter by user (optional)
+            title: User Id
+          description: Filter by user (optional)
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Page number (1-indexed)
+            default: 1
+            title: Page
+          description: Page number (1-indexed)
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            description: Items per page
+            default: 20
+            title: Page Size
+          description: Items per page
+        - name: search_term
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            description: "Search term for full-text 'contains' search (case-insensitive)
+              across title, description, tags, status, state, interaction_type,
+              and agent. Example: searching 'setup' will find 'account setup',
+              'Setup wizard', etc."
+            title: Search Term
+          description: "Search term for full-text 'contains' search (case-insensitive)
+            across title, description, tags, status, state, interaction_type,
+            and agent. Example: searching 'setup' will find 'account setup',
+            'Setup wizard', etc."
+        - name: sort_by
+          in: query
+          required: false
+          schema:
+            type: string
+            description: Sort field(s)
+            default: created_at
+            title: Sort By
+          description: Sort field(s)
+        - name: sort_order
+          in: query
+          required: false
+          schema:
+            type: string
+            description: "Sort order(s): asc or desc"
+            default: desc
+            title: Sort Order
+          description: "Sort order(s): asc or desc"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListInteractionsResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/interactions/{interaction_id}:
+    get:
+      tags:
+        - Staff - Interactions
+      summary: Get any interaction (staff)
+      description: Retrieve any interaction across all realms. Staff-only endpoint.
+      operationId: get_any_interaction_api_v1_staff_interactions__interaction_id__get
+      parameters:
+        - name: interaction_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Interaction Id
+        - name: realm
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            description: Realm ID of the interaction
+            title: Realm
+          description: Realm ID of the interaction
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InteractionResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    patch:
+      tags:
+        - Staff - Interactions
+      summary: Update any interaction (staff)
+      description: Update any interaction across all realms. Staff-only endpoint.
+      operationId: update_any_interaction_api_v1_staff_interactions__interaction_id__patch
+      parameters:
+        - name: interaction_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Interaction Id
+        - name: realm
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            description: Realm ID of the interaction
+            title: Realm
+          description: Realm ID of the interaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateInteractionRequestSchema"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InteractionUpdatedResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - Staff - Interactions
+      summary: Delete any interaction (staff)
+      description: Permanently delete any interaction across all realms. Staff-only
+        endpoint.
+      operationId: delete_any_interaction_api_v1_staff_interactions__interaction_id__delete
+      parameters:
+        - name: interaction_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Interaction Id
+        - name: realm
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            description: Realm ID of the interaction
+            title: Realm
+          description: Realm ID of the interaction
+        - name: reason
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            description: Reason for deletion
+            title: Reason
+          description: Reason for deletion
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InteractionDeletedResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/generic/health:
+    get:
+      tags:
+        - Generic - Public
+      summary: Health check
+      description: Public health check endpoint to verify service availability.
+      operationId: health_check_api_v1_generic_health_get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/v1/generic/info:
+    get:
+      tags:
+        - Generic - Public
+      summary: Service information
+      description: Public endpoint for service metadata.
+      operationId: service_info_api_v1_generic_info_get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /:
+    get:
+      summary: Root
+      description: Root endpoint
+      operationId: root__get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /health:
+    get:
+      summary: Health Check
+      description: Health check endpoint
+      operationId: health_check_health_get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+components:
+  schemas:
+    ArchiveInteractionRequestSchema:
+      properties:
+        reason:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Reason
+          description: Reason for archiving
+      type: object
+      title: ArchiveInteractionRequestSchema
+      description: |-
+        Schema for archiving an interaction.
+
+        Attributes:
+            reason: Optional reason for archiving
+      example:
+        reason: User requested archive
+    CreateInteractionRequestSchema:
+      properties:
+        user_id:
+          type: string
+          title: User Id
+          description: ID of the user
+        interaction_type:
+          type: string
+          title: Interaction Type
+          description: Type of interaction
+        agent:
+          type: string
+          title: Agent
+          description: Agent title or slug
+          default: system
+        title:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Title
+          description: Title of the interaction
+        description:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Description
+          description: Description of the interaction
+        payload:
+          additionalProperties: true
+          type: object
+          title: Payload
+          description: Agent-specific data
+        tags:
+          items:
+            type: string
+          type: array
+          title: Tags
+          description: Searchable tags
+        parent_interaction_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Parent Interaction Id
+          description: Parent interaction ID
+        state:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: State
+          description: Initial workflow state
+        source:
+          anyOf:
+            - $ref: "#/components/schemas/Source"
+            - type: "null"
+          description: Source of interaction
+      type: object
+      required:
+        - user_id
+        - interaction_type
+      title: CreateInteractionRequestSchema
+      description: |-
+        Schema for creating a new interaction.
+
+        Attributes:
+            user_id: ID of the user creating the interaction
+            interaction_type: Type of interaction (required)
+            agent: Agent title or slug (defaults to "system")
+            title: Title of the interaction (optional)
+            description: Optional description
+            payload: Agent-specific data
+            tags: Optional tags for categorization
+            parent_interaction_id: Optional parent for threading
+            state: Initial workflow state (optional)
+            source: Source of the interaction request (optional)
+      example:
+        agent: customer-support-assistant
+        description: Help with account setup
+        interaction_type: conversation
+        payload:
+          session_id: session_123
+        source: api
+        state: queued
+        tags:
+          - support
+          - onboarding
+        title: Customer support chat
+        user_id: user_789
+    CreateMessageRequestSchema:
+      properties:
+        role:
+          $ref: "#/components/schemas/MessageRole"
+          description: Message sender role
+        text:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Text
+          description: Text content of the message
+        user:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: User
+          description: User ID (owner)
+        sender:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Sender
+          description: Sender ID (actual sender)
+        correlation_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Correlation Id
+          description: Correlation ID for tracing
+        request_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Request Id
+          description: Request ID for tracing
+        parent_message_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Parent Message Id
+          description: Parent message ID
+        metadata:
+          items:
+            type: string
+          type: array
+          title: Metadata
+          description: Metadata tags
+        user_metadata:
+          additionalProperties: true
+          type: object
+          title: User Metadata
+          description: User metadata
+      type: object
+      required:
+        - role
+      title: CreateMessageRequestSchema
+      description: |-
+        Request schema for creating a new message.
+
+        Attributes:
+            role: Message sender role (AI, USER, SYSTEM)
+            text: Text content of the message
+            user: User ID of the conversation owner (optional, set from context)
+            sender: User ID of the actual message sender (defaults to user)
+            correlation_id: Correlation ID for distributed tracing
+            request_id: Request ID for request tracing
+            parent_message_id: Parent message ID for threading
+            metadata: Additional metadata as key-value pairs
+            user_metadata: User-specific metadata
+      example:
+        correlation_id: req_abc123
+        metadata:
+          - chat
+          - support
+        role: user
+        text: Hello, how can you help me?
+        user: user_789
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: "#/components/schemas/ValidationError"
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    InteractionCreatedResponseSchema:
+      properties:
+        interaction_id:
+          type: string
+          title: Interaction Id
+          description: ID of created interaction
+        message:
+          type: string
+          title: Message
+          default: Interaction created successfully
+      type: object
+      required:
+        - interaction_id
+      title: InteractionCreatedResponseSchema
+      description: |-
+        Response schema for interaction creation.
+
+        Attributes:
+            interaction_id: ID of the created interaction
+            message: Success message
+      example:
+        interaction_id: 01234567-89ab-cdef-0123-456789abcdef
+        message: Interaction created successfully
+    InteractionDeletedResponseSchema:
+      properties:
+        interaction_id:
+          type: string
+          title: Interaction Id
+          description: ID of deleted interaction
+        message:
+          type: string
+          title: Message
+          default: Interaction deleted successfully
+      type: object
+      required:
+        - interaction_id
+      title: InteractionDeletedResponseSchema
+      description: |-
+        Response schema for interaction deletion.
+
+        Attributes:
+            interaction_id: ID of the deleted interaction
+            message: Success message
+      example:
+        interaction_id: 01234567-89ab-cdef-0123-456789abcdef
+        message: Interaction deleted successfully
+    InteractionMetadataSerializer:
+      properties:
+        ip_address:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Ip Address
+        user_agent:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: User Agent
+        source:
+          anyOf:
+            - $ref: "#/components/schemas/Source"
+            - type: "null"
+          description: Source of interaction
+        custom_fields:
+          additionalProperties: true
+          type: object
+          title: Custom Fields
+      type: object
+      title: InteractionMetadataSerializer
+      description: |-
+        Serializer for interaction metadata.
+
+        Attributes:
+            source: Source of interaction (API, webhook, internal) - optional
+            ip_address: Client IP address if available
+            user_agent: Client user agent string if available
+            custom_fields: Additional custom metadata as key-value pairs
+    InteractionResponseSchema:
+      properties:
+        interaction_id:
+          type: string
+          title: Interaction Id
+          description: Unique interaction ID
+        realm:
+          type: string
+          title: Realm
+          description: Tenant/realm identifier
+        agent:
+          type: string
+          title: Agent
+          description: Agent title or slug
+        user_id:
+          type: string
+          title: User Id
+          description: ID of the user
+        interaction_type:
+          type: string
+          title: Interaction Type
+          description: Type of interaction
+        title:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Title
+          description: Title of the interaction
+        description:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Description
+          description: Description of the interaction
+        status:
+          $ref: "#/components/schemas/InteractionStatus"
+          description: Current status
+        state:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: State
+          description: Agent-defined workflow state
+        state_changes:
+          items:
+            $ref: "#/components/schemas/StateChangeSerializer"
+          type: array
+          title: State Changes
+          description: History of state transitions
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: Creation timestamp
+        updated_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Updated At
+          description: Last update timestamp
+        tags:
+          items:
+            type: string
+          type: array
+          title: Tags
+          description: Tags
+        parent_interaction_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Parent Interaction Id
+          description: Parent interaction ID
+        payload:
+          additionalProperties: true
+          type: object
+          title: Payload
+          description: Agent-specific data
+        metadata:
+          $ref: "#/components/schemas/InteractionMetadataSerializer"
+          description: Metadata
+      type: object
+      required:
+        - interaction_id
+        - realm
+        - agent
+        - user_id
+        - interaction_type
+        - status
+        - created_at
+        - metadata
+      title: InteractionResponseSchema
+      description: |-
+        Schema for interaction response data.
+
+        Contains all interaction fields for API responses.
+      example:
+        agent: customer-support-assistant
+        created_at: 2024-01-01T00:00:00Z
+        description: Help with account setup
+        interaction_id: 01234567-89ab-cdef-0123-456789abcdef
+        interaction_type: conversation
+        metadata:
+          custom_fields: {}
+          source: api
+        payload:
+          data: value
+        realm: realm_123
+        state: processing
+        state_changes: []
+        status: active
+        tags:
+          - support
+        title: Customer support chat
+        updated_at: 2024-01-01T01:00:00Z
+        user_id: user_789
+    InteractionStatus:
+      type: string
+      enum:
+        - active
+        - archived
+        - deleted
+      title: InteractionStatus
+      description: |-
+        Status of an interaction.
+
+        Attributes:
+            ACTIVE: Interaction is currently active
+            ARCHIVED: Interaction has been archived
+            DELETED: Interaction has been soft-deleted
+    InteractionUpdatedResponseSchema:
+      properties:
+        interaction_id:
+          type: string
+          title: Interaction Id
+          description: ID of updated interaction
+        message:
+          type: string
+          title: Message
+          default: Interaction updated successfully
+      type: object
+      required:
+        - interaction_id
+      title: InteractionUpdatedResponseSchema
+      description: |-
+        Response schema for interaction updates.
+
+        Attributes:
+            interaction_id: ID of the updated interaction
+            message: Success message
+      example:
+        interaction_id: 01234567-89ab-cdef-0123-456789abcdef
+        message: Interaction updated successfully
+    ListInteractionsResponseSchema:
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/InteractionResponseSchema"
+          type: array
+          title: Items
+          description: List of items
+        pagination:
+          $ref: "#/components/schemas/PaginationMetadata"
+          description: Pagination metadata
+      type: object
+      required:
+        - items
+        - pagination
+      title: ListInteractionsResponseSchema
+      description: >-
+        Response schema for listing interactions.
+
+
+        Inherits from PaginatedListResponse to ensure consistent pagination
+        structure.
+
+
+        Attributes:
+            items: List of interactions (inherited)
+            pagination: Pagination metadata (inherited)
+      example:
+        items:
+          - agent: customer-support-assistant
+            created_at: 2024-01-01T00:00:00Z
+            description: Help with account setup
+            interaction_id: 01234567-89ab-cdef-0123-456789abcdef
+            interaction_type: conversation
+            metadata:
+              custom_fields: {}
+              source: api
+            payload: {}
+            realm: realm_123
+            state_changes: []
+            status: active
+            tags:
+              - support
+            title: Customer support chat
+            user_id: user_789
+        pagination:
+          has_more: false
+          limit: 20
+          offset: 0
+          total: 1
+    ListMessagesResponseSchema:
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/MessageSerializer"
+          type: array
+          title: Items
+          description: List of items
+        pagination:
+          $ref: "#/components/schemas/PaginationMetadata"
+          description: Pagination metadata
+      type: object
+      required:
+        - items
+        - pagination
+      title: ListMessagesResponseSchema
+      description: >-
+        Response schema for listing messages with pagination.
+
+
+        Inherits from PaginatedListResponse to ensure consistent pagination
+        structure.
+
+
+        Attributes:
+            items: List of messages (inherited)
+            pagination: Pagination metadata (inherited)
+      example:
+        items:
+          - created_at: 2024-01-15T10:30:00Z
+            interaction_id: 01HQBY9876543210ZYXWVUTSRQP
+            message_id: 01HQBX1234567890ABCDEFGHIJK
+            role: user
+            text: Hello
+        pagination:
+          has_next: true
+          has_previous: false
+          page: 1
+          page_size: 50
+          total_items: 150
+          total_pages: 3
+    MessageMetadataSerializer:
+      properties:
+        is_viewed:
+          type: boolean
+          title: Is Viewed
+          description: Indicates user read message
+          default: true
+        is_visible:
+          type: boolean
+          title: Is Visible
+          description: Indicates user can read it
+          default: true
+        is_edited:
+          type: boolean
+          title: Is Edited
+          description: Indicates if the message has been edited
+          default: false
+        message_views:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Message Views
+          description: List of message views containing {user_id, created_at}
+        error:
+          type: boolean
+          title: Error
+          description: Indicates if there was an error with the message
+          default: false
+        need_human_responder:
+          type: boolean
+          title: Need Human Responder
+          description: When need human to answer question
+          default: false
+      type: object
+      title: MessageMetadataSerializer
+      description: >-
+        Serializer for message metadata.
+
+
+        Attributes:
+            is_viewed: Whether the user has read the message
+            is_visible: Whether the message is visible to the user
+            is_edited: Whether the message has been edited after creation
+            message_views: List of view records with {user_id, created_at}
+            error: Whether the message encountered an error during processing
+            need_human_responder: Whether the message requires human intervention
+    MessageRole:
+      type: string
+      enum:
+        - ai
+        - user
+        - system
+      title: MessageRole
+      description: >-
+        Role/type of the message sender.
+
+
+        Attributes:
+            AI: Message generated by an AI agent/assistant
+            USER: Message sent by an end user
+            SYSTEM: Message generated by the system (notifications, status updates)
+    MessageSerializer:
+      properties:
+        message_id:
+          type: string
+          title: Message Id
+          description: Unique identifier for the message
+        interaction_id:
+          type: string
+          title: Interaction Id
+          description: Reference to parent interaction
+        realm:
+          type: string
+          title: Realm
+          description: Tenant/realm identifier
+        role:
+          $ref: "#/components/schemas/MessageRole"
+          description: Message sender role
+        text:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Text
+          description: Text content of the message
+        user:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: User
+          description: User ID associated with the message (owner)
+        sender:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Sender
+          description: Sender of the message (actual sender)
+        correlation_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Correlation Id
+          description: Correlation ID for distributed tracing
+        request_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Request Id
+          description: Unique identifier for the request
+        finish_reason:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Finish Reason
+          description: Reason for finishing the message generation
+        parent_message_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Parent Message Id
+          description: Unique identifier of the parent message
+        metadata:
+          items:
+            type: string
+          type: array
+          title: Metadata
+          description: Metadata tags
+        user_metadata:
+          additionalProperties: true
+          type: object
+          title: User Metadata
+          description: User metadata
+        message_metadata:
+          $ref: "#/components/schemas/MessageMetadataSerializer"
+          description: Message state and tracking metadata
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: Creation timestamp
+        updated_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Updated At
+          description: Last update timestamp
+        deleted_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Deleted At
+          description: Soft delete timestamp
+      type: object
+      required:
+        - message_id
+        - interaction_id
+        - realm
+        - role
+        - created_at
+      title: MessageSerializer
+      description: >-
+        Base message serializer with all database model fields.
+
+
+        This serves as the common base that all role-specific serializers
+        inherit from.
+
+        Contains all fields from the Message document model.
+
+
+        Role-specific serializers can:
+
+        - Inherit all fields as-is
+
+        - Override field configurations (e.g., mark as Optional, exclude)
+
+        - Add computed fields
+
+
+        Attributes:
+            message_id: Unique UUID v7 identifier (time-sortable)
+            interaction_id: Reference to parent interaction
+            realm: Tenant/realm identifier for multi-tenancy
+            role: Message sender role (AI, USER, SYSTEM)
+            text: Text content of the message
+            user: User ID of the conversation owner
+            sender: User ID of the actual message sender (for human-in-the-loop)
+            correlation_id: Correlation ID for distributed tracing
+            request_id: Request ID for request tracing
+            finish_reason: Reason for AI message generation completion
+            parent_message_id: Parent message ID for threading
+            metadata: Additional metadata as key-value pairs
+            user_metadata: User-specific metadata
+            message_metadata: Message state and tracking metadata
+            created_at: When the message was created
+            updated_at: When the message was last updated
+            deleted_at: When the message was soft-deleted
+      example:
+        correlation_id: req_abc123
+        created_at: 2024-01-15T10:30:00Z
+        interaction_id: 01HQBY9876543210ZYXWVUTSRQP
+        message_id: 01HQBX1234567890ABCDEFGHIJK
+        message_metadata:
+          error: false
+          is_edited: false
+          is_viewed: true
+          is_visible: true
+          message_views: []
+          need_human_responder: false
+        metadata:
+          - chat
+          - support
+        realm: realm_123
+        request_id: req_xyz456
+        role: user
+        sender: user_789
+        text: Hello, how can you help me?
+        user: user_789
+        user_metadata:
+          priority: high
+    PaginationMetadata:
+      properties:
+        page:
+          type: integer
+          minimum: 1
+          title: Page
+          description: Current page number (1-indexed)
+        page_size:
+          type: integer
+          maximum: 100
+          minimum: 1
+          title: Page Size
+          description: Items per page
+        total_items:
+          type: integer
+          minimum: 0
+          title: Total Items
+          description: Total number of items
+        total_pages:
+          type: integer
+          minimum: 0
+          title: Total Pages
+          description: Total number of pages
+        has_next:
+          type: boolean
+          title: Has Next
+          description: Whether there is a next page
+        has_previous:
+          type: boolean
+          title: Has Previous
+          description: Whether there is a previous page
+      type: object
+      required:
+        - page
+        - page_size
+        - total_items
+        - total_pages
+        - has_next
+        - has_previous
+      title: PaginationMetadata
+      description: |-
+        Pagination metadata per API Design Standard.
+
+        Used in query results to provide complete pagination information
+        including current page, total counts, and navigation flags.
+
+        Attributes:
+            page: Current page number (1-indexed)
+            page_size: Number of items per page
+            total_items: Total count of items across all pages
+            total_pages: Total number of pages
+            has_next: Whether there is a next page available
+            has_previous: Whether there is a previous page available
+
+        Example:
+            >>> pagination = PaginationInfo(
+            ...     page=2,
+            ...     page_size=20,
+            ...     total_items=247,
+            ...     total_pages=13,
+            ...     has_next=True,
+            ...     has_previous=True
+            ... )
+      example:
+        has_next: true
+        has_previous: true
+        page: 2
+        page_size: 20
+        total_items: 247
+        total_pages: 13
+    Source:
+      type: string
+      enum:
+        - api
+        - webhook
+        - internal
+      title: Source
+      description: |-
+        Source of the interaction request.
+
+        Attributes:
+            API: Created via REST API
+            WEBHOOK: Created via webhook
+            INTERNAL: Created internally by the system
+    StateChangeSerializer:
+      properties:
+        user_id:
+          type: string
+          title: User Id
+          description: ID of the user who made the change
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: Timestamp of the state change
+        old_state:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Old State
+          description: Previous state
+        new_state:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: New State
+          description: New state
+      type: object
+      required:
+        - user_id
+        - created_at
+      title: StateChangeSerializer
+      description: |-
+        Serializer for state change records.
+
+        Attributes:
+            user_id: ID of the user who made the state change
+            created_at: When the state change occurred
+            old_state: Previous state value
+            new_state: New state value
+    UpdateInteractionRequestSchema:
+      properties:
+        title:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Title
+          description: New title
+        description:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Description
+          description: New description
+        status:
+          anyOf:
+            - $ref: "#/components/schemas/InteractionStatus"
+            - type: "null"
+          description: New status
+        state:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: State
+          description: Updated workflow state
+        payload:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Payload
+          description: Updated payload
+        tags:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Tags
+          description: Updated tags
+      type: object
+      title: UpdateInteractionRequestSchema
+      description: |-
+        Schema for updating an existing interaction.
+
+        All fields are optional for partial updates.
+
+        Attributes:
+            title: New title
+            description: New description
+            status: New status
+            state: Updated workflow state
+            payload: Updated payload (merged with existing)
+            tags: Updated tags (replaces existing)
+      example:
+        description: Updated description
+        payload:
+          additional_data: value
+        state: completed
+        status: active
+        tags:
+          - updated
+          - modified
+        title: Updated title
+    UpdateMessageRequestSchema:
+      properties:
+        text:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Text
+          description: Updated text content
+        metadata:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Metadata
+          description: Updated metadata tags
+        user_metadata:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: User Metadata
+          description: Updated user metadata
+        message_metadata:
+          anyOf:
+            - $ref: "#/components/schemas/MessageMetadataSerializer"
+            - type: "null"
+          description: Updated message state metadata
+      type: object
+      title: UpdateMessageRequestSchema
+      description: |-
+        Request schema for updating an existing message.
+
+        Attributes:
+            text: Updated text content
+            metadata: Updated metadata tags
+            user_metadata: Updated user-specific metadata
+            message_metadata: Updated message state metadata
+      example:
+        metadata:
+          - chat
+          - support
+          - account
+        text: Hello, how can you help me with my account?
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+        - loc
+        - msg
+        - type
+      title: ValidationError
+
