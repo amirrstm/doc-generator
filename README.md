@@ -105,42 +105,42 @@ docs/
 
 ```
 Doc-Generator/
-  .gitignore               # Git ignore rules
-  README.md                # Project documentation
-  package.json             # Project dependencies and scripts
-  pnpm-lock.yaml           # PNPM lockfile
-  tailwind.config.ts       # Tailwind CSS configuration
-  tsconfig.json            # TypeScript configuration
-  docs/                    # Generated documentation (auto-generated)
-    [project]/
-      endpoints/           # Generated MDX files for each API endpoint
-      sidebar.json         # Navigation structure for docs sidebar
-      env.json             # API environment configs
-      intro.mdx            # Project introduction page
-  messages/                # i18n translation files
-    en.json
-    fa.json
-  public/                  # Static assets (images, fonts, etc)
-    styles/                # Custom CSS
-  scripts/                 # Build and documentation scripts
-    generate-docs.mjs      # Documentation generator
-    swagger/               # OpenAPI YAML files (input for doc gen)
-  src/
-    app/                   # Next.js App Router entrypoint
-      [locale]/            # Internationalized routes ({en, fa, ...})
-      [projectSlug]/       # Project-based dynamic routing
-    components/            # Reusable React components
-      layout/              # Header, Sidebar, Footer UI
-      Search/              # Global search components
-      ui/                  # shadcn/ui components library
-    configs/               # Configuration files
-      i18n/                # Internationalization config
-    containers/            # Page containers for endpoints/intro
-    contexts/              # React context providers
-    hooks/                 # Custom React hooks
-    providers/             # Context providers (e.g. ProjectProvider)
-    types/                 # TypeScript types/interfaces
-    utils/                 # Utility/helper functions
+├── .gitignore                   # Git ignore rules
+├── README.md                    # Project documentation
+├── package.json                 # Project dependencies and scripts
+├── pnpm-lock.yaml               # PNPM lockfile
+├── tailwind.config.ts           # Tailwind CSS configuration
+├── tsconfig.json                # TypeScript configuration
+├── docs/                        # Generated documentation (auto-generated)
+│   ├── [project]/
+│   │   ├── endpoints/           # Generated MDX files for each API endpoint
+│   │   ├── sidebar.json         # Navigation structure for docs sidebar
+│   │   ├── env.json             # API environment configs
+│   │   └── intro.mdx            # Project introduction page
+├── messages/                    # i18n translation files
+│   ├── en.json
+│   └── fa.json
+├── public/                      # Static assets (images, fonts, etc)
+│   └── styles/                  # Custom CSS
+├── scripts/                     # Build and documentation scripts
+│   ├── generate-docs.mjs        # Documentation generator
+│   └── swagger/                 # OpenAPI YAML files (input for doc gen)
+└── src/
+    ├── app/                     # Next.js App Router entrypoint
+    │   ├── [locale]/            # Internationalized routes ({en, fa, ...})
+    │   └── [projectSlug]/       # Project-based dynamic routing
+    ├── components/              # Reusable React components
+    │   ├── layout/              # Header, Sidebar, Footer UI
+    │   ├── Search/              # Global search components
+    │   └── ui/                  # shadcn/ui components library
+    ├── configs/                 # Configuration files
+    │   └── i18n/                # Internationalization config
+    ├── containers/              # Page containers for endpoints/intro
+    ├── contexts/                # React context providers
+    ├── hooks/                   # Custom React hooks
+    ├── providers/               # Context providers (e.g. ProjectProvider)
+    ├── types/                   # TypeScript types/interfaces
+    └── utils/                   # Utility/helper functions
 ```
 
 ## Configuration
