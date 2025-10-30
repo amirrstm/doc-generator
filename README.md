@@ -170,9 +170,27 @@ Edit `scripts/generate-docs.mjs` to customize:
 
 ### Theme Customization
 
-Modify Tailwind configuration for custom theming:
-- Colors, fonts, and spacing in `tailwind.config.ts`
-- Custom CSS in `public/styles/`
+This project uses Tailwind CSS v4 with CSS-based configuration. Customize theming in:
+- **Color variables**: Edit CSS custom properties in `public/styles/globals.css`
+- **Theme tokens**: Modify the `@theme inline` directive for colors, fonts, and spacing
+- **Light/Dark modes**: Update `:root` and `.dark` selectors with OKLCH color values
+- **Custom styles**: Add additional CSS in `public/styles/`
+
+Example customization in [globals.css](public/styles/globals.css):
+```css
+:root {
+  --brand-primary: oklch(0.55 0.2 240);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  /* ... other color variables */
+}
+
+@theme inline {
+  --color-brand-primary: var(--brand-primary);
+  --font-en: var(--font-en-primary);
+  /* ... theme configuration */
+}
+```
 
 ## Available Scripts
 
