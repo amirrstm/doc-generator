@@ -1,0 +1,103 @@
+import Endpoint from '@/components/Endpoint'
+
+<Endpoint
+title="Disconnect Instagram account"
+method="DELETE"
+category="Social - Instagram"
+baseUrl="https://api.paystar.stg.felesh.ai"
+path="/social/api/v1/platform/instagram/accounts/\{account_id\}"
+summary="Disconnect Instagram account"
+description={`Disconnect an Instagram account (deactivates webhook processing).`}
+hasAuthentication={false}
+curl={`curl --request DELETE \
+  --url "{baseUrl}/social/api/v1/platform/instagram/accounts/123" \
+  --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..."`}
+languages={{
+javascript: `fetch("{baseUrl}/social/api/v1/platform/instagram/accounts/\${account_id}", {
+  "method": "DELETE"
+})
+  .then(response => response.json())
+  .then(data => console.log(data));`,
+python: `import requests
+
+url = "{baseUrl}/social/api/v1/platform/instagram/accounts/{account_id}"
+
+headers = {
+"Authorization": "Bearer <token>"
+}
+
+response = requests.delete(url, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Bearer token obtained from the Impersonate User endpoint.",
+      "required": true,
+      "title": "Authorization",
+      "type": "string"
+    }
+  ],
+  "path": [
+    {
+      "description": "No description provided",
+      "required": true,
+      "title": "account_id",
+      "type": "string"
+    }
+  ],
+  "query": []
+}}
+requestBody={{
+  "properties": [],
+  "required": false
+}}
+responses={{
+  "200": [
+    {
+      "description": "No description provided",
+      "title": "id",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "instagram_account_id",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "is_active",
+      "type": "boolean"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "Social_ValidationError"
+      }
+    }
+  ]
+}}
+/>

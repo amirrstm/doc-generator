@@ -1,0 +1,178 @@
+import Endpoint from '@/components/Endpoint'
+
+<Endpoint
+title="Get Task Status"
+method="GET"
+category="RAG"
+baseUrl="https://api.paystar.stg.felesh.ai"
+path="/rag/api/v1/tasks/\{task_id\}"
+summary="Get Task Status"
+description={`Retrieve the status of an asynchronous ingestion task. Tasks are created by the Ingest File and Ingest Records endpoints. Poll this endpoint to track progress and get results. Status values: pending, processing, completed, failed, cancelled.`}
+hasAuthentication={false}
+curl={`curl --request GET \
+  --url "{baseUrl}/rag/api/v1/tasks/123" \
+  --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..."`}
+languages={{
+javascript: `fetch("{baseUrl}/rag/api/v1/tasks/\${task_id}", {
+  "method": "GET"
+})
+  .then(response => response.json())
+  .then(data => console.log(data));`,
+python: `import requests
+
+url = "{baseUrl}/rag/api/v1/tasks/{task_id}"
+
+headers = {
+"Authorization": "Bearer <token>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Bearer token obtained from the Impersonate User endpoint.",
+      "required": true,
+      "title": "Authorization",
+      "type": "string"
+    }
+  ],
+  "path": [
+    {
+      "description": "Unique task identifier returned from an ingestion endpoint.",
+      "required": true,
+      "title": "task_id",
+      "type": "string"
+    }
+  ],
+  "query": []
+}}
+requestBody={{
+  "properties": [],
+  "required": false
+}}
+responses={{
+  "200": [
+    {
+      "description": "Unique task identifier.",
+      "title": "task_id",
+      "type": "string"
+    },
+    {
+      "description": "Current task status: pending, processing, completed, failed, or cancelled. Possible values: [pending, processing, completed, failed, cancelled]",
+      "title": "status",
+      "type": "enum<string>"
+    },
+    {
+      "description": "Processing progress as a percentage (0.0 to 100.0).",
+      "title": "progress",
+      "type": "number (float)"
+    },
+    {
+      "description": "Task creation time (Unix timestamp).",
+      "title": "created_at",
+      "type": "number (float)"
+    },
+    {
+      "description": "Task start time (Unix timestamp). Null if not yet started.",
+      "title": "started_at",
+      "type": "number (float)"
+    },
+    {
+      "description": "Task completion time (Unix timestamp). Null if still running.",
+      "title": "completed_at",
+      "type": "number (float)"
+    },
+    {
+      "description": "Task metadata including tenant, domain, and source info.",
+      "title": "metadata",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "tenant_id",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "domain",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "source_name",
+            "type": "string"
+          }
+        ],
+        "title": "Object"
+      }
+    },
+    {
+      "description": "Processing result (available when status is \"completed\").",
+      "title": "result",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "chunks_created",
+            "type": "integer"
+          },
+          {
+            "description": "No description provided",
+            "title": "processing_time_ms",
+            "type": "integer"
+          }
+        ],
+        "title": "Object"
+      }
+    },
+    {
+      "description": "Error message (available when status is \"failed\").",
+      "title": "error",
+      "type": "string"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "input",
+            "type": "unknown"
+          },
+          {
+            "description": "No description provided",
+            "title": "ctx",
+            "type": "object"
+          }
+        ],
+        "title": "RAG_ValidationError"
+      }
+    }
+  ]
+}}
+/>

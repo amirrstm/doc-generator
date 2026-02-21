@@ -1,0 +1,152 @@
+import Endpoint from '@/components/Endpoint'
+
+<Endpoint
+title="Update an interaction"
+method="PATCH"
+category="Interaction History"
+baseUrl="https://api.paystar.stg.felesh.ai"
+path="/interaction/api/v1/org/interactions/\{interaction_id\}"
+summary="Update an interaction"
+description={`Update any interaction in the realm.`}
+hasAuthentication={false}
+curl={`curl --request PATCH \
+  --url "{baseUrl}/interaction/api/v1/org/interactions/123" \
+  --header "Content-Type: application/json" \
+  --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  --data '{
+  "title": "string",
+  "description": "string",
+  "state": "string",
+  "tags": [
+    "string"
+  ],
+  "payload": {}
+}'`}
+languages={{
+javascript: `const requestBody = {
+"title": "string",
+"description": "string",
+"state": "string",
+"tags": [
+"string"
+],
+"payload": {}
+};
+
+fetch("{baseUrl}/interaction/api/v1/org/interactions/\${interaction_id}", {
+"method": "PATCH",
+"headers": {
+"Content-Type": "application/json"
+},
+"body": JSON.stringify(requestBody)
+})
+.then(response => response.json())
+.then(data => console.log(data));`,
+    python: `import requests
+
+url = "{baseUrl}/interaction/api/v1/org/interactions/{interaction_id}"
+
+payload = {
+"title": "string",
+"description": "string",
+"state": "string",
+"tags": ["string"],
+"payload": {}
+}
+
+headers = {
+"Content-Type": "application/json",
+"Authorization": "Bearer <token>"
+}
+
+response = requests.patch(url, json=payload, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Bearer token obtained from the Impersonate User endpoint.",
+      "required": true,
+      "title": "Authorization",
+      "type": "string"
+    }
+  ],
+  "path": [
+    {
+      "description": "No description provided",
+      "required": true,
+      "title": "interaction_id",
+      "type": "string"
+    }
+  ],
+  "query": []
+}}
+requestBody={{
+  "contentType": "application/json",
+  "properties": [
+    {
+      "description": "Interaction title",
+      "title": "title",
+      "type": "string",
+      "required": false
+    },
+    {
+      "description": "Interaction description",
+      "title": "description",
+      "type": "string",
+      "required": false
+    },
+    {
+      "description": "New state",
+      "title": "state",
+      "type": "string",
+      "required": false
+    },
+    {
+      "description": "Updated tags",
+      "title": "tags",
+      "type": "array",
+      "required": false
+    },
+    {
+      "description": "Updates to agent-specific data",
+      "title": "payload",
+      "type": "object",
+      "required": false
+    }
+  ],
+  "required": true
+}}
+responses={{
+  "200": [],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "Interaction_ValidationError"
+      }
+    }
+  ]
+}}
+/>

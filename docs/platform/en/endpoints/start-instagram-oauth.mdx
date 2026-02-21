@@ -1,0 +1,112 @@
+import Endpoint from '@/components/Endpoint'
+
+<Endpoint
+title="Start Instagram OAuth"
+method="GET"
+category="Social - Instagram"
+baseUrl="https://api.paystar.stg.felesh.ai"
+path="/social/api/v1/platform/instagram/oauth/connect"
+summary="Start Instagram OAuth"
+description={`Start the Instagram OAuth flow. Requires a single-use OAuth token.`}
+hasAuthentication={false}
+curl={`curl --request GET \
+  --url "{baseUrl}/social/api/v1/platform/instagram/oauth/connect" \
+  --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..."`}
+languages={{
+javascript: `fetch("{baseUrl}/social/api/v1/platform/instagram/oauth/connect?callback_url=value&store_id=value&store_api_key=value&state=value", {
+  "method": "GET"
+})
+  .then(response => response.json())
+  .then(data => console.log(data));`,
+python: `import requests
+
+url = "{baseUrl}/social/api/v1/platform/instagram/oauth/connect"
+
+headers = {
+"Authorization": "Bearer <token>"
+}
+
+params = {
+"callback_url": "value",
+"store_id": "value",
+"store_api_key": "value",
+"state": "value"
+}
+
+response = requests.get(url, headers=headers, params=params)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Bearer token obtained from the Impersonate User endpoint.",
+      "required": true,
+      "title": "Authorization",
+      "type": "string"
+    }
+  ],
+  "path": [],
+  "query": [
+    {
+      "description": "URL to redirect after OAuth",
+      "required": true,
+      "title": "callback_url",
+      "type": "string"
+    },
+    {
+      "description": "End-user's store ID (optional)",
+      "required": false,
+      "title": "store_id",
+      "type": "string"
+    },
+    {
+      "description": "End-user's store API key (optional)",
+      "required": false,
+      "title": "store_api_key",
+      "type": "string"
+    },
+    {
+      "description": "Optional pass-through state",
+      "required": false,
+      "title": "state",
+      "type": "string"
+    }
+  ]
+}}
+requestBody={{
+  "properties": [],
+  "required": false
+}}
+responses={{
+  "200": [],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "Social_ValidationError"
+      }
+    }
+  ]
+}}
+/>

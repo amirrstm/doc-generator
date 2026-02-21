@@ -1,0 +1,180 @@
+# Felesh Platform API
+
+Getting Started Guide for integrating with the Felesh platform services. This guide covers authentication, configuration, and all available platform APIs for external integrators.
+
+## Platform Overview
+
+The Felesh platform provides a suite of microservices for building AI-powered customer engagement applications. As an integrator, you have access to the following services through a unified API gateway:
+
+| Service | Description |
+|---------|-------------|
+| **Authentication & User Management** | Onboard customer realms, impersonate users to obtain access tokens, and manage user profiles and roles. |
+| **Config Store** | Create and manage tenants, application configurations, widget settings, and file uploads for your customers. |
+| **RAG** | Ingest files and records into a knowledge base, then search across them using AI-powered retrieval. |
+| **Social Gateway** | Connect Instagram accounts, retrieve user information, and manage posts for social media integration. |
+| **Interaction History** | Access conversation histories, messages, statistics, and archived interactions for end users and organizations. |
+
+All services are accessible through a single API gateway. Each request is routed to the appropriate service based on its path prefix.
+
+## Authentication
+
+The platform uses a two-step authentication flow. You will receive a `client_id` and `client_secret` from the Felesh team to get started.
+
+### Step 1: Onboard a Realm
+
+Create a realm for your customer by calling the onboard endpoint. This sets up the customer's isolated environment on the platform.
+
+**Request fields:**
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `slug` | Yes | Unique realm identifier. Use the Paystar customer's `user_id`. |
+| `display_name` | Yes | Human-readable name for the realm (e.g. company name). |
+| `owner_username` | Yes | Username for the realm owner. Can be a mobile number or email address. |
+| `first_name` | No | First name of the realm owner. |
+| `last_name` | No | Last name of the realm owner. |
+
+```bash
+curl --request POST \
+  --url "https://api.paystar.stg.felesh.ai/auth/api/v1/staff/realms/onboard" \
+  --header "Content-Type: application/json" \
+  --header "X-Client-ID: your_client_id" \
+  --header "X-Client-Secret: your_client_secret" \
+  --data '{
+    "slug": "customer-user-id",
+    "display_name": "Paystar",
+    "owner_username": "09121234567"
+  }'
+```
+
+The response contains the created realm and owner details:
+
+```json
+{
+  "data": {
+    "realm": {
+      "slug": "customer-user-id",
+      "display_name": "Paystar",
+      "enabled": true,
+      "user_count": 1
+    },
+    "owner": {
+      "id": "195f9f26-8637-412f-aeb4-547b9653e210",
+      "roles": ["default-roles-customer-user-id", "realm-owner"],
+      "realm_id": "customer-user-id",
+      "username": "09121234567",
+      "enabled": true
+    }
+  },
+  "metadata": {
+    "request_id": "019c7f6c-b207-7443-b4b9-21b5fbbec098",
+    "timestamp": "2026-02-21T08:59:15.847368Z"
+  }
+}
+```
+
+### Step 2: Impersonate a User
+
+Obtain an access token for a specific user within the realm. This token is used for all subsequent API calls.
+
+**Request fields:**
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `slug` (path) | Yes | The realm slug (Paystar customer's `user_id`) returned from the onboard response. |
+| `username` (body) | Yes | The customer's username — mobile number or email address used during onboarding. |
+
+```bash
+curl --request POST \
+  --url "https://api.paystar.stg.felesh.ai/auth/api/v1/staff/realms/customer-user-id/impersonate" \
+  --header "Content-Type: application/json" \
+  --header "X-Client-ID: your_client_id" \
+  --header "X-Client-Secret: your_client_secret" \
+  --data '{
+    "username": "09121234567"
+  }'
+```
+
+The response includes an `access_token` (JWT). Use it as a Bearer token for all other API calls:
+
+```json
+{
+  "access_token": "eyJhbGciOiJSUzI1NiIs...",
+  "expires_in": 3600,
+  "refresh_token": "eyJhbGciOiJIUzUxMiIs...",
+  "refresh_expires_in": 7200,
+  "token_type": "Bearer",
+  "scope": "profile email"
+}
+```
+
+```
+Authorization: Bearer <access_token>
+```
+
+## Integration Sequence
+
+Follow these steps to integrate with the platform:
+
+### 1. Onboard
+
+Create a realm for your customer using `POST /auth/api/v1/staff/realms/onboard`. This provisions the customer's environment, including their organization and owner account.
+
+### 2. Get Token
+
+Impersonate a user via `POST /auth/api/v1/staff/realms/{slug}/impersonate` to obtain a Bearer access token. Use this token for all subsequent requests.
+
+### 3. Configure
+
+Set up tenants through the Config Store:
+
+- Create tenant: `POST /config/api/v1/org/tenants/`
+- Get tenant: `GET /config/api/v1/org/tenants/{id}/`
+- Delete tenant: `DELETE /config/api/v1/org/tenants/{id}/`
+
+### 4. Ingest Data
+
+Upload knowledge base content to the RAG service:
+
+- Upload files: `POST /rag/api/v1/ingest/files`
+- Upload records: `POST /rag/api/v1/ingest/records`
+
+### 5. Search
+
+Query the knowledge base using `POST /rag/api/v1/search` to retrieve relevant information.
+
+### 6. Social
+
+Connect Instagram accounts through the Social Gateway:
+
+- Start OAuth flow: `GET /social/api/v1/platform/instagram/oauth/connect`
+- List connected accounts: `GET /social/api/v1/platform/instagram/accounts`
+- Get posts: `GET /social/api/v1/platform/instagram/posts`
+
+### 7. History
+
+Access interaction records via the Interaction History service:
+
+- List interactions: `GET /interaction/api/v1/org/interactions/`
+- Get messages: `GET /interaction/api/v1/org/interactions/{id}/messages/`
+- View statistics: `GET /interaction/api/v1/org/statistics/`
+
+## Environments
+
+The platform is available in two environments:
+
+| Environment | Base URL |
+|-------------|----------|
+| **Staging** | `https://api.paystar.stg.felesh.ai` |
+| **Production** | `https://api.paystar.felesh.ai` |
+
+Use the environment switcher in the top of the documentation to toggle between staging and production base URLs in code examples.
+
+## Common Headers
+
+| Header | Description | Used For |
+|--------|-------------|----------|
+| `X-Client-ID` | Your client identifier provided by Felesh | Onboard and Impersonate endpoints only |
+| `X-Client-Secret` | Your client secret provided by Felesh | Onboard and Impersonate endpoints only |
+| `Authorization: Bearer <token>` | Access token from the impersonate response | All other API endpoints |
+| `X-Auth-User` | User identifier (automatically injected by the gateway after token validation) | Automatically set — do not send manually |

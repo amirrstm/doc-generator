@@ -1,0 +1,91 @@
+import Endpoint from '@/components/Endpoint'
+
+<Endpoint
+title="Get interaction statistics"
+method="GET"
+category="Interaction History"
+baseUrl="https://api.paystar.stg.felesh.ai"
+path="/interaction/api/v1/org/interactions/statistics"
+summary="Get interaction statistics"
+description={`Get counts for total, today, active, archived, and deleted interactions in the realm.`}
+hasAuthentication={false}
+curl={`curl --request GET \
+  --url "{baseUrl}/interaction/api/v1/org/interactions/statistics" \
+  --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..."`}
+languages={{
+javascript: `fetch("{baseUrl}/interaction/api/v1/org/interactions/statistics?user_id=value", {
+  "method": "GET"
+})
+  .then(response => response.json())
+  .then(data => console.log(data));`,
+python: `import requests
+
+url = "{baseUrl}/interaction/api/v1/org/interactions/statistics"
+
+headers = {
+"Authorization": "Bearer <token>"
+}
+
+params = {
+"user_id": "value"
+}
+
+response = requests.get(url, headers=headers, params=params)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Bearer token obtained from the Impersonate User endpoint.",
+      "required": true,
+      "title": "Authorization",
+      "type": "string"
+    }
+  ],
+  "path": [],
+  "query": [
+    {
+      "description": "Filter statistics by user ID",
+      "required": false,
+      "title": "user_id",
+      "type": "string"
+    }
+  ]
+}}
+requestBody={{
+  "properties": [],
+  "required": false
+}}
+responses={{
+  "200": [],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "Interaction_ValidationError"
+      }
+    }
+  ]
+}}
+/>

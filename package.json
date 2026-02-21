@@ -56,9 +56,10 @@
   "name": "ra-docs",
   "private": true,
   "scripts": {
-    "build": "pnpm run generate-docs && next build",
+    "build": "next build",
     "dev": "next dev",
     "generate-docs": "node scripts/generate-docs.mjs",
+    "merge-specs": "node scripts/merge-platform-specs.mjs",
     "lint": "biome check src --write",
     "start": "next start"
   },

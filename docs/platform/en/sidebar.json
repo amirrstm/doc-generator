@@ -1,0 +1,167 @@
+[
+  {
+    "items": [
+      {
+        "method": "POST",
+        "slug": "onboard-realm",
+        "title": "Onboard Realm"
+      },
+      {
+        "method": "POST",
+        "slug": "impersonate-user",
+        "title": "Impersonate User"
+      }
+    ],
+    "section": "Onboarding"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "get-tenant-by-realm",
+        "title": "Get tenant by realm"
+      },
+      {
+        "method": "POST",
+        "slug": "create-tenant",
+        "title": "Create tenant"
+      },
+      {
+        "method": "DELETE",
+        "slug": "delete-tenant",
+        "title": "Delete tenant"
+      }
+    ],
+    "section": "Config Store"
+  },
+  {
+    "items": [
+      {
+        "method": "POST",
+        "slug": "ingest-file",
+        "title": "Ingest File"
+      },
+      {
+        "method": "POST",
+        "slug": "ingest-records",
+        "title": "Ingest Records"
+      },
+      {
+        "method": "POST",
+        "slug": "search",
+        "title": "Search"
+      },
+      {
+        "method": "GET",
+        "slug": "get-task-status",
+        "title": "Get Task Status"
+      }
+    ],
+    "section": "RAG"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "list-instagram-accounts",
+        "title": "List Instagram accounts"
+      },
+      {
+        "method": "GET",
+        "slug": "get-instagram-account",
+        "title": "Get Instagram account"
+      },
+      {
+        "method": "DELETE",
+        "slug": "disconnect-instagram-account",
+        "title": "Disconnect Instagram account"
+      },
+      {
+        "method": "GET",
+        "slug": "list-instagram-posts",
+        "title": "List Instagram posts"
+      },
+      {
+        "method": "POST",
+        "slug": "create-instagram-post",
+        "title": "Create Instagram post"
+      },
+      {
+        "method": "GET",
+        "slug": "get-instagram-user-info",
+        "title": "Get Instagram user info"
+      },
+      {
+        "method": "GET",
+        "slug": "start-instagram-oauth",
+        "title": "Start Instagram OAuth"
+      }
+    ],
+    "section": "Social - Instagram"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "list-interactions-in-realm",
+        "title": "List interactions in realm"
+      },
+      {
+        "method": "POST",
+        "slug": "create-a-new-interaction",
+        "title": "Create a new interaction"
+      },
+      {
+        "method": "GET",
+        "slug": "get-interaction-statistics",
+        "title": "Get interaction statistics"
+      },
+      {
+        "method": "GET",
+        "slug": "get-interaction-by-id",
+        "title": "Get interaction by ID"
+      },
+      {
+        "method": "PATCH",
+        "slug": "update-an-interaction",
+        "title": "Update an interaction"
+      },
+      {
+        "method": "DELETE",
+        "slug": "delete-an-interaction",
+        "title": "Delete an interaction"
+      },
+      {
+        "method": "POST",
+        "slug": "archive-an-interaction",
+        "title": "Archive an interaction"
+      },
+      {
+        "method": "GET",
+        "slug": "list-messages-for-an-interaction",
+        "title": "List messages for an interaction"
+      },
+      {
+        "method": "POST",
+        "slug": "create-a-new-message",
+        "title": "Create a new message"
+      },
+      {
+        "method": "GET",
+        "slug": "get-message-by-id",
+        "title": "Get message by ID"
+      },
+      {
+        "method": "PATCH",
+        "slug": "update-a-message",
+        "title": "Update a message"
+      },
+      {
+        "method": "DELETE",
+        "slug": "delete-a-message",
+        "title": "Delete a message"
+      }
+    ],
+    "section": "Interaction History"
+  }
+]

@@ -1,0 +1,285 @@
+import Endpoint from '@/components/Endpoint'
+
+<Endpoint
+title="Onboard Realm"
+method="POST"
+category="Onboarding"
+baseUrl="https://api.paystar.stg.felesh.ai"
+path="/auth/api/v1/staff/realms/onboard"
+summary="Onboard Realm"
+description={``}
+  hasAuthentication={false}
+  curl={`curl --request POST \
+ --url "{baseUrl}/auth/api/v1/staff/realms/onboard" \
+ --header "Content-Type: application/json" \
+ --header "X-Client-Id: value" \
+ --header "X-Client-Secret: value" \
+ --data '{
+"slug": "string",
+"display_name": "string",
+"owner_username": "string",
+"first_name": "string",
+"last_name": "string"
+}'`}
+  languages={{
+    javascript: `const requestBody = {
+"slug": "string",
+"display_name": "string",
+"owner_username": "string",
+"first_name": "string",
+"last_name": "string"
+};
+
+fetch("{baseUrl}/auth/api/v1/staff/realms/onboard", {
+"method": "POST",
+"headers": {
+"Content-Type": "application/json"
+},
+"body": JSON.stringify(requestBody)
+})
+.then(response => response.json())
+.then(data => console.log(data));`,
+    python: `import requests
+
+url = "{baseUrl}/auth/api/v1/staff/realms/onboard"
+
+payload = {
+"slug": "string",
+"display_name": "string",
+"owner_username": "string",
+"first_name": "string",
+"last_name": "string"
+}
+
+headers = {
+"Content-Type": "application/json",
+"X-Client-Id": "<token>",
+"X-Client-Secret": "<token>"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "No description provided",
+      "required": false,
+      "title": "X-Client-Id",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "required": false,
+      "title": "X-Client-Secret",
+      "type": "string"
+    }
+  ],
+  "path": [],
+  "query": []
+}}
+requestBody={{
+  "contentType": "application/json",
+  "properties": [
+    {
+      "description": "Unique identifier for the realm. Use the Paystar customer's user_id.",
+      "title": "slug",
+      "type": "string",
+      "required": true
+    },
+    {
+      "description": "Human-readable name for the realm (e.g. company name).",
+      "title": "display_name",
+      "type": "string",
+      "required": true
+    },
+    {
+      "description": "Username for the realm owner. Can be a mobile number or email address of the customer.",
+      "title": "owner_username",
+      "type": "string",
+      "required": true
+    },
+    {
+      "description": "First name of the realm owner (optional).",
+      "title": "first_name",
+      "type": "string",
+      "required": false
+    },
+    {
+      "description": "Last name of the realm owner (optional).",
+      "title": "last_name",
+      "type": "string",
+      "required": false
+    }
+  ],
+  "required": true
+}}
+responses={{
+  "200": [
+    {
+      "description": "No description provided",
+      "title": "data",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "realm",
+            "type": "object",
+            "children": {
+              "items": [
+                {
+                  "description": "Unique realm identifier (the Paystar customer's user_id).",
+                  "title": "slug",
+                  "type": "string"
+                },
+                {
+                  "description": "Human-readable realm name.",
+                  "title": "display_name",
+                  "type": "string"
+                },
+                {
+                  "description": "Whether the realm is active.",
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                {
+                  "description": "Realm creation timestamp.",
+                  "title": "created_at",
+                  "type": "string"
+                },
+                {
+                  "description": "Number of users in the realm.",
+                  "title": "user_count",
+                  "type": "integer"
+                }
+              ],
+              "title": "Object"
+            }
+          },
+          {
+            "description": "No description provided",
+            "title": "owner",
+            "type": "object",
+            "children": {
+              "items": [
+                {
+                  "description": "Unique owner user ID.",
+                  "title": "id",
+                  "type": "string (uuid)"
+                },
+                {
+                  "description": "Assigned roles for the owner.",
+                  "title": "roles",
+                  "type": "array"
+                },
+                {
+                  "description": "The realm this owner belongs to.",
+                  "title": "realm_id",
+                  "type": "string"
+                },
+                {
+                  "description": "Owner email address.",
+                  "title": "email",
+                  "type": "string"
+                },
+                {
+                  "description": "Owner username (mobile or email).",
+                  "title": "username",
+                  "type": "string"
+                },
+                {
+                  "description": "Whether the owner account is active.",
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                {
+                  "description": "Owner last name.",
+                  "title": "last_name",
+                  "type": "string"
+                },
+                {
+                  "description": "Owner first name.",
+                  "title": "first_name",
+                  "type": "string"
+                },
+                {
+                  "description": "Owner creation timestamp (epoch ms).",
+                  "title": "created_at",
+                  "type": "integer"
+                }
+              ],
+              "title": "Object"
+            }
+          }
+        ],
+        "title": "Object"
+      }
+    },
+    {
+      "description": "No description provided",
+      "title": "metadata",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "Unique request tracking ID.",
+            "title": "request_id",
+            "type": "string (uuid)"
+          },
+          {
+            "description": "Server timestamp of the response.",
+            "title": "timestamp",
+            "type": "string (date-time)"
+          },
+          {
+            "description": "Request processing time in milliseconds.",
+            "title": "processing_time_ms",
+            "type": "number"
+          }
+        ],
+        "title": "Object"
+      }
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "input",
+            "type": "unknown"
+          },
+          {
+            "description": "No description provided",
+            "title": "ctx",
+            "type": "object"
+          }
+        ],
+        "title": "Auth_ValidationError"
+      }
+    }
+  ]
+}}
+/>

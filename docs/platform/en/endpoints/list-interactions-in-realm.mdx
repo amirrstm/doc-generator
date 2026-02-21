@@ -1,0 +1,267 @@
+import Endpoint from '@/components/Endpoint'
+
+<Endpoint
+title="List interactions in realm"
+method="GET"
+category="Interaction History"
+baseUrl="https://api.paystar.stg.felesh.ai"
+path="/interaction/api/v1/org/interactions"
+summary="List interactions in realm"
+description={`List all interactions in the realm with optional user_id filter, search, sorting, and pagination.`}
+hasAuthentication={false}
+curl={`curl --request GET \
+  --url "{baseUrl}/interaction/api/v1/org/interactions" \
+  --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..."`}
+languages={{
+javascript: `fetch("{baseUrl}/interaction/api/v1/org/interactions?user_id=value&page=123&page_size=123&search=value&sort_by=value&sort_order=value", {
+  "method": "GET"
+})
+  .then(response => response.json())
+  .then(data => console.log(data));`,
+python: `import requests
+
+url = "{baseUrl}/interaction/api/v1/org/interactions"
+
+headers = {
+"Authorization": "Bearer <token>"
+}
+
+params = {
+"user_id": "value",
+"page": 123,
+"page_size": 123,
+"search": "value",
+"sort_by": "value",
+"sort_order": "value"
+}
+
+response = requests.get(url, headers=headers, params=params)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Bearer token obtained from the Impersonate User endpoint.",
+      "required": true,
+      "title": "Authorization",
+      "type": "string"
+    }
+  ],
+  "path": [],
+  "query": [
+    {
+      "description": "Filter by user ID",
+      "required": false,
+      "title": "user_id",
+      "type": "string"
+    },
+    {
+      "description": "Page number",
+      "required": false,
+      "title": "page",
+      "type": "integer"
+    },
+    {
+      "description": "Items per page",
+      "required": false,
+      "title": "page_size",
+      "type": "integer"
+    },
+    {
+      "description": "Case-insensitive search across title, description, tags, and interaction_id",
+      "required": false,
+      "title": "search",
+      "type": "string"
+    },
+    {
+      "description": "Sort field",
+      "required": false,
+      "title": "sort_by",
+      "type": "string"
+    },
+    {
+      "description": "Sort order (asc/desc)",
+      "required": false,
+      "title": "sort_order",
+      "type": "string"
+    }
+  ]
+}}
+requestBody={{
+  "properties": [],
+  "required": false
+}}
+responses={{
+  "200": [
+    {
+      "description": "List of interactions with their last message.",
+      "title": "data",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "Unique identifier for the interaction (UUID v7).",
+            "title": "interaction_id",
+            "type": "string"
+          },
+          {
+            "description": "Tenant identifier for multi-tenancy.",
+            "title": "realm",
+            "type": "string"
+          },
+          {
+            "description": "Owner of the interaction.",
+            "title": "user_id",
+            "type": "string"
+          },
+          {
+            "description": "Agent handling the interaction.",
+            "title": "agent",
+            "type": "string"
+          },
+          {
+            "description": "Agent-specific interaction type.",
+            "title": "interaction_type",
+            "type": "string"
+          },
+          {
+            "description": "Optional summary title for the interaction.",
+            "title": "title",
+            "type": "string"
+          },
+          {
+            "description": "Interaction status: ACTIVE, ARCHIVED, or DELETED. Possible values: [ACTIVE, ARCHIVED, DELETED]",
+            "title": "status",
+            "type": "enum<string>"
+          },
+          {
+            "description": "Agent workflow state.",
+            "title": "state",
+            "type": "string"
+          },
+          {
+            "description": "Searchable tags for the interaction.",
+            "title": "tags",
+            "type": "array"
+          },
+          {
+            "description": "Creation timestamp (ISO 8601).",
+            "title": "created_at",
+            "type": "string (date-time)"
+          },
+          {
+            "description": "Last update timestamp (ISO 8601).",
+            "title": "updated_at",
+            "type": "string (date-time)"
+          },
+          {
+            "description": "Most recent message in the interaction.",
+            "title": "last_message",
+            "type": "object",
+            "children": {
+              "items": [
+                {
+                  "description": "Unique identifier for the message (UUID v7).",
+                  "title": "message_id",
+                  "type": "string"
+                },
+                {
+                  "description": "Message role: AI, USER, or SYSTEM. Possible values: [AI, USER, SYSTEM]",
+                  "title": "role",
+                  "type": "enum<string>"
+                },
+                {
+                  "description": "Message content.",
+                  "title": "text",
+                  "type": "string"
+                },
+                {
+                  "description": "Actual sender identifier (for human-in-the-loop scenarios).",
+                  "title": "sender",
+                  "type": "string"
+                },
+                {
+                  "description": "Message creation timestamp (ISO 8601).",
+                  "title": "created_at",
+                  "type": "string (date-time)"
+                }
+              ],
+              "title": "Interaction_LastMessage"
+            }
+          }
+        ],
+        "title": "Interaction_InteractionWithLastMessage"
+      }
+    },
+    {
+      "description": "No description provided",
+      "title": "pagination",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "Current page number (1-based).",
+            "title": "page",
+            "type": "integer"
+          },
+          {
+            "description": "Number of items per page.",
+            "title": "page_size",
+            "type": "integer"
+          },
+          {
+            "description": "Total number of items matching the query.",
+            "title": "total_items",
+            "type": "integer"
+          },
+          {
+            "description": "Total number of pages.",
+            "title": "total_pages",
+            "type": "integer"
+          },
+          {
+            "description": "Whether there is a next page.",
+            "title": "has_next",
+            "type": "boolean"
+          },
+          {
+            "description": "Whether there is a previous page.",
+            "title": "has_previous",
+            "type": "boolean"
+          }
+        ],
+        "title": "Interaction_PaginationMeta"
+      }
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "Interaction_ValidationError"
+      }
+    }
+  ]
+}}
+/>

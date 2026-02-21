@@ -1,0 +1,104 @@
+import Endpoint from '@/components/Endpoint'
+
+<Endpoint
+title="Get tenant by realm"
+method="GET"
+category="Config Store"
+baseUrl="https://api.paystar.stg.felesh.ai"
+path="/config/api/v1/org/tenants/"
+summary="Get tenant by realm"
+description={`Get the tenant associated with the current realm.`}
+hasAuthentication={false}
+curl={`curl --request GET \
+  --url "{baseUrl}/config/api/v1/org/tenants/" \
+  --header "Authorization: value"`}
+languages={{
+javascript: `fetch("{baseUrl}/config/api/v1/org/tenants/", {
+  "method": "GET"
+})
+  .then(response => response.json())
+  .then(data => console.log(data));`,
+python: `import requests
+
+url = "{baseUrl}/config/api/v1/org/tenants/"
+
+headers = {
+"Authorization": "Bearer <token>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Bearer token from impersonate response (e.g. Bearer eyJhbG...)",
+      "required": true,
+      "title": "Authorization",
+      "type": "string"
+    }
+  ],
+  "path": [],
+  "query": []
+}}
+requestBody={{
+  "properties": [],
+  "required": false
+}}
+responses={{
+  "200": [
+    {
+      "description": "No description provided",
+      "title": "id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "No description provided",
+      "title": "realm",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "name",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "api_key",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "enabled",
+      "type": "boolean"
+    },
+    {
+      "description": "No description provided",
+      "title": "requests_per_minute",
+      "type": "integer"
+    },
+    {
+      "description": "No description provided",
+      "title": "burst_allowance",
+      "type": "integer"
+    },
+    {
+      "description": "No description provided",
+      "title": "domains",
+      "type": "array"
+    },
+    {
+      "description": "No description provided",
+      "title": "created_at",
+      "type": "string (date-time)"
+    },
+    {
+      "description": "No description provided",
+      "title": "updated_at",
+      "type": "string (date-time)"
+    }
+  ]
+}}
+/>

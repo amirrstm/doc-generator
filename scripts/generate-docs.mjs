@@ -253,8 +253,20 @@ function extractRequestBodyProperties(operation, spec) {
   }
 
   const content = operation.requestBody.content;
+
+  // Determine content type (prefer application/json, fallback to multipart/form-data)
+  let schema = null;
+  let contentType = "application/json";
+
   if (content["application/json"] && content["application/json"].schema) {
-    const schema = content["application/json"].schema;
+    schema = content["application/json"].schema;
+    contentType = "application/json";
+  } else if (content["multipart/form-data"] && content["multipart/form-data"].schema) {
+    schema = content["multipart/form-data"].schema;
+    contentType = "multipart/form-data";
+  }
+
+  if (schema) {
     const properties = extractResponseProperties(schema, spec);
 
     // Get required fields from schema
@@ -270,13 +282,9 @@ function extractRequestBodyProperties(operation, spec) {
 
         // If the property has children, process them recursively
         if (prop.children && prop.children.items) {
-          // For nested objects, we need to get the required fields from the referenced schema
           let childRequiredFields = [];
 
-          // Try to find the required fields for the child schema
           if (prop.type === "array" || prop.type === "object") {
-            // For now, we'll assume nested required fields need to be handled separately
-            // This could be enhanced further based on the specific schema structure
             childRequiredFields = [];
           }
 
@@ -293,12 +301,14 @@ function extractRequestBodyProperties(operation, spec) {
     const propertiesWithRequired = addRequiredToProperties(properties, requiredFields);
 
     return {
+      contentType,
       properties: propertiesWithRequired,
       required: operation.requestBody.required || false
     };
   }
 
   return {
+    contentType: "application/json",
     properties: [],
     required: false
   };
@@ -429,9 +439,10 @@ function generateCurlCommand(method, pathKey, operation, spec) {
 
   // Add headers
   const headers = [];
+  const isMultipart = isMultipartFormData(operation);
 
-  // Add content-type for requests with body
-  if (["POST", "PUT", "PATCH"].includes(method.toUpperCase()) && operation.requestBody) {
+  // Add content-type for requests with body (skip for multipart — curl sets it automatically with -F)
+  if (["POST", "PUT", "PATCH"].includes(method.toUpperCase()) && operation.requestBody && !isMultipart) {
     headers.push('--header "Content-Type: application/json"');
   }
 
@@ -452,10 +463,24 @@ function generateCurlCommand(method, pathKey, operation, spec) {
 
   // Add request body for POST/PUT/PATCH
   if (["POST", "PUT", "PATCH"].includes(method.toUpperCase()) && operation.requestBody) {
-    const requestBodyExample = generateRequestBodyExample(operation, spec);
-    if (requestBodyExample) {
-      const jsonBody = JSON.stringify(requestBodyExample, null, 2);
-      curlParts.push(`--data '${jsonBody}'`);
+    if (isMultipart) {
+      // Use -F flags for multipart/form-data
+      const requestBodyExample = generateRequestBodyExample(operation, spec);
+      if (requestBodyExample) {
+        for (const [key, value] of Object.entries(requestBodyExample)) {
+          if (typeof value === "string" && value.startsWith("@")) {
+            curlParts.push(`-F "${key}=${value}"`);
+          } else {
+            curlParts.push(`-F "${key}=${value}"`);
+          }
+        }
+      }
+    } else {
+      const requestBodyExample = generateRequestBodyExample(operation, spec);
+      if (requestBodyExample) {
+        const jsonBody = JSON.stringify(requestBodyExample, null, 2);
+        curlParts.push(`--data '${jsonBody}'`);
+      }
     }
   }
 
@@ -510,40 +535,87 @@ function generateJavaScriptCode(method, pathKey, operation, spec) {
     url += `?${queryParams.join("&")}`;
   }
 
-  const fetchOptions = {
-    method: method.toUpperCase()
-  };
-
-  // Add headers
-  const headers = {};
-  if (["POST", "PUT", "PATCH"].includes(method.toUpperCase()) && operation.requestBody) {
-    headers["Content-Type"] = "application/json";
-  }
-
-  if (Object.keys(headers).length > 0) {
-    fetchOptions.headers = headers;
-  }
-
+  const isMultipart = isMultipartFormData(operation);
   const codeLines = [];
 
-  // Add request body example if needed
-  if (["POST", "PUT", "PATCH"].includes(method.toUpperCase()) && operation.requestBody) {
+  if (isMultipart) {
+    // Generate FormData-based code for multipart/form-data
     const requestBodyExample = generateRequestBodyExample(operation, spec);
+    codeLines.push("const formData = new FormData();");
     if (requestBodyExample) {
-      codeLines.push(`const requestBody = ${JSON.stringify(requestBodyExample, null, 2)};`);
-      codeLines.push("");
-      fetchOptions.body = "JSON.stringify(requestBody)";
+      for (const [key, value] of Object.entries(requestBodyExample)) {
+        if (typeof value === "string" && value.startsWith("@")) {
+          codeLines.push(`formData.append("${key}", fileInput.files[0]);`);
+        } else {
+          codeLines.push(`formData.append("${key}", ${JSON.stringify(value)});`);
+        }
+      }
     }
+    codeLines.push("");
+
+    // Add header params (but not Content-Type — browser sets it for FormData)
+    const headerLines = [];
+    if (operation.parameters) {
+      operation.parameters.forEach((param) => {
+        if (param.in === "header") {
+          let exampleValue = "<token>";
+          if (param.name.toLowerCase().includes("authorization")) {
+            exampleValue = "Bearer <token>";
+          } else if (param.schema && param.schema.example) {
+            exampleValue = param.schema.example;
+          }
+          headerLines.push(`  "${param.name}": "${exampleValue}"`);
+        }
+      });
+    }
+
+    const fetchOptions = { method: method.toUpperCase() };
+    if (headerLines.length > 0) {
+      fetchOptions.headers = "__HEADERS__";
+    }
+    fetchOptions.body = "formData";
+
+    let optionsStr = JSON.stringify(fetchOptions, null, 2)
+      .replace('"formData"', "formData")
+      .replace('"__HEADERS__"', `{\n${headerLines.join(",\n")}\n  }`);
+
+    codeLines.push(`fetch("${url}", ${optionsStr})`);
+    codeLines.push("  .then(response => response.json())");
+    codeLines.push("  .then(data => console.log(data));");
+  } else {
+    const fetchOptions = {
+      method: method.toUpperCase()
+    };
+
+    // Add headers
+    const headers = {};
+    if (["POST", "PUT", "PATCH"].includes(method.toUpperCase()) && operation.requestBody) {
+      headers["Content-Type"] = "application/json";
+    }
+
+    if (Object.keys(headers).length > 0) {
+      fetchOptions.headers = headers;
+    }
+
+    // Add request body example if needed
+    if (["POST", "PUT", "PATCH"].includes(method.toUpperCase()) && operation.requestBody) {
+      const requestBodyExample = generateRequestBodyExample(operation, spec);
+      if (requestBodyExample) {
+        codeLines.push(`const requestBody = ${JSON.stringify(requestBodyExample, null, 2)};`);
+        codeLines.push("");
+        fetchOptions.body = "JSON.stringify(requestBody)";
+      }
+    }
+
+    const optionsStr = JSON.stringify(fetchOptions, null, 2).replace(
+      '"JSON.stringify(requestBody)"',
+      "JSON.stringify(requestBody)"
+    );
+
+    codeLines.push(`fetch("${url}", ${optionsStr})`);
+    codeLines.push("  .then(response => response.json())");
+    codeLines.push("  .then(data => console.log(data));");
   }
-
-  const optionsStr = JSON.stringify(fetchOptions, null, 2).replace(
-    '"JSON.stringify(requestBody)"',
-    "JSON.stringify(requestBody)"
-  );
-
-  codeLines.push(`fetch("${url}", ${optionsStr})`);
-  codeLines.push("  .then(response => response.json())");
-  codeLines.push("  .then(data => console.log(data));");
 
   return codeLines.join("\n");
 }
@@ -570,6 +642,7 @@ function generatePythonCode(method, pathKey, operation, spec) {
     });
   }
 
+  const isMultipart = isMultipartFormData(operation);
   const codeLines = ["import requests"];
   codeLines.push("");
   codeLines.push(`url = "${url}"`);
@@ -578,10 +651,41 @@ function generatePythonCode(method, pathKey, operation, spec) {
   // Add request body for POST/PUT/PATCH
   if (["POST", "PUT", "PATCH"].includes(method.toUpperCase()) && operation.requestBody) {
     const requestBodyExample = generateRequestBodyExample(operation, spec);
-    if (requestBodyExample) {
+    if (requestBodyExample && isMultipart) {
+      // Generate files dict and data dict for multipart
+      const fileFields = [];
+      const dataFields = [];
+      for (const [key, value] of Object.entries(requestBodyExample)) {
+        if (typeof value === "string" && value.startsWith("@")) {
+          const filename = value.slice(1);
+          fileFields.push([key, filename]);
+        } else {
+          dataFields.push([key, value]);
+        }
+      }
+
+      if (fileFields.length > 0) {
+        codeLines.push("files = {");
+        fileFields.forEach(([key, filename], index) => {
+          const comma = index < fileFields.length - 1 ? "," : "";
+          codeLines.push(`    "${key}": open("${filename}", "rb")${comma}`);
+        });
+        codeLines.push("}");
+        codeLines.push("");
+      }
+
+      if (dataFields.length > 0) {
+        codeLines.push("data = {");
+        dataFields.forEach(([key, value], index) => {
+          const comma = index < dataFields.length - 1 ? "," : "";
+          codeLines.push(`    "${key}": ${JSON.stringify(value)}${comma}`);
+        });
+        codeLines.push("}");
+        codeLines.push("");
+      }
+    } else if (requestBodyExample) {
       codeLines.push("payload = {");
 
-      // Add each property with proper indentation
       const entries = Object.entries(requestBodyExample);
       entries.forEach(([key, value], index) => {
         const isLast = index === entries.length - 1;
@@ -617,9 +721,9 @@ function generatePythonCode(method, pathKey, operation, spec) {
     }
   }
 
-  // Add headers
+  // Add headers (skip Content-Type for multipart — requests sets it automatically)
   const headers = {};
-  if (["POST", "PUT", "PATCH"].includes(method.toUpperCase()) && operation.requestBody) {
+  if (["POST", "PUT", "PATCH"].includes(method.toUpperCase()) && operation.requestBody && !isMultipart) {
     headers["Content-Type"] = "application/json";
   }
 
@@ -676,7 +780,12 @@ function generatePythonCode(method, pathKey, operation, spec) {
   const requestParts = [`url`];
 
   if (["POST", "PUT", "PATCH"].includes(method.toUpperCase()) && operation.requestBody) {
-    requestParts.push("json=payload");
+    if (isMultipart) {
+      requestParts.push("files=files");
+      requestParts.push("data=data");
+    } else {
+      requestParts.push("json=payload");
+    }
   }
 
   if (Object.keys(headers).length > 0) {
@@ -717,7 +826,20 @@ function generateRequestBodyExample(operation, spec) {
     return generateSchemaExample(schema, spec);
   }
 
+  if (content["multipart/form-data"] && content["multipart/form-data"].schema) {
+    const schema = content["multipart/form-data"].schema;
+    return generateSchemaExample(schema, spec);
+  }
+
   return null;
+}
+
+/**
+ * Check if an operation uses multipart/form-data content type
+ */
+function isMultipartFormData(operation) {
+  if (!operation.requestBody || !operation.requestBody.content) return false;
+  return !!operation.requestBody.content["multipart/form-data"] && !operation.requestBody.content["application/json"];
 }
 
 /**
@@ -760,6 +882,7 @@ function generateSchemaExample(schema, spec, visited = new Set()) {
       return [];
 
     case "string":
+      if (schema.format === "binary") return "@file.pdf";
       if (schema.example) return schema.example;
       if (schema.format === "uuid") return "xxxxxxxx-xxxxx";
       if (schema.format === "date-time") return new Date().toISOString();

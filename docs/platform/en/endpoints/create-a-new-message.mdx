@@ -1,0 +1,244 @@
+import Endpoint from '@/components/Endpoint'
+
+<Endpoint
+title="Create a new message"
+method="POST"
+category="Interaction History"
+baseUrl="https://api.paystar.stg.felesh.ai"
+path="/interaction/api/v1/org/interactions/\{interaction_id\}/messages"
+summary="Create a new message"
+description={`Create a new message in any interaction in the realm.`}
+hasAuthentication={false}
+curl={`curl --request POST \
+  --url "{baseUrl}/interaction/api/v1/org/interactions/123/messages" \
+  --header "Content-Type: application/json" \
+  --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  --data '{
+  "role": "string",
+  "text": "string",
+  "sender": "string",
+  "correlation_id": "string",
+  "request_id": "string",
+  "finish_reason": "string",
+  "parent_message_id": "string",
+  "metadata": [
+    "string"
+  ],
+  "user_metadata": {},
+  "message_metadata": {
+    "error": "string",
+    "is_viewed": true,
+    "is_visible": true,
+    "is_edited": true,
+    "need_human_responder": true
+  }
+}'`}
+languages={{
+javascript: `const requestBody = {
+"role": "string",
+"text": "string",
+"sender": "string",
+"correlation_id": "string",
+"request_id": "string",
+"finish_reason": "string",
+"parent_message_id": "string",
+"metadata": [
+"string"
+],
+"user_metadata": {},
+"message_metadata": {
+"error": "string",
+"is_viewed": true,
+"is_visible": true,
+"is_edited": true,
+"need_human_responder": true
+}
+};
+
+fetch("{baseUrl}/interaction/api/v1/org/interactions/\${interaction_id}/messages", {
+"method": "POST",
+"headers": {
+"Content-Type": "application/json"
+},
+"body": JSON.stringify(requestBody)
+})
+.then(response => response.json())
+.then(data => console.log(data));`,
+    python: `import requests
+
+url = "{baseUrl}/interaction/api/v1/org/interactions/{interaction_id}/messages"
+
+payload = {
+"role": "string",
+"text": "string",
+"sender": "string",
+"correlation_id": "string",
+"request_id": "string",
+"finish_reason": "string",
+"parent_message_id": "string",
+"metadata": ["string"],
+"user_metadata": {},
+"message_metadata": {"error":"string","is_viewed":true,"is_visible":true,"is_edited":true,"need_human_responder":true}
+}
+
+headers = {
+"Content-Type": "application/json",
+"Authorization": "Bearer <token>"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Bearer token obtained from the Impersonate User endpoint.",
+      "required": true,
+      "title": "Authorization",
+      "type": "string"
+    }
+  ],
+  "path": [
+    {
+      "description": "No description provided",
+      "required": true,
+      "title": "interaction_id",
+      "type": "string"
+    }
+  ],
+  "query": []
+}}
+requestBody={{
+  "contentType": "application/json",
+  "properties": [
+    {
+      "description": "Message role: AI, USER, or SYSTEM",
+      "title": "role",
+      "type": "string",
+      "required": true
+    },
+    {
+      "description": "Message content",
+      "title": "text",
+      "type": "string",
+      "required": false
+    },
+    {
+      "description": "Actual sender (for human-in-the-loop)",
+      "title": "sender",
+      "type": "string",
+      "required": false
+    },
+    {
+      "description": "Distributed tracing ID",
+      "title": "correlation_id",
+      "type": "string",
+      "required": false
+    },
+    {
+      "description": "Request tracing ID",
+      "title": "request_id",
+      "type": "string",
+      "required": false
+    },
+    {
+      "description": "AI completion reason",
+      "title": "finish_reason",
+      "type": "string",
+      "required": false
+    },
+    {
+      "description": "Parent message ID for threading",
+      "title": "parent_message_id",
+      "type": "string",
+      "required": false
+    },
+    {
+      "description": "Tags",
+      "title": "metadata",
+      "type": "array",
+      "required": false
+    },
+    {
+      "description": "User-specific data",
+      "title": "user_metadata",
+      "type": "object",
+      "required": false
+    },
+    {
+      "description": "Message metadata",
+      "title": "message_metadata",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "Error message if any",
+            "title": "error",
+            "type": "string",
+            "required": false
+          },
+          {
+            "description": "Whether message is viewed",
+            "title": "is_viewed",
+            "type": "boolean",
+            "required": false
+          },
+          {
+            "description": "Whether message is visible",
+            "title": "is_visible",
+            "type": "boolean",
+            "required": false
+          },
+          {
+            "description": "Whether message is edited",
+            "title": "is_edited",
+            "type": "boolean",
+            "required": false
+          },
+          {
+            "description": "Whether human response is needed",
+            "title": "need_human_responder",
+            "type": "boolean",
+            "required": false
+          }
+        ],
+        "title": "Interaction_MessageMetadataRequest"
+      },
+      "required": false
+    }
+  ],
+  "required": true
+}}
+responses={{
+  "201": [],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "Interaction_ValidationError"
+      }
+    }
+  ]
+}}
+/>

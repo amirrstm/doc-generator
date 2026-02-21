@@ -1,0 +1,169 @@
+import Endpoint from '@/components/Endpoint'
+
+<Endpoint
+title="Create tenant"
+method="POST"
+category="Config Store"
+baseUrl="https://api.paystar.stg.felesh.ai"
+path="/config/api/v1/org/tenants/"
+summary="Create tenant"
+description={`Create a new tenant for the current realm.`}
+hasAuthentication={false}
+curl={`curl --request POST \
+  --url "{baseUrl}/config/api/v1/org/tenants/" \
+  --header "Content-Type: application/json" \
+  --header "Authorization: value" \
+  --data '{
+  "name": "string",
+  "enabled": true,
+  "requests_per_minute": 123,
+  "burst_allowance": 123,
+  "domains": [
+    "product"
+  ]
+}'`}
+languages={{
+javascript: `const requestBody = {
+"name": "string",
+"enabled": true,
+"requests_per_minute": 123,
+"burst_allowance": 123,
+"domains": [
+"product"
+]
+};
+
+fetch("{baseUrl}/config/api/v1/org/tenants/", {
+"method": "POST",
+"headers": {
+"Content-Type": "application/json"
+},
+"body": JSON.stringify(requestBody)
+})
+.then(response => response.json())
+.then(data => console.log(data));`,
+    python: `import requests
+
+url = "{baseUrl}/config/api/v1/org/tenants/"
+
+payload = {
+"name": "string",
+"enabled": true,
+"requests_per_minute": 123,
+"burst_allowance": 123,
+"domains": ["product"]
+}
+
+headers = {
+"Content-Type": "application/json",
+"Authorization": "Bearer <token>"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Bearer token from impersonate response (e.g. Bearer eyJhbG...)",
+      "required": true,
+      "title": "Authorization",
+      "type": "string"
+    }
+  ],
+  "path": [],
+  "query": []
+}}
+requestBody={{
+  "contentType": "application/json",
+  "properties": [
+    {
+      "description": "No description provided",
+      "title": "name",
+      "type": "string",
+      "required": true
+    },
+    {
+      "description": "No description provided",
+      "title": "enabled",
+      "type": "boolean",
+      "required": false
+    },
+    {
+      "description": "No description provided",
+      "title": "requests_per_minute",
+      "type": "integer",
+      "required": true
+    },
+    {
+      "description": "No description provided",
+      "title": "burst_allowance",
+      "type": "integer",
+      "required": true
+    },
+    {
+      "description": "No description provided",
+      "title": "domains",
+      "type": "array",
+      "required": false
+    }
+  ],
+  "required": true
+}}
+responses={{
+  "201": [
+    {
+      "description": "No description provided",
+      "title": "id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "No description provided",
+      "title": "realm",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "name",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "api_key",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "enabled",
+      "type": "boolean"
+    },
+    {
+      "description": "No description provided",
+      "title": "requests_per_minute",
+      "type": "integer"
+    },
+    {
+      "description": "No description provided",
+      "title": "burst_allowance",
+      "type": "integer"
+    },
+    {
+      "description": "No description provided",
+      "title": "domains",
+      "type": "array"
+    },
+    {
+      "description": "No description provided",
+      "title": "created_at",
+      "type": "string (date-time)"
+    },
+    {
+      "description": "No description provided",
+      "title": "updated_at",
+      "type": "string (date-time)"
+    }
+  ]
+}}
+/>

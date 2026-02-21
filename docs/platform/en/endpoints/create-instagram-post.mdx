@@ -1,0 +1,130 @@
+import Endpoint from '@/components/Endpoint'
+
+<Endpoint
+title="Create Instagram post"
+method="POST"
+category="Social - Instagram"
+baseUrl="https://api.paystar.stg.felesh.ai"
+path="/social/api/v1/platform/instagram/posts"
+summary="Create Instagram post"
+description={`Create and publish an Instagram image post.`}
+hasAuthentication={false}
+curl={`curl --request POST \
+  --url "{baseUrl}/social/api/v1/platform/instagram/posts" \
+  --header "Content-Type: application/json" \
+  --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  --data '{
+  "image_url": "string",
+  "caption": "string"
+}'`}
+languages={{
+javascript: `const requestBody = {
+"image_url": "string",
+"caption": "string"
+};
+
+fetch("{baseUrl}/social/api/v1/platform/instagram/posts", {
+"method": "POST",
+"headers": {
+"Content-Type": "application/json"
+},
+"body": JSON.stringify(requestBody)
+})
+.then(response => response.json())
+.then(data => console.log(data));`,
+    python: `import requests
+
+url = "{baseUrl}/social/api/v1/platform/instagram/posts"
+
+payload = {
+"image_url": "string",
+"caption": "string"
+}
+
+headers = {
+"Content-Type": "application/json",
+"Authorization": "Bearer <token>"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Bearer token obtained from the Impersonate User endpoint.",
+      "required": true,
+      "title": "Authorization",
+      "type": "string"
+    }
+  ],
+  "path": [],
+  "query": []
+}}
+requestBody={{
+  "contentType": "application/json",
+  "properties": [
+    {
+      "description": "No description provided",
+      "title": "image_url",
+      "type": "string",
+      "required": true
+    },
+    {
+      "description": "No description provided",
+      "title": "caption",
+      "type": "string",
+      "required": false
+    }
+  ],
+  "required": true
+}}
+responses={{
+  "200": [
+    {
+      "description": "No description provided",
+      "title": "container_id",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "media_id",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "publish_status",
+      "type": "string"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "Social_ValidationError"
+      }
+    }
+  ]
+}}
+/>

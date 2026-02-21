@@ -71,10 +71,10 @@ export function generateDynamicCurl({
   // Build the final URL with path parameters (same logic as buildRequestUrl)
   let finalUrl = url;
 
-  // Replace path parameters
+  // Replace path parameters (handle both escaped \{param\} and unescaped {param})
   Object.entries(pathParams).forEach(([param, value]) => {
     if (value) {
-      finalUrl = finalUrl.replace(`{${param}}`, encodeURIComponent(value));
+      finalUrl = finalUrl.replace(`\\{${param}\\}`, encodeURIComponent(value)).replace(`{${param}}`, encodeURIComponent(value));
     }
   });
 

@@ -1,0 +1,157 @@
+import Endpoint from '@/components/Endpoint'
+
+<Endpoint
+title="Ingest File"
+method="POST"
+category="RAG"
+baseUrl="https://api.paystar.stg.felesh.ai"
+path="/rag/api/v1/ingest/files"
+summary="Ingest File"
+description={`Upload a file for ingestion into the specified domain. Supports PDF, TXT, CSV, JSON, JSONL and other document formats up to 100MB. The file is validated and queued for asynchronous processing. Returns a task ID for polling status via GET /tasks/{task_id}.`}
+hasAuthentication={false}
+curl={`curl --request POST \
+  --url "{baseUrl}/rag/api/v1/ingest/files" \
+  --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -F "file=@file.pdf" \
+  -F "domain=document" \
+  -F "strategy=general"`}
+languages={{
+javascript: `const formData = new FormData();
+formData.append("file", fileInput.files[0]);
+formData.append("domain", "document");
+formData.append("strategy", "general");
+
+fetch("{baseUrl}/rag/api/v1/ingest/files", {
+"method": "POST",
+"headers": {
+"Authorization": "Bearer <token>"
+},
+"body": formData
+})
+.then(response => response.json())
+.then(data => console.log(data));`,
+    python: `import requests
+
+url = "{baseUrl}/rag/api/v1/ingest/files"
+
+files = {
+"file": open("file.pdf", "rb")
+}
+
+data = {
+"domain": "document",
+"strategy": "general"
+}
+
+headers = {
+"Authorization": "Bearer <token>"
+}
+
+response = requests.post(url, files=files, data=data, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Bearer token obtained from the Impersonate User endpoint.",
+      "required": true,
+      "title": "Authorization",
+      "type": "string"
+    }
+  ],
+  "path": [],
+  "query": []
+}}
+requestBody={{
+  "contentType": "multipart/form-data",
+  "properties": [
+    {
+      "description": "File to upload (multipart/form-data). Maximum size 100MB. Supported formats include PDF, TXT, CSV, JSON, JSONL.",
+      "title": "file",
+      "type": "string (binary)",
+      "required": true
+    },
+    {
+      "description": "Target domain for ingestion (e.g., \"document\", \"product\").",
+      "title": "domain",
+      "type": "string",
+      "required": true
+    },
+    {
+      "description": "Processing strategy to use. If not provided, uses the domain's default strategy.",
+      "title": "strategy",
+      "type": "string",
+      "required": false
+    }
+  ],
+  "required": true
+}}
+responses={{
+  "200": [
+    {
+      "description": "Unique identifier for the ingestion task. Use this to poll status.",
+      "title": "task_id",
+      "type": "string"
+    },
+    {
+      "description": "Name of the ingested source (filename or batch identifier).",
+      "title": "source_name",
+      "type": "string"
+    },
+    {
+      "description": "Unique identifier assigned to the source.",
+      "title": "source_id",
+      "type": "string"
+    },
+    {
+      "description": "Domain the content was ingested into.",
+      "title": "domain",
+      "type": "string"
+    },
+    {
+      "description": "Initial task status (always \"pending\" on creation). Possible values: [pending]",
+      "title": "status",
+      "type": "enum<string>"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "input",
+            "type": "unknown"
+          },
+          {
+            "description": "No description provided",
+            "title": "ctx",
+            "type": "object"
+          }
+        ],
+        "title": "RAG_ValidationError"
+      }
+    }
+  ]
+}}
+/>

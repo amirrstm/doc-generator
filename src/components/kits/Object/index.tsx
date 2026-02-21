@@ -19,8 +19,8 @@ export default function ContentObject({ title, subtitle, data }: Props) {
         {subtitle && <p className="font-mono text-gray-500 text-xs">{subtitle}</p>}
       </div>
 
-      {data?.map((item) => (
-        <NestedProperty item={item} key={item.title} />
+      {data?.map((item, index) => (
+        <NestedProperty item={item} key={`${item.title}-${index}`} />
       ))}
     </div>
   );

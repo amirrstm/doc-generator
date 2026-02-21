@@ -1,0 +1,174 @@
+import Endpoint from '@/components/Endpoint'
+
+<Endpoint
+title="Ingest Records"
+method="POST"
+category="RAG"
+baseUrl="https://api.paystar.stg.felesh.ai"
+path="/rag/api/v1/ingest/records"
+summary="Ingest Records"
+description={`Ingest an array of JSON records into the specified domain. Records are validated against the domain schema before task creation. Maximum 1000 records per request. Returns a task ID for polling status via GET /tasks/{task_id}.`}
+hasAuthentication={false}
+curl={`curl --request POST \
+  --url "{baseUrl}/rag/api/v1/ingest/records" \
+  --header "Content-Type: application/json" \
+  --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  --data '{
+  "domain": "product",
+  "strategy": "product",
+  "source_name": "catalog_import_2024_02",
+  "records": [
+    {}
+  ]
+}'`}
+languages={{
+javascript: `const requestBody = {
+"domain": "product",
+"strategy": "product",
+"source_name": "catalog_import_2024_02",
+"records": [
+{}
+]
+};
+
+fetch("{baseUrl}/rag/api/v1/ingest/records", {
+"method": "POST",
+"headers": {
+"Content-Type": "application/json"
+},
+"body": JSON.stringify(requestBody)
+})
+.then(response => response.json())
+.then(data => console.log(data));`,
+    python: `import requests
+
+url = "{baseUrl}/rag/api/v1/ingest/records"
+
+payload = {
+"domain": "product",
+"strategy": "product",
+"source_name": "catalog_import_2024_02",
+"records": [
+{}
+]
+}
+
+headers = {
+"Content-Type": "application/json",
+"Authorization": "Bearer <token>"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Bearer token obtained from the Impersonate User endpoint.",
+      "required": true,
+      "title": "Authorization",
+      "type": "string"
+    }
+  ],
+  "path": [],
+  "query": []
+}}
+requestBody={{
+  "contentType": "application/json",
+  "properties": [
+    {
+      "description": "Target domain for ingestion (e.g., 'document', 'product')",
+      "title": "domain",
+      "type": "string",
+      "required": true
+    },
+    {
+      "description": "Processing strategy to use. If not provided, uses domain's default strategy",
+      "title": "strategy",
+      "type": "string",
+      "required": false
+    },
+    {
+      "description": "Optional identifier for this batch of records (e.g., 'import_2024_Q1')",
+      "title": "source_name",
+      "type": "string",
+      "required": false
+    },
+    {
+      "description": "Array of JSON objects to ingest. Must conform to domain's schema",
+      "title": "records",
+      "type": "array",
+      "required": true
+    }
+  ],
+  "required": true
+}}
+responses={{
+  "200": [
+    {
+      "description": "Unique identifier for the ingestion task. Use this to poll status.",
+      "title": "task_id",
+      "type": "string"
+    },
+    {
+      "description": "Name of the ingested source (filename or batch identifier).",
+      "title": "source_name",
+      "type": "string"
+    },
+    {
+      "description": "Unique identifier assigned to the source.",
+      "title": "source_id",
+      "type": "string"
+    },
+    {
+      "description": "Domain the content was ingested into.",
+      "title": "domain",
+      "type": "string"
+    },
+    {
+      "description": "Initial task status (always \"pending\" on creation). Possible values: [pending]",
+      "title": "status",
+      "type": "enum<string>"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "input",
+            "type": "unknown"
+          },
+          {
+            "description": "No description provided",
+            "title": "ctx",
+            "type": "object"
+          }
+        ],
+        "title": "RAG_ValidationError"
+      }
+    }
+  ]
+}}
+/>

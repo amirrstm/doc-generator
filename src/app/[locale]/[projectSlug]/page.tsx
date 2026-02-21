@@ -3,6 +3,7 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 
 import ContentAlert from "@/components/kits/Alert";
 import { ContentDescription, ContentImage, ContentTitle } from "@/components/kits/Intro";
+import { MarkdownIntro } from "@/components/kits/Prose";
 import { validateProject } from "@/utils/file";
 
 import fs from "node:fs";
@@ -34,19 +35,30 @@ export default async function ProjectPage({
     notFound();
   }
 
-  const mdxContent = fs.readFileSync(mdxPath, "utf-8");
+  const content = fs.readFileSync(mdxPath, "utf-8");
+
+  // Use react-markdown for pure markdown intros, MDXRemote for legacy JSX-based intros
+  const isJsxBased = content.includes("<Title>");
+
+  if (isJsxBased) {
+    return (
+      <div className="container mx-auto px-4">
+        <MDXRemote
+          components={{
+            Description: ContentDescription,
+            Image: ContentImage,
+            Info: ContentAlert,
+            Title: ContentTitle
+          }}
+          source={content}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4">
-      <MDXRemote
-        components={{
-          Description: ContentDescription,
-          Image: ContentImage,
-          Info: ContentAlert,
-          Title: ContentTitle
-        }}
-        source={mdxContent}
-      />
+      <MarkdownIntro content={content} />
     </div>
   );
 }

@@ -1,0 +1,229 @@
+import Endpoint from '@/components/Endpoint'
+
+<Endpoint
+title="Create a new interaction"
+method="POST"
+category="Interaction History"
+baseUrl="https://api.paystar.stg.felesh.ai"
+path="/interaction/api/v1/org/interactions"
+summary="Create a new interaction"
+description={`Create a new interaction. Optionally specify user_id to create for another user.`}
+hasAuthentication={false}
+curl={`curl --request POST \
+  --url "{baseUrl}/interaction/api/v1/org/interactions" \
+  --header "Content-Type: application/json" \
+  --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  --data '{
+  "agent": "string",
+  "interaction_type": "string",
+  "title": "string",
+  "description": "string",
+  "state": "string",
+  "tags": [
+    "string"
+  ],
+  "parent_interaction_id": "string",
+  "payload": {},
+  "metadata": {
+    "source": "string",
+    "ip_address": "string",
+    "user_agent": "string",
+    "custom": {}
+  },
+  "user_id": "string"
+}'`}
+languages={{
+javascript: `const requestBody = {
+"agent": "string",
+"interaction_type": "string",
+"title": "string",
+"description": "string",
+"state": "string",
+"tags": [
+"string"
+],
+"parent_interaction_id": "string",
+"payload": {},
+"metadata": {
+"source": "string",
+"ip_address": "string",
+"user_agent": "string",
+"custom": {}
+},
+"user_id": "string"
+};
+
+fetch("{baseUrl}/interaction/api/v1/org/interactions", {
+"method": "POST",
+"headers": {
+"Content-Type": "application/json"
+},
+"body": JSON.stringify(requestBody)
+})
+.then(response => response.json())
+.then(data => console.log(data));`,
+    python: `import requests
+
+url = "{baseUrl}/interaction/api/v1/org/interactions"
+
+payload = {
+"agent": "string",
+"interaction_type": "string",
+"title": "string",
+"description": "string",
+"state": "string",
+"tags": ["string"],
+"parent_interaction_id": "string",
+"payload": {},
+"metadata": {"source":"string","ip_address":"string","user_agent":"string","custom":{}},
+"user_id": "string"
+}
+
+headers = {
+"Content-Type": "application/json",
+"Authorization": "Bearer <token>"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Bearer token obtained from the Impersonate User endpoint.",
+      "required": true,
+      "title": "Authorization",
+      "type": "string"
+    }
+  ],
+  "path": [],
+  "query": []
+}}
+requestBody={{
+  "contentType": "application/json",
+  "properties": [
+    {
+      "description": "Agent handling the interaction",
+      "title": "agent",
+      "type": "string",
+      "required": true
+    },
+    {
+      "description": "Type of interaction",
+      "title": "interaction_type",
+      "type": "string",
+      "required": true
+    },
+    {
+      "description": "Interaction title",
+      "title": "title",
+      "type": "string",
+      "required": false
+    },
+    {
+      "description": "Interaction description",
+      "title": "description",
+      "type": "string",
+      "required": false
+    },
+    {
+      "description": "Initial state",
+      "title": "state",
+      "type": "string",
+      "required": false
+    },
+    {
+      "description": "Searchable tags",
+      "title": "tags",
+      "type": "array",
+      "required": false
+    },
+    {
+      "description": "Parent interaction ID for threading",
+      "title": "parent_interaction_id",
+      "type": "string",
+      "required": false
+    },
+    {
+      "description": "Agent-specific data",
+      "title": "payload",
+      "type": "object",
+      "required": false
+    },
+    {
+      "description": "Interaction metadata",
+      "title": "metadata",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "Source of the interaction",
+            "title": "source",
+            "type": "string",
+            "required": false
+          },
+          {
+            "description": "Client IP address",
+            "title": "ip_address",
+            "type": "string",
+            "required": false
+          },
+          {
+            "description": "Client user agent",
+            "title": "user_agent",
+            "type": "string",
+            "required": false
+          },
+          {
+            "description": "Custom metadata",
+            "title": "custom",
+            "type": "object",
+            "required": false
+          }
+        ],
+        "title": "Interaction_InteractionMetadataRequest"
+      },
+      "required": false
+    },
+    {
+      "description": "User ID to create interaction for (defaults to requester)",
+      "title": "user_id",
+      "type": "string",
+      "required": false
+    }
+  ],
+  "required": true
+}}
+responses={{
+  "201": [],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "Interaction_ValidationError"
+      }
+    }
+  ]
+}}
+/>

@@ -1,0 +1,136 @@
+import Endpoint from '@/components/Endpoint'
+
+<Endpoint
+title="Update a message"
+method="PATCH"
+category="Interaction History"
+baseUrl="https://api.paystar.stg.felesh.ai"
+path="/interaction/api/v1/org/interactions/\{interaction_id\}/messages/\{message_id\}"
+summary="Update a message"
+description={`Update any message in the realm.`}
+hasAuthentication={false}
+curl={`curl --request PATCH \
+  --url "{baseUrl}/interaction/api/v1/org/interactions/123/messages/123" \
+  --header "Content-Type: application/json" \
+  --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  --data '{
+  "text": "string",
+  "user_metadata": {},
+  "message_metadata": {}
+}'`}
+languages={{
+javascript: `const requestBody = {
+"text": "string",
+"user_metadata": {},
+"message_metadata": {}
+};
+
+fetch("{baseUrl}/interaction/api/v1/org/interactions/\${interaction_id}/messages/\${message_id}", {
+"method": "PATCH",
+"headers": {
+"Content-Type": "application/json"
+},
+"body": JSON.stringify(requestBody)
+})
+.then(response => response.json())
+.then(data => console.log(data));`,
+    python: `import requests
+
+url = "{baseUrl}/interaction/api/v1/org/interactions/{interaction_id}/messages/{message_id}"
+
+payload = {
+"text": "string",
+"user_metadata": {},
+"message_metadata": {}
+}
+
+headers = {
+"Content-Type": "application/json",
+"Authorization": "Bearer <token>"
+}
+
+response = requests.patch(url, json=payload, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Bearer token obtained from the Impersonate User endpoint.",
+      "required": true,
+      "title": "Authorization",
+      "type": "string"
+    }
+  ],
+  "path": [
+    {
+      "description": "No description provided",
+      "required": true,
+      "title": "interaction_id",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "required": true,
+      "title": "message_id",
+      "type": "string"
+    }
+  ],
+  "query": []
+}}
+requestBody={{
+  "contentType": "application/json",
+  "properties": [
+    {
+      "description": "Updated message content",
+      "title": "text",
+      "type": "string",
+      "required": false
+    },
+    {
+      "description": "Updates to user-specific data",
+      "title": "user_metadata",
+      "type": "object",
+      "required": false
+    },
+    {
+      "description": "Updates to message metadata",
+      "title": "message_metadata",
+      "type": "object",
+      "required": false
+    }
+  ],
+  "required": true
+}}
+responses={{
+  "200": [],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "Interaction_ValidationError"
+      }
+    }
+  ]
+}}
+/>

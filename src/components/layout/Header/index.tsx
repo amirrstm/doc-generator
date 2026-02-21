@@ -3,7 +3,6 @@ import { useTranslations } from "next-intl";
 import Logo from "@/components/kits/Logo";
 
 import BaseUrlSelector from "./BaseUrlSelector";
-import LanguageSwitcher from "./LanguageSwitcher";
 import HeaderSearch from "./Search";
 import HeaderTheme from "./Theme";
 
@@ -20,10 +19,7 @@ export default function Header(): ReactElement {
           <p
             className="font-black text-sm md:text-base"
             dangerouslySetInnerHTML={{
-              __html: t.markup("title", {
-                base: (chunks) =>
-                  `<span class="text-brand-primary">${chunks}</span> `,
-              }),
+              __html: t.markup("title", { base: (chunks) => `<span class="text-brand-primary">${chunks}</span>` })
             }}
           />
         </div>

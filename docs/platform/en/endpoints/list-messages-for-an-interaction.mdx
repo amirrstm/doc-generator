@@ -1,0 +1,98 @@
+import Endpoint from '@/components/Endpoint'
+
+<Endpoint
+title="List messages for an interaction"
+method="GET"
+category="Interaction History"
+baseUrl="https://api.paystar.stg.felesh.ai"
+path="/interaction/api/v1/org/interactions/\{interaction_id\}/messages"
+summary="List messages for an interaction"
+description={`List all messages in any interaction in the realm.`}
+hasAuthentication={false}
+curl={`curl --request GET \
+  --url "{baseUrl}/interaction/api/v1/org/interactions/123/messages" \
+  --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..."`}
+languages={{
+javascript: `fetch("{baseUrl}/interaction/api/v1/org/interactions/\${interaction_id}/messages?include_deleted=true", {
+  "method": "GET"
+})
+  .then(response => response.json())
+  .then(data => console.log(data));`,
+python: `import requests
+
+url = "{baseUrl}/interaction/api/v1/org/interactions/{interaction_id}/messages"
+
+headers = {
+"Authorization": "Bearer <token>"
+}
+
+params = {
+"include_deleted": true
+}
+
+response = requests.get(url, headers=headers, params=params)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Bearer token obtained from the Impersonate User endpoint.",
+      "required": true,
+      "title": "Authorization",
+      "type": "string"
+    }
+  ],
+  "path": [
+    {
+      "description": "No description provided",
+      "required": true,
+      "title": "interaction_id",
+      "type": "string"
+    }
+  ],
+  "query": [
+    {
+      "description": "Include deleted messages",
+      "required": false,
+      "title": "include_deleted",
+      "type": "boolean"
+    }
+  ]
+}}
+requestBody={{
+  "properties": [],
+  "required": false
+}}
+responses={{
+  "200": [],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "Interaction_ValidationError"
+      }
+    }
+  ]
+}}
+/>

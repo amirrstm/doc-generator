@@ -31,7 +31,7 @@ type Props = {
   description: string;
   parameters?: Parameters;
   hasAuthentication?: boolean;
-  requestBody?: { required: boolean; properties: Array<ResponseInfo> };
+  requestBody?: { required: boolean; contentType?: string; properties: Array<ResponseInfo> };
 };
 
 export function Execute({
@@ -58,7 +58,9 @@ export function Execute({
   const [requestBodyJson, setRequestBodyJson] = useState("{}");
   const [pathParams, setPathParams] = useState<Record<string, string>>({});
   const [bodyFormData, setBodyFormData] = useState<Record<string, unknown>>({});
+  const [headerParams, setHeaderParams] = useState<Record<string, string>>({});
   const [queryParams, setQueryParams] = useState<Array<{ key: string; value: string }>>([]);
+  const [fileFields, setFileFields] = useState<Record<string, File | null>>({});
   const [response, setResponse] = useState<{
     error?: string;
     status?: number;
@@ -67,12 +69,16 @@ export function Execute({
     headers?: Record<string, string>;
   } | null>(null);
 
+  const isMultipart = requestBody?.contentType === "multipart/form-data";
+
   const resetFormValues = useCallback(() => {
     setAuthToken("");
     setIsRawJsonMode(false);
     setRequestBodyJson("{}");
     setPathParams({});
+    setHeaderParams({});
     setBodyFormData({});
+    setFileFields({});
     setQueryParams([]);
     setResponse(null);
     setCopied(false);
@@ -99,10 +105,10 @@ export function Execute({
   const buildRequestUrl = useCallback(() => {
     let finalUrl = url;
 
-    // Replace path parameters
+    // Replace path parameters (handle both escaped \{param\} and unescaped {param})
     pathParameterNames.forEach((param) => {
       const value = pathParams[param] || "";
-      finalUrl = finalUrl.replace(`{${param}}`, encodeURIComponent(value));
+      finalUrl = finalUrl.replace(`\\{${param}\\}`, encodeURIComponent(value)).replace(`{${param}}`, encodeURIComponent(value));
     });
 
     // Add query parameters
@@ -117,14 +123,24 @@ export function Execute({
 
   // Build request headers
   const buildHeaders = useCallback(() => {
-    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    const headers: Record<string, string> = {};
+
+    // Don't set Content-Type for multipart — browser sets it with boundary
+    if (!isMultipart) {
+      headers["Content-Type"] = "application/json";
+    }
 
     if (hasAuthentication && authToken) {
       headers.Authorization = `Bearer ${authToken}`;
     }
 
+    // Add custom header parameters
+    for (const [key, value] of Object.entries(headerParams)) {
+      if (value) headers[key] = value;
+    }
+
     return headers;
-  }, [hasAuthentication, authToken]);
+  }, [hasAuthentication, authToken, headerParams, isMultipart]);
 
   // Convert form data to JSON
   const formDataToJson = useCallback(() => {
@@ -146,12 +162,25 @@ export function Execute({
       authToken: hasAuthentication ? authToken : undefined,
       baseUrl,
       body,
+      headers: headerParams,
       method: type,
       pathParams,
       queryParams,
       url
     });
-  }, [baseUrl, url, type, pathParams, queryParams, requestBodyJson, isRawJsonMode, authToken, hasAuthentication, formDataToJson]);
+  }, [
+    baseUrl,
+    url,
+    type,
+    pathParams,
+    queryParams,
+    headerParams,
+    requestBodyJson,
+    isRawJsonMode,
+    authToken,
+    hasAuthentication,
+    formDataToJson
+  ]);
 
   // Execute the API request
   const executeRequest = async () => {
@@ -162,9 +191,32 @@ export function Execute({
       const finalUrl = buildRequestUrl();
       const headers = buildHeaders();
 
-      let body: string | undefined;
+      let body: string | FormData | undefined;
       if (type.toUpperCase() !== "GET" && type.toUpperCase() !== "DELETE") {
-        body = isRawJsonMode ? requestBodyJson : formDataToJson();
+        if (isMultipart) {
+          const formData = new FormData();
+          // Add file fields
+          for (const [key, file] of Object.entries(fileFields)) {
+            if (file) formData.append(key, file);
+          }
+          // Add non-file form fields
+          for (const [key, value] of Object.entries(bodyFormData)) {
+            if (value !== undefined && value !== null && value !== "") {
+              formData.append(key, String(value));
+            }
+          }
+          body = formData;
+        } else {
+          const raw = isRawJsonMode ? requestBodyJson : formDataToJson();
+          // Validate and re-serialize to strip invisible characters
+          try {
+            body = JSON.stringify(JSON.parse(raw));
+          } catch {
+            setResponse({ error: "Invalid JSON in request body. Please check your syntax." });
+            setIsLoading(false);
+            return;
+          }
+        }
       }
 
       const res = await fetch(finalUrl, { body, headers, method: type.toUpperCase() });
@@ -224,6 +276,17 @@ export function Execute({
     }
   };
 
+  // Get form field value by dot-separated path
+  const getFormField = (path: string): unknown => {
+    const keys = path.split(".");
+    let current: Record<string, unknown> = bodyFormData;
+    for (const key of keys) {
+      if (current == null || typeof current !== "object") return "";
+      current = current[key] as Record<string, unknown>;
+    }
+    return current;
+  };
+
   // Update form field value
   const updateFormField = (path: string, value: unknown) => {
     setBodyFormData((prev) => {
@@ -241,6 +304,11 @@ export function Execute({
       current[keys[keys.length - 1]] = value;
       return updated;
     });
+  };
+
+  // Check if a field is a file upload (binary format)
+  const isFileField = (field: ResponseInfo) => {
+    return field.type.includes("binary");
   };
 
   // Render body form fields
@@ -261,6 +329,33 @@ export function Execute({
       );
     }
 
+    // File upload field
+    if (isFileField(field)) {
+      return (
+        <div className="space-y-1 pt-2" key={fieldPath}>
+          <Label className="text-sm" htmlFor={fieldId}>
+            {field.title}
+            {field.required && <span className="text-red-500">*</span>}
+          </Label>
+          {field.description && <p className="text-gray-500 text-xs">{field.description}</p>}
+          <Input
+            accept="*/*"
+            id={fieldId}
+            onChange={(e) => {
+              const file = e.target.files?.[0] || null;
+              setFileFields((prev) => ({ ...prev, [field.title]: file }));
+            }}
+            type="file"
+          />
+          {fileFields[field.title] && (
+            <p className="text-gray-500 text-xs">
+              Selected: {fileFields[field.title]?.name} ({(fileFields[field.title]?.size ?? 0 / 1024 / 1024).toFixed(2)} MB)
+            </p>
+          )}
+        </div>
+      );
+    }
+
     return (
       <div className="space-y-1 pt-2" key={fieldPath}>
         <Label className="text-sm" htmlFor={fieldId}>
@@ -277,6 +372,7 @@ export function Execute({
           }}
           placeholder={`Enter ${field.title}`}
           type={field.type === "number" || field.type === "integer" ? "number" : "text"}
+          value={String(getFormField(fieldPath) ?? "")}
         />
       </div>
     );
@@ -339,6 +435,36 @@ export function Execute({
                 </div>
               )}
 
+              {/* Header Parameters Section */}
+              {parameters?.header && parameters.header.length > 0 && (
+                <div className="space-y-2 rounded-md border p-4">
+                  <h3 className="border-b pb-2 font-semibold">Headers</h3>
+                  <div className="space-y-2">
+                    {parameters.header.map((param) => (
+                      <div className="space-y-1 pt-2" key={param.title}>
+                        <Label className="text-xs">
+                          {param.title}
+                          {param.required && <span className="text-red-500">*</span>}
+                        </Label>
+                        {param.description && param.description !== "No description provided" && (
+                          <p className="text-gray-500 text-xs">{param.description}</p>
+                        )}
+                        <Input
+                          onChange={(e) =>
+                            setHeaderParams((prev) => ({
+                              ...prev,
+                              [param.title]: e.target.value
+                            }))
+                          }
+                          placeholder={`Enter ${param.title}`}
+                          value={headerParams[param.title] || ""}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Path Parameters Section */}
               {pathParameterNames.length > 0 && (
                 <div className="space-y-2 rounded-md border p-4">
@@ -383,7 +509,7 @@ export function Execute({
                   <div className="space-y-2">
                     {/* Predefined query parameters */}
                     {parameters?.query?.map((param) => (
-                      <div className="flex gap-2" key={queryParamId}>
+                      <div className="flex gap-2" key={`${param.title}-${queryParamId}`}>
                         <div className="flex-1">
                           <Input disabled placeholder="Key" value={param.title} />
                         </div>
@@ -410,7 +536,7 @@ export function Execute({
                       if (isPredefined) return null;
 
                       return (
-                        <div className="flex gap-2" key={index}>
+                        <div className="flex gap-2" key={`${param.key}-${index}`}>
                           <div className="flex-1">
                             <Input
                               onChange={(e) => updateQueryParam(index, "key", e.target.value)}
@@ -439,34 +565,39 @@ export function Execute({
               {requestBody && requestBody.properties.length > 0 && (
                 <div className="space-y-2 rounded-md border p-4">
                   <div className="flex items-center justify-between border-b pb-2">
-                    <h3 className="font-semibold">Request Body</h3>
-                    <div className="flex gap-2">
-                      <Button
-                        onClick={() => {
-                          setIsRawJsonMode(false);
-                          setRequestBodyJson(formDataToJson());
-                        }}
-                        size="xs"
-                        type="button"
-                        variant={isRawJsonMode ? "outline" : "default"}
-                      >
-                        Form
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          setIsRawJsonMode(true);
-                          setRequestBodyJson(formDataToJson());
-                        }}
-                        size="xs"
-                        type="button"
-                        variant={isRawJsonMode ? "default" : "outline"}
-                      >
-                        Raw JSON
-                      </Button>
-                    </div>
+                    <h3 className="font-semibold">
+                      Request Body
+                      {isMultipart && <span className="ml-2 font-normal text-gray-500 text-xs">(multipart/form-data)</span>}
+                    </h3>
+                    {!isMultipart && (
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={() => {
+                            setIsRawJsonMode(false);
+                            setRequestBodyJson(formDataToJson());
+                          }}
+                          size="xs"
+                          type="button"
+                          variant={isRawJsonMode ? "outline" : "default"}
+                        >
+                          Form
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            setIsRawJsonMode(true);
+                            setRequestBodyJson(formDataToJson());
+                          }}
+                          size="xs"
+                          type="button"
+                          variant={isRawJsonMode ? "default" : "outline"}
+                        >
+                          Raw JSON
+                        </Button>
+                      </div>
+                    )}
                   </div>
 
-                  {isRawJsonMode ? (
+                  {!isMultipart && isRawJsonMode ? (
                     <div className="space-y-1">
                       <Label className="text-sm" htmlFor="raw-json">
                         JSON Content

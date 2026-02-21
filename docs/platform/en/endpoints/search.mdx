@@ -1,0 +1,193 @@
+import Endpoint from '@/components/Endpoint'
+
+<Endpoint
+title="Search"
+method="POST"
+category="RAG"
+baseUrl="https://api.paystar.stg.felesh.ai"
+path="/rag/api/v1/search"
+summary="Search"
+description={`Perform hybrid semantic search (embedding + BM25) across the specified domain. Returns ranked results with relevance scores and metadata. Supports optional metadata filters and configurable result count.`}
+hasAuthentication={false}
+curl={`curl --request POST \
+  --url "{baseUrl}/rag/api/v1/search" \
+  --header "Content-Type: application/json" \
+  --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  --data '{
+  "domain": "document",
+  "query": "machine learning applications in healthcare",
+  "top_k": 10,
+  "filters": {}
+}'`}
+languages={{
+javascript: `const requestBody = {
+"domain": "document",
+"query": "machine learning applications in healthcare",
+"top_k": 10,
+"filters": {}
+};
+
+fetch("{baseUrl}/rag/api/v1/search", {
+"method": "POST",
+"headers": {
+"Content-Type": "application/json"
+},
+"body": JSON.stringify(requestBody)
+})
+.then(response => response.json())
+.then(data => console.log(data));`,
+    python: `import requests
+
+url = "{baseUrl}/rag/api/v1/search"
+
+payload = {
+"domain": "document",
+"query": "machine learning applications in healthcare",
+"top_k": 10,
+"filters": {}
+}
+
+headers = {
+"Content-Type": "application/json",
+"Authorization": "Bearer <token>"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Bearer token obtained from the Impersonate User endpoint.",
+      "required": true,
+      "title": "Authorization",
+      "type": "string"
+    }
+  ],
+  "path": [],
+  "query": []
+}}
+requestBody={{
+  "contentType": "application/json",
+  "properties": [
+    {
+      "description": "Target domain to search (e.g., 'document', 'product')",
+      "title": "domain",
+      "type": "string",
+      "required": true
+    },
+    {
+      "description": "Search query text. Will be sanitized and embedded for semantic search",
+      "title": "query",
+      "type": "string",
+      "required": true
+    },
+    {
+      "description": "Number of results to return. Defaults to 10 if not specified",
+      "title": "top_k",
+      "type": "integer",
+      "required": false
+    },
+    {
+      "description": "Optional metadata filters to narrow results. Keys must match domain's metadata fields",
+      "title": "filters",
+      "type": "object",
+      "required": false
+    }
+  ],
+  "required": true
+}}
+responses={{
+  "200": [
+    {
+      "description": "The original search query.",
+      "title": "query",
+      "type": "string"
+    },
+    {
+      "description": "Domain that was searched.",
+      "title": "domain",
+      "type": "string"
+    },
+    {
+      "description": "Total number of matching results.",
+      "title": "total_found",
+      "type": "integer"
+    },
+    {
+      "description": "Ranked list of search results.",
+      "title": "results",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "Unique identifier of the result chunk.",
+            "title": "id",
+            "type": "string"
+          },
+          {
+            "description": "Text content of the matched chunk.",
+            "title": "content",
+            "type": "string"
+          },
+          {
+            "description": "Relevance score (0.0 to 1.0).",
+            "title": "score",
+            "type": "number (float)"
+          },
+          {
+            "description": "Name of the source document.",
+            "title": "source_name",
+            "type": "string"
+          },
+          {
+            "description": "Domain-specific metadata for the result.",
+            "title": "metadata",
+            "type": "object"
+          }
+        ],
+        "title": "Object"
+      }
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "input",
+            "type": "unknown"
+          },
+          {
+            "description": "No description provided",
+            "title": "ctx",
+            "type": "object"
+          }
+        ],
+        "title": "RAG_ValidationError"
+      }
+    }
+  ]
+}}
+/>

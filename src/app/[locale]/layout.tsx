@@ -3,11 +3,7 @@ import { Suspense } from "react";
 
 import { appLayoutViewport } from "@/constants/viewport";
 import Providers from "@/providers";
-import {
-  englishMonoFont,
-  englishPrimaryFont,
-  persianPrimaryFont,
-} from "@/utils/font";
+import { englishMonoFont, englishPrimaryFont, persianPrimaryFont } from "@/utils/font";
 
 import "../../../public/styles/globals.css";
 
@@ -18,14 +14,12 @@ import type { PropsWithChildren, ReactElement } from "react";
 export const metadata = {
   description: "Felesh Documentation",
   icons: { icon: [{ href: "/favicon.ico", url: "/favicon.ico" }] },
-  title: "Felesh Documentation",
+  title: "Felesh Documentation"
 };
 
 export const viewport = appLayoutViewport;
 
-export default async function RootLayout({
-  children,
-}: PropsWithChildren): Promise<ReactElement> {
+export default async function RootLayout({ children }: PropsWithChildren): Promise<ReactElement> {
   const locale = await getLocale();
   const messages = await getMessages();
 
@@ -36,13 +30,7 @@ export default async function RootLayout({
       lang={locale}
       suppressHydrationWarning
     >
-      <body
-        className={
-          locale === "fa"
-            ? persianPrimaryFont.className
-            : englishPrimaryFont.className
-        }
-      >
+      <body className={locale === "fa" ? persianPrimaryFont.className : englishPrimaryFont.className}>
         <Suspense fallback={<div />}>
           <NextIntlClientProvider messages={messages}>
             <Providers>{children}</Providers>

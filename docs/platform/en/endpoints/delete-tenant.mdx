@@ -1,0 +1,58 @@
+import Endpoint from '@/components/Endpoint'
+
+<Endpoint
+title="Delete tenant"
+method="DELETE"
+category="Config Store"
+baseUrl="https://api.paystar.stg.felesh.ai"
+path="/config/api/v1/org/tenants/\{tenant_id\}/"
+summary="Delete tenant"
+description={`Delete a tenant by ID.`}
+hasAuthentication={false}
+curl={`curl --request DELETE \
+  --url "{baseUrl}/config/api/v1/org/tenants/123/" \
+  --header "Authorization: value"`}
+languages={{
+javascript: `fetch("{baseUrl}/config/api/v1/org/tenants/\${tenant_id}/", {
+  "method": "DELETE"
+})
+  .then(response => response.json())
+  .then(data => console.log(data));`,
+python: `import requests
+
+url = "{baseUrl}/config/api/v1/org/tenants/{tenant_id}/"
+
+headers = {
+"Authorization": "Bearer <token>"
+}
+
+response = requests.delete(url, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Bearer token from impersonate response (e.g. Bearer eyJhbG...)",
+      "required": true,
+      "title": "Authorization",
+      "type": "string"
+    }
+  ],
+  "path": [
+    {
+      "description": "The tenant ID to delete.",
+      "required": true,
+      "title": "tenant_id",
+      "type": "string"
+    }
+  ],
+  "query": []
+}}
+requestBody={{
+  "properties": [],
+  "required": false
+}}
+responses={{}}
+/>

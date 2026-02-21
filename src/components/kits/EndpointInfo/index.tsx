@@ -25,7 +25,7 @@ type Props = {
   description: string;
   hasAuthentication?: boolean;
   parameters?: Parameters;
-  requestBody?: { required: boolean; properties: Array<ResponseInfo> };
+  requestBody?: { required: boolean; contentType?: string; properties: Array<ResponseInfo> };
 };
 
 export default function EndpointInfo({

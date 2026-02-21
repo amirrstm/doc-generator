@@ -37,6 +37,7 @@ type Props = {
   languages: { javascript: string; python: string };
   requestBody?: {
     required: boolean;
+    contentType?: string;
     properties: Array<ResponseInfo>;
   };
   responses?: Responses;
@@ -87,7 +88,7 @@ export default function EndpointContainer({
         {parameters && parameters.query.length > 0 && <ContentObject data={parameters.query} title="Query Parameters" />}
 
         {requestBody && requestBody.properties.length > 0 && (
-          <ContentObject data={requestBody.properties} subtitle="application/json" title="Body" />
+          <ContentObject data={requestBody.properties} subtitle={requestBody.contentType || "application/json"} title="Body" />
         )}
 
         {responses &&
