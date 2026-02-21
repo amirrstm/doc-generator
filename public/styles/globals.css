@@ -3,8 +3,10 @@
 
 @plugin 'tailwindcss-animate';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --brand-primary: oklch(0.55 0.2 240);
+  --brand-primary: oklch(0.387 0.1955 268.79);
 
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -42,6 +44,8 @@
 }
 
 .dark {
+  --brand-primary: oklch(0.663 0.2015 269.24);
+
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.145 0 0);

@@ -1,0 +1,302 @@
+import Endpoint from '@/components/Endpoint'
+
+<Endpoint
+title="List all interactions (staff)"
+method="GET"
+category="Staff - Interactions"
+baseUrl="https://stage.server.url"
+path="/api/v1/staff/interactions/"
+summary="List all interactions (staff)"
+description={`Retrieve interactions across all realms with secure filtering. Staff-only endpoint with full access.`}
+hasAuthentication={false}
+curl={`curl --request GET \
+  --url "{baseUrl}/api/v1/staff/interactions/"`}
+languages={{
+javascript: `fetch("{baseUrl}/api/v1/staff/interactions/?realm=value&user_id=value&page=123&page_size=123&search_term=value&sort_by=value&sort_order=value", {
+  "method": "GET"
+})
+  .then(response => response.json())
+  .then(data => console.log(data));`,
+python: `import requests
+
+url = "{baseUrl}/api/v1/staff/interactions/"
+
+params = {
+"realm": "value",
+"user_id": "value",
+"page": 123,
+"page_size": 123,
+"search_term": "value",
+"sort_by": "value",
+"sort_order": "value"
+}
+
+response = requests.get(url, params=params)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [],
+  "path": [],
+  "query": [
+    {
+      "description": "Filter by realm (required)",
+      "required": true,
+      "title": "realm",
+      "type": "string"
+    },
+    {
+      "description": "Filter by user (optional)",
+      "required": false,
+      "title": "user_id",
+      "type": "unknown"
+    },
+    {
+      "description": "Page number (1-indexed)",
+      "required": false,
+      "title": "page",
+      "type": "integer"
+    },
+    {
+      "description": "Items per page",
+      "required": false,
+      "title": "page_size",
+      "type": "integer"
+    },
+    {
+      "description": "Search term for full-text 'contains' search (case-insensitive) across title, description, tags, status, state, interaction_type, and agent. Example: searching 'setup' will find 'account setup', 'Setup wizard', etc.",
+      "required": false,
+      "title": "search_term",
+      "type": "unknown"
+    },
+    {
+      "description": "Sort field(s)",
+      "required": false,
+      "title": "sort_by",
+      "type": "string"
+    },
+    {
+      "description": "Sort order(s): asc or desc",
+      "required": false,
+      "title": "sort_order",
+      "type": "string"
+    }
+  ]
+}}
+requestBody={{
+  "properties": [],
+  "required": false
+}}
+responses={{
+  "200": [
+    {
+      "description": "List of items",
+      "title": "items",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "Unique interaction ID",
+            "title": "interaction_id",
+            "type": "string"
+          },
+          {
+            "description": "Tenant/realm identifier",
+            "title": "realm",
+            "type": "string"
+          },
+          {
+            "description": "Agent title or slug",
+            "title": "agent",
+            "type": "string"
+          },
+          {
+            "description": "ID of the user",
+            "title": "user_id",
+            "type": "string"
+          },
+          {
+            "description": "Type of interaction",
+            "title": "interaction_type",
+            "type": "string"
+          },
+          {
+            "description": "Title of the interaction",
+            "title": "title",
+            "type": "unknown"
+          },
+          {
+            "description": "Description of the interaction",
+            "title": "description",
+            "type": "unknown"
+          },
+          {
+            "description": "Current status",
+            "title": "status",
+            "type": "object"
+          },
+          {
+            "description": "Agent-defined workflow state",
+            "title": "state",
+            "type": "unknown"
+          },
+          {
+            "description": "History of state transitions",
+            "title": "state_changes",
+            "type": "array",
+            "children": {
+              "items": [
+                {
+                  "description": "ID of the user who made the change",
+                  "title": "user_id",
+                  "type": "string"
+                },
+                {
+                  "description": "Timestamp of the state change",
+                  "title": "created_at",
+                  "type": "string (date-time)"
+                },
+                {
+                  "description": "Previous state",
+                  "title": "old_state",
+                  "type": "unknown"
+                },
+                {
+                  "description": "New state",
+                  "title": "new_state",
+                  "type": "unknown"
+                }
+              ],
+              "title": "StateChangeSerializer"
+            }
+          },
+          {
+            "description": "Creation timestamp",
+            "title": "created_at",
+            "type": "string (date-time)"
+          },
+          {
+            "description": "Last update timestamp",
+            "title": "updated_at",
+            "type": "unknown"
+          },
+          {
+            "description": "Tags",
+            "title": "tags",
+            "type": "array"
+          },
+          {
+            "description": "Parent interaction ID",
+            "title": "parent_interaction_id",
+            "type": "unknown"
+          },
+          {
+            "description": "Agent-specific data",
+            "title": "payload",
+            "type": "object"
+          },
+          {
+            "description": "Metadata",
+            "title": "metadata",
+            "type": "object",
+            "children": {
+              "items": [
+                {
+                  "description": "No description provided",
+                  "title": "ip_address",
+                  "type": "unknown"
+                },
+                {
+                  "description": "No description provided",
+                  "title": "user_agent",
+                  "type": "unknown"
+                },
+                {
+                  "description": "Source of interaction",
+                  "title": "source",
+                  "type": "unknown"
+                },
+                {
+                  "description": "No description provided",
+                  "title": "custom_fields",
+                  "type": "object"
+                }
+              ],
+              "title": "InteractionMetadataSerializer"
+            }
+          }
+        ],
+        "title": "InteractionResponseSchema"
+      }
+    },
+    {
+      "description": "Pagination metadata",
+      "title": "pagination",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "Current page number (1-indexed)",
+            "title": "page",
+            "type": "integer"
+          },
+          {
+            "description": "Items per page",
+            "title": "page_size",
+            "type": "integer"
+          },
+          {
+            "description": "Total number of items",
+            "title": "total_items",
+            "type": "integer"
+          },
+          {
+            "description": "Total number of pages",
+            "title": "total_pages",
+            "type": "integer"
+          },
+          {
+            "description": "Whether there is a next page",
+            "title": "has_next",
+            "type": "boolean"
+          },
+          {
+            "description": "Whether there is a previous page",
+            "title": "has_previous",
+            "type": "boolean"
+          }
+        ],
+        "title": "PaginationMetadata"
+      }
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

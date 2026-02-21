@@ -1,0 +1,191 @@
+import Endpoint from '@/components/Endpoint'
+
+<Endpoint
+title="Create my interaction"
+method="POST"
+category="Enduser - Interactions"
+baseUrl="https://stage.server.url"
+path="/api/v1/enduser/interactions/"
+summary="Create my interaction"
+description={`Create a new interaction. The user_id in request body must match the authenticated user.`}
+hasAuthentication={false}
+curl={`curl --request POST \
+  --url "{baseUrl}/api/v1/enduser/interactions/" \
+  --header "Content-Type: application/json" \
+  --data '{
+  "user_id": "string",
+  "interaction_type": "string",
+  "agent": "string",
+  "title": null,
+  "description": null,
+  "payload": {},
+  "tags": [
+    "string"
+  ],
+  "parent_interaction_id": null,
+  "state": null,
+  "source": null
+}'`}
+languages={{
+javascript: `const requestBody = {
+"user_id": "string",
+"interaction_type": "string",
+"agent": "string",
+"title": null,
+"description": null,
+"payload": {},
+"tags": [
+"string"
+],
+"parent_interaction_id": null,
+"state": null,
+"source": null
+};
+
+fetch("{baseUrl}/api/v1/enduser/interactions/", {
+"method": "POST",
+"headers": {
+"Content-Type": "application/json"
+},
+"body": JSON.stringify(requestBody)
+})
+.then(response => response.json())
+.then(data => console.log(data));`,
+    python: `import requests
+
+url = "{baseUrl}/api/v1/enduser/interactions/"
+
+payload = {
+"user_id": "string",
+"interaction_type": "string",
+"agent": "string",
+"title": null,
+"description": null,
+"payload": {},
+"tags": ["string"],
+"parent_interaction_id": null,
+"state": null,
+"source": null
+}
+
+headers = {
+"Content-Type": "application/json"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [],
+  "path": [],
+  "query": []
+}}
+requestBody={{
+  "properties": [
+    {
+      "description": "ID of the user",
+      "title": "user_id",
+      "type": "string",
+      "required": true
+    },
+    {
+      "description": "Type of interaction",
+      "title": "interaction_type",
+      "type": "string",
+      "required": true
+    },
+    {
+      "description": "Agent title or slug",
+      "title": "agent",
+      "type": "string",
+      "required": false
+    },
+    {
+      "description": "Title of the interaction",
+      "title": "title",
+      "type": "unknown",
+      "required": false
+    },
+    {
+      "description": "Description of the interaction",
+      "title": "description",
+      "type": "unknown",
+      "required": false
+    },
+    {
+      "description": "Agent-specific data",
+      "title": "payload",
+      "type": "object",
+      "required": false
+    },
+    {
+      "description": "Searchable tags",
+      "title": "tags",
+      "type": "array",
+      "required": false
+    },
+    {
+      "description": "Parent interaction ID",
+      "title": "parent_interaction_id",
+      "type": "unknown",
+      "required": false
+    },
+    {
+      "description": "Initial workflow state",
+      "title": "state",
+      "type": "unknown",
+      "required": false
+    },
+    {
+      "description": "Source of interaction",
+      "title": "source",
+      "type": "unknown",
+      "required": false
+    }
+  ],
+  "required": true
+}}
+responses={{
+  "201": [
+    {
+      "description": "ID of created interaction",
+      "title": "interaction_id",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

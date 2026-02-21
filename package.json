@@ -56,7 +56,7 @@
   "name": "ra-docs",
   "private": true,
   "scripts": {
-    "build": "next build",
+    "build": "pnpm run generate-docs && next build",
     "dev": "next dev",
     "generate-docs": "node scripts/generate-docs.mjs",
     "lint": "biome check src --write",

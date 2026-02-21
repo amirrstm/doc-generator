@@ -61,8 +61,16 @@ export function EndpointUrl({ url, type, action }: Props) {
 
   return (
     <div className="flex w-full gap-2 rounded-md border p-2" dir="ltr">
-      <div className="group relative flex h-10 min-w-0 flex-1 items-center gap-2 rounded-md border p-2">
-        <div className={cn(badgeVariants({ type: type as "get" | "post" | "patch" | "del" | "put" }))}>{type.toUpperCase()}</div>
+      <div className="group relative flex h-10 min-w-0 flex-1 items-center gap-2 overflow-hidden rounded-md border p-2">
+        <div
+          className={cn(
+            badgeVariants({
+              type: type as "get" | "post" | "patch" | "del" | "put"
+            })
+          )}
+        >
+          {type.toUpperCase()}
+        </div>
 
         <div className="hide-scrollbar min-w-0 flex-1 overflow-x-auto">
           <div className="flex flex-nowrap items-center gap-1 whitespace-nowrap font-medium font-mono text-gray-800 text-xs md:text-sm dark:text-white">
@@ -82,7 +90,7 @@ export function EndpointUrl({ url, type, action }: Props) {
         </div>
 
         <button
-          className="absolute top-0 right-0 flex h-full w-10 cursor-pointer items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+          className="absolute top-0 right-0 flex h-full w-10 cursor-pointer items-center justify-center bg-background opacity-0 transition-opacity duration-200 group-hover:opacity-100"
           onClick={copyToClipboard}
           type="button"
         >

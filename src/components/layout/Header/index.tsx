@@ -21,8 +21,9 @@ export default function Header(): ReactElement {
             className="font-black text-sm md:text-base"
             dangerouslySetInnerHTML={{
               __html: t.markup("title", {
-                base: (chunks) => `<span class="text-brand-primary">${chunks}</span> `
-              })
+                base: (chunks) =>
+                  `<span class="text-brand-primary">${chunks}</span> `,
+              }),
             }}
           />
         </div>
@@ -30,7 +31,6 @@ export default function Header(): ReactElement {
         <div className="flex w-fit items-center gap-4">
           <HeaderSearch />
           <BaseUrlSelector />
-          <LanguageSwitcher />
           <HeaderTheme />
         </div>
       </nav>
