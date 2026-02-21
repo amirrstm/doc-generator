@@ -61,7 +61,7 @@ function Code({ children, className, ...props }: ComponentPropsWithoutRef<"code"
   }
 
   return (
-    <code className="rounded bg-muted px-1.5 py-0.5 font-medium text-foreground text-sm" {...props}>
+    <code className="break-words rounded bg-muted px-1.5 py-0.5 font-medium text-foreground text-sm" {...props}>
       {children}
     </code>
   );

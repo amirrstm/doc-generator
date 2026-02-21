@@ -11,25 +11,27 @@ export default function BaseUrlSelector(): ReactElement | null {
   if (environments.length <= 1) return null;
 
   return (
-    <Select
-      onValueChange={(value) => {
-        const env = environments.find((e) => e.url === value);
-        if (env) {
-          setSelectedEnvironment(env);
-        }
-      }}
-      value={selectedEnvironment?.url || ""}
-    >
-      <SelectTrigger size="sm">
-        <SelectValue placeholder="Select environment" />
-      </SelectTrigger>
-      <SelectContent>
-        {environments.map((env) => (
-          <SelectItem key={env.url} value={env.url}>
-            {env.name}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <div className="hidden md:block">
+      <Select
+        onValueChange={(value) => {
+          const env = environments.find((e) => e.url === value);
+          if (env) {
+            setSelectedEnvironment(env);
+          }
+        }}
+        value={selectedEnvironment?.url || ""}
+      >
+        <SelectTrigger size="sm">
+          <SelectValue placeholder="Select environment" />
+        </SelectTrigger>
+        <SelectContent>
+          {environments.map((env) => (
+            <SelectItem key={env.url} value={env.url}>
+              {env.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
   );
 }
