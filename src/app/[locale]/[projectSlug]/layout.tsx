@@ -5,15 +5,15 @@ import { SearchProvider } from "@/contexts/SearchContext";
 import { ProjectProvider } from "@/providers/Project";
 import { buildProjectSearchIndex, readProjectEnvironments, readProjectSidebar, validateProject } from "@/utils/file";
 
-import type { ReactElement } from "react";
+import type { ReactNode } from "react";
 
 export default async function ProjectLayout({
   params,
   children
 }: {
   params: Promise<{ locale: string; projectSlug: string }>;
-  children: ReactElement;
-}): Promise<ReactElement> {
+  children: ReactNode;
+}): Promise<ReactNode> {
   const { locale, projectSlug } = await params;
 
   const projectExists = await validateProject(projectSlug);

@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import ApiBadge from "./Badge";
 
 import type { ReactElement } from "react";
-import type { APITypes } from "@/constants/api";
 
 type Props = {
   href: string;
@@ -37,8 +36,8 @@ export default function SidebarSingleMenu({ href, title, isActive, type }: Props
       href={href}
     >
       {type && (
-        <ApiBadge type={type as APITypes} variant={isActive ? "filled" : "outline"}>
-          {type.toUpperCase()}
+        <ApiBadge type={type as unknown as "get" | "post" | "patch" | "put" | "delete"} variant={isActive ? "filled" : "outline"}>
+          {type.toUpperCase() as "GET" | "POST" | "PATCH" | "PUT" | "DELETE"}
         </ApiBadge>
       )}
       <div className="flex flex-1 items-center space-x-2.5 text-sm">
