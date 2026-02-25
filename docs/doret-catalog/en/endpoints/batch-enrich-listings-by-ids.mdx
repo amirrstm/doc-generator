@@ -1,0 +1,179 @@
+<Endpoint
+title="Batch enrich listings by IDs"
+method="POST"
+category="internal"
+baseUrl="https://api.example.com"
+path="/api/v1/internal/listings/batch-enrich-by-ids"
+summary="Batch enrich listings by IDs"
+description={`Batch lookup of listings by listing IDs with enriched product display data. Accepts 1-50 listing IDs. Unmatched IDs return with found: false.`}
+hasAuthentication={true}
+curl={`curl --request POST \
+  --url "{baseUrl}/api/v1/internal/listings/batch-enrich-by-ids" \
+  --header "Content-Type: application/json" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value" \
+  --data '{
+  "listing_ids": [
+    "string"
+  ]
+}'`}
+languages={{
+javascript: `const requestBody = {
+"listing_ids": [
+"string"
+]
+};
+
+fetch("{baseUrl}/api/v1/internal/listings/batch-enrich-by-ids", {
+"method": "POST",
+"headers": {
+"Content-Type": "application/json"
+},
+"body": JSON.stringify(requestBody)
+})
+.then(response => response.json())
+.then(data => console.log(data));`,
+    python: `import requests
+
+url = "{baseUrl}/api/v1/internal/listings/batch-enrich-by-ids"
+
+payload = {
+"listing_ids": ["string"]
+}
+
+headers = {
+"Content-Type": "application/json",
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [],
+  "query": []
+}}
+requestBody={{
+  "contentType": "application/json",
+  "properties": [
+    {
+      "description": "No description provided",
+      "title": "listing_ids",
+      "type": "array",
+      "required": true
+    }
+  ],
+  "required": true
+}}
+responses={{
+  "200": [
+    {
+      "description": "No description provided",
+      "title": "items",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "listing_id",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "found",
+            "type": "boolean"
+          },
+          {
+            "description": "No description provided",
+            "title": "variant_id",
+            "type": "unknown"
+          },
+          {
+            "description": "No description provided",
+            "title": "variant_name",
+            "type": "unknown"
+          },
+          {
+            "description": "No description provided",
+            "title": "variant_sku",
+            "type": "unknown"
+          },
+          {
+            "description": "No description provided",
+            "title": "product_title",
+            "type": "unknown"
+          },
+          {
+            "description": "No description provided",
+            "title": "brand_name",
+            "type": "unknown"
+          },
+          {
+            "description": "No description provided",
+            "title": "cover_image",
+            "type": "unknown"
+          },
+          {
+            "description": "No description provided",
+            "title": "category_name_fa",
+            "type": "unknown"
+          }
+        ],
+        "title": "BatchEnrichByIdItemResponse"
+      }
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

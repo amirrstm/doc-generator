@@ -1,0 +1,180 @@
+<Endpoint
+title="Get listings by variant"
+method="GET"
+category="customer"
+baseUrl="https://api.example.com"
+path="/api/v1/customer/listings/variant/\{variant_id\}"
+summary="Get listings by variant"
+description={`Get all seller listings for a catalog variant with enriched data.
+
+Returns listings with nested variant, product group, and category (with tree).
+All media IDs (listing, product group) are resolved to signed URLs.`}
+  hasAuthentication={true}
+  curl={`curl --request GET \
+ --url "{baseUrl}/api/v1/customer/listings/variant/123" \
+ --header "x-doret-client-type: app" \
+ --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+ --header "X-Doret-Business-Social-Id: value"`}
+  languages={{
+    javascript: `fetch("{baseUrl}/api/v1/customer/listings/variant/\${variant_id}?page=123&page_size=123", {
+"method": "GET"
+})
+.then(response => response.json())
+.then(data => console.log(data));`,
+    python: `import requests
+
+url = "{baseUrl}/api/v1/customer/listings/variant/{variant_id}"
+
+headers = {
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+params = {
+"page": 123,
+"page_size": 123
+}
+
+response = requests.get(url, headers=headers, params=params)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [
+    {
+      "description": "No description provided",
+      "required": true,
+      "title": "variant_id",
+      "type": "string"
+    }
+  ],
+  "query": [
+    {
+      "description": "Page number",
+      "required": false,
+      "title": "page",
+      "type": "integer"
+    },
+    {
+      "description": "Number of items per page (max 100)",
+      "required": false,
+      "title": "page_size",
+      "type": "integer"
+    }
+  ]
+}}
+requestBody={{
+  "properties": [],
+  "required": false
+}}
+responses={{
+  "200": [
+    {
+      "description": "No description provided",
+      "title": "listing_id (array item)",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "variant_id (array item)",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "seller_id (array item)",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "sku (array item)",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "condition (array item)",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "cover_image (array item)",
+      "type": "unknown"
+    },
+    {
+      "description": "No description provided",
+      "title": "created_at (array item)",
+      "type": "string (date-time)"
+    },
+    {
+      "description": "No description provided",
+      "title": "updated_at (array item)",
+      "type": "string (date-time)"
+    }
+  ],
+  "404": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

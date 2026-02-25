@@ -1,0 +1,212 @@
+<Endpoint
+title="Upsert BNPL plans for a shop by Doret social ID (internal)"
+method="PUT"
+category="internal"
+baseUrl="https://api.example.com"
+path="/api/v1/internal/shops/by-doret-social-id/\{doret_social_id\}/bnpl-plans"
+summary="Upsert BNPL plans for a shop by Doret social ID (internal)"
+description={`Replace all BNPL plans for a shop identified by Doret social ID. Internal service-to-service endpoint. Called by the integration service after syncing plans from GreenBank. Accepts a complete list of plans; existing plans are fully replaced. An empty list clears all plans for the shop. No authentication required - trusted internal network only.`}
+hasAuthentication={true}
+curl={`curl --request PUT \
+  --url "{baseUrl}/api/v1/internal/shops/by-doret-social-id/123/bnpl-plans" \
+  --header "Content-Type: application/json" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value" \
+  --data '{
+  "plans": [
+    {
+      "plan_id": "string",
+      "plan_name": null,
+      "plan_name_fa": null,
+      "status": null,
+      "installment_count": null,
+      "min_purchase_amount": null,
+      "max_purchase_amount": null
+    }
+  ]
+}'`}
+languages={{
+javascript: `const requestBody = {
+"plans": [
+{
+"plan_id": "string",
+"plan_name": null,
+"plan_name_fa": null,
+"status": null,
+"installment_count": null,
+"min_purchase_amount": null,
+"max_purchase_amount": null
+}
+]
+};
+
+fetch("{baseUrl}/api/v1/internal/shops/by-doret-social-id/\${doret_social_id}/bnpl-plans", {
+"method": "PUT",
+"headers": {
+"Content-Type": "application/json"
+},
+"body": JSON.stringify(requestBody)
+})
+.then(response => response.json())
+.then(data => console.log(data));`,
+    python: `import requests
+
+url = "{baseUrl}/api/v1/internal/shops/by-doret-social-id/{doret_social_id}/bnpl-plans"
+
+payload = {
+"plans": [
+{"plan_id":"string","plan_name":null,"plan_name_fa":null,"status":null,"installment_count":null,"min_purchase_amount":null,"max_purchase_amount":null}
+]
+}
+
+headers = {
+"Content-Type": "application/json",
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+response = requests.put(url, json=payload, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [
+    {
+      "description": "No description provided",
+      "required": true,
+      "title": "doret_social_id",
+      "type": "string"
+    }
+  ],
+  "query": []
+}}
+requestBody={{
+  "contentType": "application/json",
+  "properties": [
+    {
+      "description": "Complete list of BNPL plans (replaces all existing plans)",
+      "title": "plans",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "GreenBank plan UUID as string",
+            "title": "plan_id",
+            "type": "string",
+            "required": false
+          },
+          {
+            "description": "English plan name",
+            "title": "plan_name",
+            "type": "unknown",
+            "required": false
+          },
+          {
+            "description": "Farsi plan name",
+            "title": "plan_name_fa",
+            "type": "unknown",
+            "required": false
+          },
+          {
+            "description": "Plan status from GreenBank",
+            "title": "status",
+            "type": "unknown",
+            "required": false
+          },
+          {
+            "description": "Number of installments",
+            "title": "installment_count",
+            "type": "unknown",
+            "required": false
+          },
+          {
+            "description": "Minimum purchase amount (decimal string)",
+            "title": "min_purchase_amount",
+            "type": "unknown",
+            "required": false
+          },
+          {
+            "description": "Maximum purchase amount (decimal string)",
+            "title": "max_purchase_amount",
+            "type": "unknown",
+            "required": false
+          }
+        ],
+        "title": "BnplPlanItemRequest"
+      },
+      "required": false
+    }
+  ],
+  "required": true
+}}
+responses={{
+  "200": [],
+  "404": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

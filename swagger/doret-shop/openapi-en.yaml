@@ -1,0 +1,5509 @@
+openapi: 3.1.0
+info:
+  title: Shop
+  version: 1.0.0
+paths:
+  /api/v1/common/health:
+    get:
+      tags:
+        - common
+      summary: Health Check
+      description: Health check endpoint
+      operationId: health_check_api_v1_common_health_get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/core__api__v1__common__schemas__HealthResponse"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/customer/shops:
+    post:
+      tags:
+        - customer
+      summary: Request shop creation
+      description: >-
+        Create a new shop in REQUESTED state. The shop must complete the onboarding flow: contract
+        -> shop info -> shipping config -> payment -> activation. Organization ID and social profile
+        are extracted from request headers. Returns the created shop with initial REQUESTED
+        lifecycle state.
+      operationId: request_shop_creation_api_v1_customer_shops_post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestShopCreationRequest"
+      responses:
+        "201":
+          description: Shop created successfully in REQUESTED state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationResponse_ShopCreatedResponse_"
+        "400":
+          description: Invalid currency code or missing required headers
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Shop already exists for this social profile in this organization
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/customer/shop:
+    get:
+      tags:
+        - customer
+      summary: Get my shop for current page
+      description: >-
+        Get the shop for the current page context (identified by X-SOCIAL-MAIN-ID header). One page
+        can have at most one shop (1:1 relationship). Returns shop in any lifecycle state, including
+        incomplete shops (for resuming creation). Returns 404 only if no shop exists for the current
+        page.
+      operationId: get_my_shop_api_v1_customer_shop_get
+      responses:
+        "200":
+          description: Shop details for current page (any state)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShopDetailResponse"
+        "400":
+          description: Missing X-SOCIAL-MAIN-ID header
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "404":
+          description: No shop found for current page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/customer/shop/cancel:
+    post:
+      tags:
+        - customer
+      summary: Cancel incomplete shop creation
+      description: >-
+        Cancel an incomplete shop creation for the current page and allow starting fresh. Only works
+        for shops in early lifecycle states: REQUESTED, CONTRACT_SIGNED, SHOP_INFO_ADDED,
+        SHIPMENT_INFO_ADDED. Cannot cancel shops that are PAID, ACTIVE, or ADDENDUM_PENDING. After
+        canceling, the merchant can create a new shop for the same page.
+      operationId: cancel_shop_creation_api_v1_customer_shop_cancel_post
+      responses:
+        "200":
+          description: Shop creation canceled successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationResponse_CancelShopCreationResponse_"
+        "400":
+          description: Missing X-SOCIAL-MAIN-ID header
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "404":
+          description: No shop found for current page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Shop cannot be canceled (already PAID, ACTIVE, or ADDENDUM_PENDING)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/customer/shops/{shop_id}/contract:
+    get:
+      tags:
+        - customer
+      summary: Get store contract for shop
+      description: >-
+        Get the store contract/agreement for a shop in REQUESTED state. Returns contract clauses and
+        external contracts for display before signing. Must be called before sign-contract to show
+        the contract to the user.
+      operationId: get_store_contract_api_v1_customer_shops__shop_id__contract_get
+      parameters:
+        - name: shop_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Shop Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Store contract details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StoreContractResponse"
+        "404":
+          description: Shop not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Shop not in REQUESTED state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+        "503":
+          description: Contract service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+  /api/v1/customer/shops/{shop_id}/sign-contract:
+    post:
+      tags:
+        - customer
+      summary: Sign contract for shop
+      description: >-
+        Sign the contract for a shop in REQUESTED state. This calls the Contract Service to create
+        and sign the contract. Successfully signing transitions the shop to CONTRACT_SIGNED state.
+        Must be completed before adding shop information.
+      operationId: sign_contract_api_v1_customer_shops__shop_id__sign_contract_post
+      parameters:
+        - name: shop_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Shop Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignContractRequest"
+      responses:
+        "200":
+          description: Contract signed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationResponse_SignContractResponse_"
+        "404":
+          description: Shop not found or not owned by user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Shop not in REQUESTED state (contract already signed)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+        "503":
+          description: Contract service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+  /api/v1/customer/shops/{shop_id}/sign-addendum:
+    post:
+      tags:
+        - customer
+      summary: Sign contract addendum for shop
+      description: >-
+        Confirm signing of contract addendum for a shop in ADDENDUM_PENDING state. Called after shop
+        owner has signed the addendum on Contract Service. Successfully signing transitions the shop
+        back to ACTIVE state.
+      operationId: sign_addendum_api_v1_customer_shops__shop_id__sign_addendum_post
+      parameters:
+        - name: shop_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Shop Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Addendum signed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationResponse_SignAddendumResponse_"
+        "404":
+          description: Shop not found or not owned by user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Shop not in ADDENDUM_PENDING state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/shops/{shop_id}/info:
+    put:
+      tags:
+        - customer
+      summary: Add or update shop information
+      description: >-
+        Add or update comprehensive shop information. For initial add: Shop must be in
+        CONTRACT_SIGNED state, transitions to SHOP_INFO_ADDED. For updates: Shop can be in
+        SHOP_INFO_ADDED, SHIPMENT_INFO_ADDED, PAID, or ACTIVE state. Includes shop name, business
+        category, owner details, and address.
+      operationId: add_shop_info_api_v1_customer_shops__shop_id__info_put
+      parameters:
+        - name: shop_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Shop Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddShopInfoRequest"
+      responses:
+        "200":
+          description: Shop information added/updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationResponse_AddShopInfoResponse_"
+        "404":
+          description: Shop or business category not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Shop not in allowed state or category inactive
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/shops/{shop_id}/shipping-configurations:
+    post:
+      tags:
+        - customer
+      summary: Add shipping configuration
+      description: >-
+        Add a shipping configuration to a shop during onboarding. The first configuration triggers
+        state transition to SHIPMENT_INFO_ADDED. Multiple configurations can exist; use PUT /default
+        to change the default. First configuration is automatically set as default.
+      operationId: add_shipping_configuration_api_v1_customer_shops__shop_id__shipping_configurations_post
+      parameters:
+        - name: shop_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Shop Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddShippingConfigurationRequest"
+      responses:
+        "201":
+          description: Shipping configuration created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationResponse_ShippingConfigurationResponse_"
+        "404":
+          description: Shop not found or not owned by user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Shop not in valid state for adding shipping configuration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    get:
+      tags:
+        - customer
+      summary: List shipping configurations
+      description: >-
+        List all shipping configurations for a shop during onboarding. Returns configurations with
+        their type, pricing, and default status.
+      operationId: list_shipping_configurations_api_v1_customer_shops__shop_id__shipping_configurations_get
+      parameters:
+        - name: shop_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Shop Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: List of shipping configurations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionResponse_ShippingConfigurationResponse_"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/shops/{shop_id}/shipping-configurations/default:
+    put:
+      tags:
+        - customer
+      summary: Set default shipping configuration
+      description: >-
+        Set a shipping configuration as the default during onboarding. The default configuration is
+        used when customers don't select a specific option. Only one configuration can be default at
+        a time.
+      operationId: >-
+        set_default_shipping_config_api_v1_customer_shops__shop_id__shipping_configurations_default_put
+      parameters:
+        - name: shop_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Shop Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetDefaultShippingConfigRequest"
+      responses:
+        "200":
+          description: Default shipping configuration updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationResponse_SetDefaultShippingConfigResponse_"
+        "404":
+          description: Shop or configuration not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Configuration does not belong to this shop
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/shops/{shop_id}/shipping-configurations/{config_id}:
+    get:
+      tags:
+        - customer
+      summary: Get shipping configuration
+      description: >-
+        Get a single shipping configuration by ID during onboarding. Returns configuration details
+        with enriched province and country names.
+      operationId: >-
+        get_shipping_configuration_api_v1_customer_shops__shop_id__shipping_configurations__config_id__get
+      parameters:
+        - name: shop_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Shop Id
+        - name: config_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Config Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Shipping configuration details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShippingConfigurationResponse"
+        "404":
+          description: Shop or configuration not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    put:
+      tags:
+        - customer
+      summary: Update shipping configuration
+      description: >-
+        Update a shipping configuration's prices and provinces during onboarding. Shipping type and
+        country are immutable after creation. Province list is fully replaced (not merged with
+        existing).
+      operationId: >-
+        update_shipping_configuration_api_v1_customer_shops__shop_id__shipping_configurations__config_id__put
+      parameters:
+        - name: shop_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Shop Id
+        - name: config_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Config Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateShippingConfigurationRequest"
+      responses:
+        "200":
+          description: Shipping configuration updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationResponse_ShippingConfigurationResponse_"
+        "404":
+          description: Shop or configuration not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Province conflict with another configuration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - customer
+      summary: Delete shipping configuration
+      description: >-
+        Delete a shipping configuration from a shop during onboarding. Cannot delete the default
+        configuration (must set another as default first). Cannot delete the last configuration if
+        shop is in SHIPMENT_INFO_ADDED or later state.
+      operationId: >-
+        delete_shipping_configuration_api_v1_customer_shops__shop_id__shipping_configurations__config_id__delete
+      parameters:
+        - name: shop_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Shop Id
+        - name: config_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Config Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "204":
+          description: Shipping configuration deleted successfully
+        "404":
+          description: Shop or configuration not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Cannot delete default or last required configuration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/shops/{shop_id}/request-payment:
+    post:
+      tags:
+        - customer
+      summary: Request payment for shop registration
+      description: >-
+        Initiate registration payment for a shop in SHIPMENT_INFO_ADDED state. Returns a payment URL
+        that the user must visit to complete payment. After successful payment, the shop transitions
+        to PAID state via webhook. Payment amount is determined by platform configuration.
+      operationId: request_payment_api_v1_customer_shops__shop_id__request_payment_post
+      parameters:
+        - name: shop_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Shop Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Payment request created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationResponse_RequestPaymentResponse_"
+        "404":
+          description: Shop not found or not owned by user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Shop not in SHIPMENT_INFO_ADDED state (payment already initiated or not ready)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+        "503":
+          description: Payment service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+  /api/v1/customer/shops/{shop_id}/activate:
+    post:
+      tags:
+        - customer
+      summary: Retry merchant registration and activate shop
+      description: >-
+        Retry merchant registration with GreenBank and activate a shop stuck in PAID state. Use this
+        endpoint when the post-payment activation failed (e.g., GreenBank was unavailable, business
+        category had no MCC configured at the time). Creates default settlement account and
+        transitions shop to ACTIVE state.
+      operationId: activate_shop_api_v1_customer_shops__shop_id__activate_post
+      parameters:
+        - name: shop_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Shop Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Shop activated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationResponse_ActivateShopResponse_"
+        "404":
+          description: Shop not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Shop not in PAID state, or missing MCC/contract
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+        "503":
+          description: GreenBank service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+  /api/v1/generic/health:
+    get:
+      tags:
+        - generic
+      summary: Health check
+      description: Returns service health status
+      operationId: health_check_api_v1_generic_health_get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/core__api__v1__generic__schemas__HealthResponse"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/generic/business-categories:
+    get:
+      tags:
+        - generic
+      summary: List active business categories
+      description: >-
+        List all active business categories for shop classification. Returns only active categories
+        for merchant dropdown selection. No authentication required.
+      operationId: list_active_business_categories_api_v1_generic_business_categories_get
+      responses:
+        "200":
+          description: List of active business categories
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionResponse_ActiveBusinessCategoryResponse_"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/generic/shipping-methods:
+    get:
+      tags:
+        - generic
+      summary: List available shipping methods
+      description: >-
+        List all available shipping methods (courier providers) for shipping configuration. Returns
+        code and Persian label for each method. No authentication required.
+      operationId: list_shipping_methods_api_v1_generic_shipping_methods_get
+      responses:
+        "200":
+          description: List of available shipping methods
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionResponse_ShippingMethodResponse_"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/generic/shops:
+    get:
+      tags:
+        - generic
+      summary: List active shops
+      description: >-
+        List active, non-suspended shops with optional filtering and sorting. Supports filtering by
+        business_category_id, province_id, city_id, and text search on shop name (q). Sorting:
+        'newest' (default) or 'name'. Returns paginated results with the same shape as shop public
+        profile.
+      operationId: list_public_shops_api_v1_generic_shops_get
+      parameters:
+        - name: business_category_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: "null"
+            title: Business Category Id
+        - name: province_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            title: Province Id
+        - name: city_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            title: City Id
+        - name: q
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            title: Q
+        - name: sort_by
+          in: query
+          required: false
+          schema:
+            type: string
+            default: newest
+            title: Sort By
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+            title: Page
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 20
+            title: Page Size
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Paginated list of active shops
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionResponse_ShopPublicProfileResponse_"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/generic/shops/nearby:
+    get:
+      tags:
+        - generic
+      summary: Search nearby shops
+      description: >-
+        Search for active shops within a radius of the given coordinates. Returns shops sorted by
+        distance (nearest first) with distance_km included. Default radius is 10 km, maximum 50 km.
+      operationId: search_nearby_shops_api_v1_generic_shops_nearby_get
+      parameters:
+        - name: latitude
+          in: query
+          required: true
+          schema:
+            type: number
+            title: Latitude
+        - name: longitude
+          in: query
+          required: true
+          schema:
+            type: number
+            title: Longitude
+        - name: radius_km
+          in: query
+          required: false
+          schema:
+            type: number
+            default: 10
+            title: Radius Km
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+            title: Page
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 20
+            title: Page Size
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: List of nearby shops sorted by distance
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionResponse_NearbyShopResponse_"
+        "400":
+          description: Invalid coordinates or radius parameter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/generic/shops/by-social/{doret_social_id}:
+    get:
+      tags:
+        - generic
+      summary: Get shop public profile by social ID
+      description: >-
+        Get the public storefront profile of an active shop by its Doret social page ID. Returns
+        curated shop details (name, contact, location, category, currency). Only ACTIVE,
+        non-suspended shops are visible; all other states return 404.
+      operationId: get_shop_public_profile_by_social_id_api_v1_generic_shops_by_social__doret_social_id__get
+      parameters:
+        - name: doret_social_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Doret Social Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Shop public profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShopPublicProfileResponse"
+        "404":
+          description: Shop not found, not active, or suspended
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/generic/shops/{shop_id}:
+    get:
+      tags:
+        - generic
+      summary: Get shop public profile
+      description: >-
+        Get the public storefront profile of an active shop by its ID. Returns curated shop details
+        (name, contact, location, category, currency). Only ACTIVE, non-suspended shops are visible;
+        all other states return 404.
+      operationId: get_shop_public_profile_api_v1_generic_shops__shop_id__get
+      parameters:
+        - name: shop_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Shop Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Shop public profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShopPublicProfileResponse"
+        "404":
+          description: Shop not found, not active, or suspended
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/internal/shops:
+    get:
+      tags:
+        - internal
+      summary: List shops by organization (internal)
+      description: >-
+        Get all shops for an organization. Internal service-to-service endpoint. Used by other
+        services (e.g., Order Service) to find shops in an organization. Returns minimal shop data:
+        id, org_id, lifecycle_state, suspended status. No authentication required - trusted internal
+        network only.
+      operationId: list_shops_by_org_api_v1_internal_shops_get
+      parameters:
+        - name: org_id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+            description: >-
+              Organization UUID to filter shops by. Required parameter. Returns all shops belonging
+              to this organization regardless of state.
+            title: Org Id
+          description: >-
+            Organization UUID to filter shops by. Required parameter. Returns all shops belonging to
+            this organization regardless of state.
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: List of shop IDs in the organization
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShopsByOrgResponse"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/internal/shops/{shop_id}:
+    get:
+      tags:
+        - internal
+      summary: Get shop (internal)
+      description: >-
+        Get minimal shop details by ID. Internal service-to-service endpoint. Used for validating
+        shop existence and status during order processing. Returns only essential fields: id,
+        org_id, lifecycle_state, suspended. No authentication required - trusted internal network
+        only.
+      operationId: get_shop_internal_api_v1_internal_shops__shop_id__get
+      parameters:
+        - name: shop_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Shop Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Shop details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShopInternalResponse"
+        "404":
+          description: Shop with specified ID not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/internal/shops/by-doret-social-id/{doret_social_id}:
+    get:
+      tags:
+        - internal
+      summary: Get shop by Doret social ID (internal)
+      description: >-
+        Get shop details by Doret social profile ID. Internal service-to-service endpoint. Used when
+        only the social profile ID is known (e.g., from Doret Service callbacks). Returns minimal
+        shop data: id, org_id, lifecycle_state, suspended. No authentication required - trusted
+        internal network only.
+      operationId: get_shop_by_doret_social_id_api_v1_internal_shops_by_doret_social_id__doret_social_id__get
+      parameters:
+        - name: doret_social_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Doret Social Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Shop details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShopInternalResponse"
+        "404":
+          description: No shop found with the specified Doret social ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/internal/shops/by-doret-social-id/{doret_social_id}/bnpl-plans:
+    put:
+      tags:
+        - internal
+      summary: Upsert BNPL plans for a shop by Doret social ID (internal)
+      description: >-
+        Replace all BNPL plans for a shop identified by Doret social ID. Internal service-to-service
+        endpoint. Called by the integration service after syncing plans from GreenBank. Accepts a
+        complete list of plans; existing plans are fully replaced. An empty list clears all plans
+        for the shop. No authentication required - trusted internal network only.
+      operationId: upsert_bnpl_plans_api_v1_internal_shops_by_doret_social_id__doret_social_id__bnpl_plans_put
+      parameters:
+        - name: doret_social_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Doret Social Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpsertBnplPlansRequest"
+      responses:
+        "200":
+          description: Plans upserted successfully, returns plan_count
+          content:
+            application/json:
+              schema: {}
+        "404":
+          description: Shop with specified Doret social ID not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/internal/shops/{shop_id}/require-addendum:
+    post:
+      tags:
+        - internal
+      summary: Require contract addendum signing (internal)
+      description: >-
+        Require shop to sign contract addendum. Internal service-to-service endpoint. Called by
+        Contract Service to transition shop from ACTIVE to ADDENDUM_PENDING state. Shop owner must
+        sign addendum via merchant endpoint before shop becomes ACTIVE again. No authentication
+        required - trusted internal network only.
+      operationId: require_addendum_api_v1_internal_shops__shop_id__require_addendum_post
+      parameters:
+        - name: shop_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Shop Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Shop transitioned to ADDENDUM_PENDING state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShopInternalResponse"
+        "404":
+          description: Shop with specified ID not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Shop is not in ACTIVE state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/internal/shops/by-hovitech-id/{hovitech_id}:
+    get:
+      tags:
+        - internal
+      summary: Get shops by Hovitech user ID (internal)
+      description: >-
+        Get all shops owned by a Hovitech user. Internal service-to-service endpoint. Returns all
+        shops across all pages owned by the user (a user can own multiple pages). Used when services
+        need to query user-level shop data. No authentication required - trusted internal network
+        only.
+      operationId: get_shops_by_hovitech_id_api_v1_internal_shops_by_hovitech_id__hovitech_id__get
+      parameters:
+        - name: hovitech_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Hovitech Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: List of shops owned by the user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HovitechShopsResponse"
+        "404":
+          description: No shops found for the specified Hovitech user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/internal/shops/{shop_id}/eligible-bnpl-plans:
+    post:
+      tags:
+        - internal
+      summary: Get customer-eligible BNPL plans for a shop (internal)
+      description: >-
+        Get enriched shop data with BNPL plans filtered to those eligible for a specific customer.
+        Cross-matches shop's ACTIVE plans with customer's active plans from GreenBank by plan_id.
+        Returns same shape as GET /internal/shops/{shop_id} but with bnpl_plans containing only
+        customer-eligible plans. No authentication required - trusted internal network only.
+      operationId: get_customer_eligible_bnpl_plans_api_v1_internal_shops__shop_id__eligible_bnpl_plans_post
+      parameters:
+        - name: shop_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Shop Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomerEligibleBnplRequest"
+      responses:
+        "200":
+          description: Shop details with customer-eligible BNPL plans
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShopInternalResponse"
+        "404":
+          description: Shop with specified ID not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/internal/shops/resolve-batch:
+    post:
+      tags:
+        - internal
+      summary: Resolve multiple shops by IDs (internal)
+      description: >-
+        Batch resolve multiple shops by their IDs. Internal service-to-service endpoint. Accepts up
+        to 50 shop UUIDs and returns a map of shop_id to shop summary. Missing or soft-deleted shops
+        are silently omitted from the response. Optional include parameter supports: 'shipping',
+        'bnpl_plans', 'logo'. Used by other services (Order, Checkout, Catalog) to avoid N+1 queries
+        in aggregation endpoints. No authentication required - trusted internal network only.
+      operationId: resolve_shops_batch_api_v1_internal_shops_resolve_batch_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResolveShopsBatchRequest"
+        required: true
+      responses:
+        "200":
+          description: Map of shop_id to shop summary for found shops
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BatchResolveResponse"
+        "400":
+          description: Batch size exceeds maximum of 50
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/internal/shipping/calculate-batch:
+    post:
+      tags:
+        - internal
+      summary: Calculate shipping options for multiple shops (internal)
+      description: >-
+        Batch calculate shipping options and fees for multiple shops. Internal service-to-service
+        endpoint. Accepts a destination province (UUID as string) and list of shops with weights.
+        Returns available shipping methods and calculated fees per shop based on province coverage
+        in each shop's shipping configurations. Max 20 shops per request. No authentication required
+        - trusted internal network only.
+      operationId: calculate_shipping_batch_api_v1_internal_shipping_calculate_batch_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CalculateShippingBatchRequest"
+        required: true
+      responses:
+        "200":
+          description: Shipping options per shop
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShippingBatchResponse"
+        "400":
+          description: Invalid province UUID or batch size exceeds maximum
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/merchant/shop:
+    get:
+      tags:
+        - merchant
+      summary: Get current merchant's shop
+      description: >-
+        Get full shop details for the current merchant. Shop is identified by the X-SOCIAL-MAIN-ID
+        header. Returns shop in any lifecycle state with all fields.
+      operationId: get_shop_api_v1_merchant_shop_get
+      responses:
+        "200":
+          description: Shop details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShopDetailResponse"
+        "400":
+          description: Missing required headers
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "404":
+          description: No shop found for current merchant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/merchant/shop/info:
+    put:
+      tags:
+        - merchant
+      summary: Update shop information
+      description: >-
+        Update shop information for an active shop. Shop ID is extracted from X-COMMERCE-SHOP-ID
+        header. Includes shop name, business category, and address details.
+      operationId: update_shop_info_api_v1_merchant_shop_info_put
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddShopInfoRequest"
+      responses:
+        "200":
+          description: Shop information updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationResponse_AddShopInfoResponse_"
+        "404":
+          description: Shop or business category not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Shop not in allowed state or category inactive
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/merchant/shop/logo:
+    patch:
+      tags:
+        - merchant
+      summary: Update or remove shop logo
+      description: >-
+        Update or remove the shop logo image. Set logo_image_id to a valid Media Service UUID to set
+        a logo, or null to remove the current logo. Shop must be in SHOP_INFO_ADDED or later state.
+      operationId: update_shop_logo_api_v1_merchant_shop_logo_patch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateShopLogoRequest"
+      responses:
+        "200":
+          description: Shop logo updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationResponse_dict_"
+        "404":
+          description: Shop not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Shop not in allowed state for logo update
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/merchant/shipping-configurations:
+    post:
+      tags:
+        - merchant
+      summary: Add shipping configuration
+      description: >-
+        Add a shipping configuration to an active shop. Multiple configurations can exist; use PUT
+        /default to change the default. First configuration is automatically set as default.
+      operationId: add_shipping_configuration_api_v1_merchant_shipping_configurations_post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddShippingConfigurationRequest"
+      responses:
+        "201":
+          description: Shipping configuration created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationResponse_ShippingConfigurationResponse_"
+        "404":
+          description: Shop not found or not owned by user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Shop not in valid state for adding shipping configuration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+    get:
+      tags:
+        - merchant
+      summary: List shipping configurations
+      description: >-
+        List all shipping configurations for the current shop. Returns configurations with their
+        type, pricing, and default status.
+      operationId: list_shipping_configurations_api_v1_merchant_shipping_configurations_get
+      responses:
+        "200":
+          description: List of shipping configurations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionResponse_ShippingConfigurationResponse_"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/merchant/shipping-configurations/default:
+    put:
+      tags:
+        - merchant
+      summary: Set default shipping configuration
+      description: >-
+        Set a shipping configuration as the default for checkout. The default configuration is used
+        when customers don't select a specific option. Only one configuration can be default at a
+        time.
+      operationId: set_default_shipping_config_api_v1_merchant_shipping_configurations_default_put
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetDefaultShippingConfigRequest"
+      responses:
+        "200":
+          description: Default shipping configuration updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationResponse_SetDefaultShippingConfigResponse_"
+        "404":
+          description: Shop or configuration not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Configuration does not belong to this shop
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/merchant/shipping-configurations/{config_id}:
+    get:
+      tags:
+        - merchant
+      summary: Get shipping configuration
+      description: >-
+        Get a single shipping configuration by ID. Returns configuration details with enriched
+        province and country names.
+      operationId: get_shipping_configuration_api_v1_merchant_shipping_configurations__config_id__get
+      parameters:
+        - name: config_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Config Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Shipping configuration details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShippingConfigurationResponse"
+        "404":
+          description: Shop or configuration not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    put:
+      tags:
+        - merchant
+      summary: Update shipping configuration
+      description: >-
+        Update a shipping configuration's prices and provinces. Shipping type and country are
+        immutable after creation. Province list is fully replaced (not merged with existing).
+      operationId: update_shipping_configuration_api_v1_merchant_shipping_configurations__config_id__put
+      parameters:
+        - name: config_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Config Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateShippingConfigurationRequest"
+      responses:
+        "200":
+          description: Shipping configuration updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationResponse_ShippingConfigurationResponse_"
+        "404":
+          description: Shop or configuration not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Province conflict with another configuration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - merchant
+      summary: Delete shipping configuration
+      description: >-
+        Delete a shipping configuration from a shop. Cannot delete the default configuration (must
+        set another as default first). Cannot delete the last configuration if shop is in
+        SHIPMENT_INFO_ADDED or later state.
+      operationId: delete_shipping_configuration_api_v1_merchant_shipping_configurations__config_id__delete
+      parameters:
+        - name: config_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Config Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "204":
+          description: Shipping configuration deleted successfully
+        "404":
+          description: Shop or configuration not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Cannot delete default or last required configuration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/merchant/settlements:
+    post:
+      tags:
+        - merchant
+      summary: Request settlement (withdrawal)
+      description: >-
+        Request withdrawal of funds from shop wallet to merchant bank account. Requires
+        X-COMMERCE-SHOP-ID header to specify the shop context. Shop must be in ACTIVE state and not
+        suspended. Uses the merchant's Green wallet account for transfer. Settlement is processed
+        asynchronously; check status via GET /settlements/{id}.
+      operationId: request_settlement_api_v1_merchant_settlements_post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestSettlementRequest"
+      responses:
+        "202":
+          description: Settlement request accepted for processing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationResponse_SettlementResponse_"
+        "400":
+          description: Missing X-COMMERCE-SHOP-ID header or invalid amount
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "404":
+          description: Shop not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Shop not ACTIVE or is suspended, or insufficient balance
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+    get:
+      tags:
+        - merchant
+      summary: List settlements
+      description: >-
+        List settlement requests for the current shop with optional filtering. Requires
+        X-COMMERCE-SHOP-ID header to specify the shop context. Supports filtering by status and
+        pagination. Returns settlements ordered by creation date (newest first).
+      operationId: list_settlements_api_v1_merchant_settlements_get
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            description: >-
+              Filter by settlement status. Valid values: PENDING (awaiting processing), COMPLETED
+              (funds transferred), FAILED (transfer failed). Omit to return all statuses.
+            title: Status
+          description: >-
+            Filter by settlement status. Valid values: PENDING (awaiting processing), COMPLETED
+            (funds transferred), FAILED (transfer failed). Omit to return all statuses.
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: "Page number (1-indexed). Default: 1."
+            default: 1
+            title: Page
+          description: "Page number (1-indexed). Default: 1."
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            description: "Number of items per page. Default: 20, Max: 100."
+            default: 20
+            title: Page Size
+          description: "Number of items per page. Default: 20, Max: 100."
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: List of settlements
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionResponse_SettlementResponse_"
+        "400":
+          description: Missing X-COMMERCE-SHOP-ID header
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "404":
+          description: Shop not found or not owned by user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/merchant/settlements/{settlement_id}:
+    get:
+      tags:
+        - merchant
+      summary: Get settlement details
+      description: >-
+        Get detailed information about a specific settlement request. Includes status, amount,
+        timestamps, and failure reason if applicable.
+      operationId: get_settlement_api_v1_merchant_settlements__settlement_id__get
+      parameters:
+        - name: settlement_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Settlement Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Settlement details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SettlementResponse"
+        "404":
+          description: Settlement not found or not owned by user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/merchant/wallet/balance:
+    get:
+      tags:
+        - merchant
+      summary: Get wallet balance
+      description: >-
+        Get the current wallet balance for the shop. Requires X-COMMERCE-SHOP-ID header to specify
+        the shop context. Returns the total balance and amount available for settlement. Balance is
+        fetched in real-time from the Green wallet service.
+      operationId: get_wallet_balance_api_v1_merchant_wallet_balance_get
+      responses:
+        "200":
+          description: Wallet balance retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WalletBalanceResponse"
+        "400":
+          description: Missing X-COMMERCE-SHOP-ID header
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "404":
+          description: Shop not found or wallet not initialized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+        "503":
+          description: Wallet service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/merchant/bnpl/plans:
+    get:
+      tags:
+        - merchant
+      summary: Get available BNPL plans
+      description: >-
+        Get available BNPL (Buy Now Pay Later) plans from GreenBank. Returns plans the merchant can
+        register for. Shop must be in ACTIVE state.
+      operationId: get_available_bnpl_plans_api_v1_merchant_bnpl_plans_get
+      responses:
+        "200":
+          description: Available BNPL plans retrieved successfully
+          content:
+            application/json:
+              schema: {}
+        "404":
+          description: Shop not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Shop is not in ACTIVE state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+        "503":
+          description: BNPL service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/merchant/bnpl/plans/{plan_id}/contract:
+    get:
+      tags:
+        - merchant
+      summary: Get BNPL plan contract
+      description: >-
+        Get the contract template for a specific BNPL plan. Returns contract title, body, and terms
+        for review before registration.
+      operationId: get_bnpl_plan_contract_api_v1_merchant_bnpl_plans__plan_id__contract_get
+      parameters:
+        - name: plan_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Plan Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Contract template retrieved successfully
+          content:
+            application/json:
+              schema: {}
+        "404":
+          description: Shop or plan not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Shop is not in ACTIVE state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+        "503":
+          description: BNPL service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+  /api/v1/merchant/bnpl/plans/{plan_id}/register:
+    post:
+      tags:
+        - merchant
+      summary: Register for a BNPL plan
+      description: >-
+        Register the current shop for a BNPL plan. Registers with GreenBank and syncs the updated
+        plan list to local DB. Shop must be in ACTIVE state.
+      operationId: register_bnpl_plan_api_v1_merchant_bnpl_plans__plan_id__register_post
+      parameters:
+        - name: plan_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Plan Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Plan registered and synced successfully
+          content:
+            application/json:
+              schema: {}
+        "400":
+          description: Registration failed (e.g., plan already registered)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "404":
+          description: Shop or plan not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Shop is not in ACTIVE state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+        "503":
+          description: BNPL service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+  /api/v1/merchant/bnpl/my-plans:
+    get:
+      tags:
+        - merchant
+      summary: Get my registered BNPL plans
+      description: >-
+        Get the current shop's registered BNPL plans from local database. Returns plans that were
+        synced from GreenBank after registration. Shop must be in ACTIVE state.
+      operationId: get_my_bnpl_plans_api_v1_merchant_bnpl_my_plans_get
+      responses:
+        "200":
+          description: Registered BNPL plans retrieved successfully
+          content:
+            application/json:
+              schema: {}
+        "404":
+          description: Shop not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Shop is not in ACTIVE state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/staff/business-categories:
+    post:
+      tags:
+        - staff
+      summary: Create business category
+      description: >-
+        Create a new business category for shop classification. Categories are used by merchants to
+        indicate their shop's business type. The name must be unique across all categories.
+      operationId: create_business_category_api_v1_staff_business_categories_post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBusinessCategoryRequest"
+      responses:
+        "201":
+          description: Business category created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationResponse_BusinessCategoryResponse_"
+        "409":
+          description: Category with this name already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+    get:
+      tags:
+        - staff
+      summary: List business categories
+      description: >-
+        List all business categories with optional filtering by active status. Returns paginated
+        results including inactive categories for staff review.
+      operationId: list_business_categories_api_v1_staff_business_categories_get
+      parameters:
+        - name: is_active
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: boolean
+              - type: "null"
+            description: Filter by active status. Omit to return all categories.
+            title: Is Active
+          description: Filter by active status. Omit to return all categories.
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: "Page number (1-indexed). Default: 1."
+            default: 1
+            title: Page
+          description: "Page number (1-indexed). Default: 1."
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 500
+            minimum: 1
+            description: "Number of items per page. Default: 100, Max: 500."
+            default: 100
+            title: Page Size
+          description: "Number of items per page. Default: 100, Max: 500."
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: List of business categories
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionResponse_BusinessCategoryResponse_"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/business-categories/{category_id}:
+    get:
+      tags:
+        - staff
+      summary: Get business category
+      description: Get details of a specific business category by ID.
+      operationId: get_business_category_api_v1_staff_business_categories__category_id__get
+      parameters:
+        - name: category_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Category Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Business category details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessCategoryResponse"
+        "404":
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    put:
+      tags:
+        - staff
+      summary: Update business category
+      description: >-
+        Update a business category's name, description, or active status. Only provided fields are
+        updated.
+      operationId: update_business_category_api_v1_staff_business_categories__category_id__put
+      parameters:
+        - name: category_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Category Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBusinessCategoryRequest"
+      responses:
+        "200":
+          description: Business category updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationResponse_BusinessCategoryResponse_"
+        "404":
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Another category with this name already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - staff
+      summary: Delete business category
+      description: >-
+        Soft-delete a business category. The category is marked as deleted but historical data is
+        preserved.
+      operationId: delete_business_category_api_v1_staff_business_categories__category_id__delete
+      parameters:
+        - name: category_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Category Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Business category deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationResponse_BusinessCategoryDeleteResponse_"
+        "404":
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/shops:
+    get:
+      tags:
+        - staff
+      summary: List all shops
+      description: >-
+        Staff-only endpoint to list all shops in the system. Supports filtering by hovitech_id,
+        org_id, lifecycle_state, and suspension status. Results are paginated with configurable
+        limit and offset. Returns shops with full details including owner information and
+        timestamps.
+      operationId: list_shops_api_v1_staff_shops_get
+      parameters:
+        - name: hovitech_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: "null"
+            description: Filter shops by owner's Hovitech user ID. Returns only shops owned by this user.
+            title: Hovitech Id
+          description: Filter shops by owner's Hovitech user ID. Returns only shops owned by this user.
+        - name: org_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: "null"
+            description: Filter shops by organization ID. Returns only shops in this organization.
+            title: Org Id
+          description: Filter shops by organization ID. Returns only shops in this organization.
+        - name: lifecycle_state
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            description: >-
+              Filter by lifecycle state. Valid values: REQUESTED (awaiting payment), PAID (payment
+              confirmed), OWNER_ADDED (owner info submitted), SHIPMENT_INFO_ADDED (shipping
+              configured), ACTIVE (fully operational), SUSPENDED (temporarily suspended), CLOSED
+              (permanently closed).
+            title: Lifecycle State
+          description: >-
+            Filter by lifecycle state. Valid values: REQUESTED (awaiting payment), PAID (payment
+            confirmed), OWNER_ADDED (owner info submitted), SHIPMENT_INFO_ADDED (shipping
+            configured), ACTIVE (fully operational), SUSPENDED (temporarily suspended), CLOSED
+            (permanently closed).
+        - name: suspended
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: boolean
+              - type: "null"
+            description: Filter by suspension status. true=suspended only, false=non-suspended only, omit=all.
+            title: Suspended
+          description: Filter by suspension status. true=suspended only, false=non-suspended only, omit=all.
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: "Page number (1-indexed). Default: 1."
+            default: 1
+            title: Page
+          description: "Page number (1-indexed). Default: 1."
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            description: "Number of items per page. Default: 20, Max: 100."
+            default: 20
+            title: Page Size
+          description: "Number of items per page. Default: 20, Max: 100."
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: List of shops
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionResponse_ShopDetailResponse_"
+        "401":
+          description: Missing or invalid authentication headers
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "403":
+          description: User is not a staff member (X-IS-STAFF must be true)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/shops/{shop_id}:
+    get:
+      tags:
+        - staff
+      summary: Get shop details
+      description: >-
+        Get comprehensive details about a specific shop. Includes owner information, lifecycle
+        state, suspension status, payment references, and all configuration data. Staff-only
+        endpoint for shop investigation and support.
+      operationId: get_shop_details_api_v1_staff_shops__shop_id__get
+      parameters:
+        - name: shop_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Shop Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Shop details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShopDetailResponse"
+        "404":
+          description: Shop with specified ID not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/shops/{shop_id}/state-history:
+    get:
+      tags:
+        - staff
+      summary: Get shop state history
+      description: >-
+        Get the complete state transition history for a shop. Shows all lifecycle state changes with
+        timestamps, who triggered each transition, and correlation IDs for tracing. Useful for
+        debugging onboarding issues and audit trails.
+      operationId: get_shop_state_history_api_v1_staff_shops__shop_id__state_history_get
+      parameters:
+        - name: shop_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Shop Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: List of state transitions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionResponse_ShopStateTransitionResponse_"
+        "404":
+          description: Shop with specified ID not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/shops/{shop_id}/suspend:
+    post:
+      tags:
+        - staff
+      summary: Suspend shop
+      description: >-
+        Suspend a shop's operations. Suspended shops cannot process new orders or settlements.
+        Existing data is preserved; shop can be unsuspended later. Requires a reason which is
+        recorded for audit and shown to owner. Publishes commerce.shop.suspended event.
+      operationId: suspend_shop_api_v1_staff_shops__shop_id__suspend_post
+      parameters:
+        - name: shop_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Shop Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SuspendShopRequest"
+      responses:
+        "200":
+          description: Shop suspended successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationResponse_ShopSuspendResponse_"
+        "404":
+          description: Shop with specified ID not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Shop is already suspended
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/shops/{shop_id}/unsuspend:
+    post:
+      tags:
+        - staff
+      summary: Unsuspend shop
+      description: >-
+        Restore a suspended shop to normal operations. Shop returns to its previous lifecycle state.
+        Optional reason can be provided for audit purposes. Publishes commerce.shop.unsuspended
+        event.
+      operationId: unsuspend_shop_api_v1_staff_shops__shop_id__unsuspend_post
+      parameters:
+        - name: shop_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Shop Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Shop unsuspended successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationResponse_ShopSuspendResponse_"
+        "404":
+          description: Shop with specified ID not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "409":
+          description: Shop is not currently suspended
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /:
+    get:
+      summary: Root
+      description: Root endpoint
+      operationId: root__get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+components:
+  schemas:
+    ActivateShopResponse:
+      properties:
+        shop_id:
+          type: string
+          title: Shop Id
+          description: Shop identifier (UUID)
+        merchant_id:
+          type: string
+          title: Merchant Id
+          description: Created merchant identifier (UUID)
+        iban:
+          type: string
+          title: Iban
+          description: Merchant IBAN for settlements
+        lifecycle_state:
+          type: string
+          title: Lifecycle State
+          description: New lifecycle state (ACTIVE)
+      type: object
+      required:
+        - shop_id
+        - merchant_id
+        - iban
+        - lifecycle_state
+      title: ActivateShopResponse
+      description: Response for POST /shops/{id}/activate.
+    ActiveBusinessCategoryResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Business category identifier (UUID)
+        name:
+          type: string
+          title: Name
+          description: Category name
+        description:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Description
+          description: Category description
+      type: object
+      required:
+        - id
+        - name
+      title: ActiveBusinessCategoryResponse
+      description: Response item for active business categories (public list).
+    AddShippingConfigurationRequest:
+      properties:
+        shipping_origin_country_id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Shipping Origin Country Id
+          description: >-
+            Country UUID from Location Service where shipments originate. Optional - defaults to
+            Iran if not provided. Used to calculate shipping costs and delivery times.
+        shipping_origin_province_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          minItems: 1
+          title: Shipping Origin Province Ids
+          description: >-
+            List of Province UUIDs from Location Service within the origin country. Each province
+            can only be assigned to one configuration per shipping type. At least one province is
+            required.
+          examples:
+            - - 550e8400-e29b-41d4-a716-446655440000
+        shipping_type:
+          $ref: "#/components/schemas/ShippingType"
+          description: >-
+            Shipping method code. Available options: post-pishtaz (پست پیشتاز), tipax (تیپاکس),
+            chapar (چاپار), mahex (ماهکس), peyk (پیک موتوری), seller-delivery (ارسال توسط فروشنده).
+            Use GET /generic/v1/shipping-methods to get the full list with labels.
+          examples:
+            - post-pishtaz
+        base_shipping_price:
+          anyOf:
+            - type: number
+              minimum: 0
+            - type: string
+              pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Base Shipping Price
+          description: >-
+            Base shipping price in the shop's default currency (minor units). Minimum shipping cost
+            before weight-based additions.
+          examples:
+            - 50000
+        additional_price_per_kg:
+          anyOf:
+            - type: number
+              minimum: 0
+            - type: string
+              pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Additional Price Per Kg
+          description: >-
+            Additional cost per kilogram of package weight (minor units). Total shipping =
+            base_price + (weight_kg * additional_price_per_kg).
+          examples:
+            - 10000
+      type: object
+      required:
+        - shipping_origin_province_ids
+        - shipping_type
+        - base_shipping_price
+        - additional_price_per_kg
+      title: AddShippingConfigurationRequest
+      description: >-
+        Request body for adding a shipping configuration to a shop.
+
+
+        First shipping configuration triggers state transition from SHOP_INFO_ADDED to
+        SHIPMENT_INFO_ADDED.
+
+        Multiple configurations can be added; one must be set as default.
+
+        A single configuration can apply to multiple provinces.
+    AddShopInfoRequest:
+      properties:
+        shop_name:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Shop Name
+          description: Shop display name shown to customers.
+          examples:
+            - Ali's Electronics
+        business_category_id:
+          type: string
+          format: uuid
+          title: Business Category Id
+          description: >-
+            Business category UUID from the categories list. Use GET /generic/v1/business-categories
+            to get available options.
+        city_id:
+          type: string
+          maxLength: 100
+          title: City Id
+          description: >-
+            City identifier from Location Service. Must be a valid city ID that exists in the
+            location registry.
+          examples:
+            - tehran_001
+        province_id:
+          type: string
+          maxLength: 100
+          title: Province Id
+          description: >-
+            Province identifier from Location Service. Must match the province containing the
+            specified city_id.
+          examples:
+            - tehran_province
+        postal_code:
+          type: string
+          maxLength: 20
+          title: Postal Code
+          description: Postal/ZIP code for the shop's physical address.
+          examples:
+            - "1234567890"
+        physical_address:
+          type: string
+          maxLength: 1000
+          minLength: 5
+          title: Physical Address
+          description: >-
+            Complete physical address of the shop. Include street name, building number, unit number
+            if applicable.
+          examples:
+            - Valiasr St, Building 123, Unit 5
+        shop_english_name:
+          anyOf:
+            - type: string
+              maxLength: 255
+            - type: "null"
+          title: Shop English Name
+          description: Optional English name for the shop (for international customers).
+          examples:
+            - Ali's Electronics
+        website_address:
+          anyOf:
+            - type: string
+              maxLength: 500
+            - type: "null"
+          title: Website Address
+          description: Optional website URL for the shop.
+          examples:
+            - https://ali-electronics.ir
+        phone:
+          anyOf:
+            - type: string
+              maxLength: 20
+            - type: "null"
+          title: Phone
+          description: Optional phone number for the shop.
+          examples:
+            - "+989123456789"
+        address_description:
+          anyOf:
+            - type: string
+              maxLength: 1000
+            - type: "null"
+          title: Address Description
+          description: Optional address description or directions.
+          examples:
+            - Near Valiasr Square, next to the bank
+        logo_image_id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Logo Image Id
+          description: >-
+            Optional logo image UUID from Media Service. Upload the image via Media Service first,
+            then pass the returned UUID here.
+        latitude:
+          anyOf:
+            - type: number
+              maximum: 90
+              minimum: -90
+            - type: string
+              pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+            - type: "null"
+          title: Latitude
+          description: Optional latitude coordinate for map display.
+          examples:
+            - 35.7219
+        longitude:
+          anyOf:
+            - type: number
+              maximum: 180
+              minimum: -180
+            - type: string
+              pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+            - type: "null"
+          title: Longitude
+          description: Optional longitude coordinate for map display.
+          examples:
+            - 51.3347
+      type: object
+      required:
+        - shop_name
+        - business_category_id
+        - city_id
+        - province_id
+        - postal_code
+        - physical_address
+      title: AddShopInfoRequest
+      description: |-
+        Request body for adding shop information after contract signing.
+
+        Required after contract is signed (CONTRACT_SIGNED state) to progress
+        to SHOP_INFO_ADDED state. Includes shop details and owner information.
+    AddShopInfoResponse:
+      properties:
+        shop_id:
+          type: string
+          title: Shop Id
+          description: Shop identifier (UUID)
+        lifecycle_state:
+          type: string
+          title: Lifecycle State
+          description: Current lifecycle state
+        shop_name:
+          type: string
+          title: Shop Name
+          description: Shop display name
+        business_category:
+          $ref: "#/components/schemas/core__api__v1__customer__schemas__BusinessCategoryInfo"
+          description: Business category details
+        logo_image_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Logo Image Id
+          description: Logo image UUID from Media Service
+        owner_name:
+          type: string
+          title: Owner Name
+          description: Shop owner's first name
+        owner_family_name:
+          type: string
+          title: Owner Family Name
+          description: Shop owner's family name
+        updated_at:
+          type: string
+          title: Updated At
+          description: Update timestamp (ISO 8601)
+      type: object
+      required:
+        - shop_id
+        - lifecycle_state
+        - shop_name
+        - business_category
+        - owner_name
+        - owner_family_name
+        - updated_at
+      title: AddShopInfoResponse
+      description: Response for PUT /shops/{id}/info - add or update shop information.
+    BatchResolveResponse:
+      properties:
+        shops:
+          additionalProperties:
+            $ref: "#/components/schemas/BatchShopSummary"
+          type: object
+          title: Shops
+          description: Map of shop_id (UUID) to shop summary
+      type: object
+      required:
+        - shops
+      title: BatchResolveResponse
+      description: Response for batch shop resolution. Maps shop_id to shop summary.
+    BatchShopSummary:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Shop identifier (UUID)
+        org_id:
+          type: string
+          title: Org Id
+          description: Organization identifier (UUID)
+        lifecycle_state:
+          type: string
+          title: Lifecycle State
+          description: Current lifecycle state
+        suspended:
+          type: boolean
+          title: Suspended
+          description: Whether shop operations are suspended
+        name:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Name
+          description: Shop display name
+        doret_social_id:
+          type: string
+          title: Doret Social Id
+          description: Doret social profile identifier
+        logo_url:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Logo Url
+          description: Signed logo URL (null if not included or no logo)
+        merchant_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Merchant Id
+          description: GreenBank merchant identifier (UUID)
+        contract_no:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Contract No
+          description: GreenBank contract number
+        default_currency_id:
+          type: string
+          title: Default Currency Id
+          description: Default currency code
+        default_currency_instrument:
+          additionalProperties: true
+          type: object
+          title: Default Currency Instrument
+          description: Currency instrument config (symbol, format, decimal_places)
+        business_category:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Business Category
+          description: Business category {id, name} or null
+        shipping_configurations:
+          anyOf:
+            - items:
+                $ref: "#/components/schemas/ShippingConfigSummary"
+              type: array
+            - type: "null"
+          title: Shipping Configurations
+          description: Shipping configs (null if not included, [] if included but empty)
+        bnpl_plans:
+          anyOf:
+            - items: {}
+              type: array
+            - type: "null"
+          title: Bnpl Plans
+          description: BNPL plans (null if not included, [] if included but empty)
+      type: object
+      required:
+        - id
+        - org_id
+        - lifecycle_state
+        - suspended
+        - doret_social_id
+        - default_currency_id
+        - default_currency_instrument
+      title: BatchShopSummary
+      description: Summary of a single shop in a batch resolve response.
+    BnplPlanInfo:
+      properties:
+        plan_id:
+          type: string
+          title: Plan Id
+          description: Plan identifier
+        plan_name:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Plan Name
+          description: Plan display name
+        plan_name_fa:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Plan Name Fa
+          description: Plan display name (Farsi)
+        installment_count:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Installment Count
+          description: Number of installments
+        min_purchase_amount:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Min Purchase Amount
+          description: Minimum purchase amount (decimal as string)
+        max_purchase_amount:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Max Purchase Amount
+          description: Maximum purchase amount (decimal as string)
+      type: object
+      required:
+        - plan_id
+      title: BnplPlanInfo
+      description: BNPL plan info nested in public shop responses.
+    BnplPlanItemRequest:
+      properties:
+        plan_id:
+          type: string
+          title: Plan Id
+          description: GreenBank plan UUID as string
+        plan_name:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Plan Name
+          description: English plan name
+        plan_name_fa:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Plan Name Fa
+          description: Farsi plan name
+        status:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Status
+          description: Plan status from GreenBank
+        installment_count:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Installment Count
+          description: Number of installments
+        min_purchase_amount:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Min Purchase Amount
+          description: Minimum purchase amount (decimal string)
+        max_purchase_amount:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Max Purchase Amount
+          description: Maximum purchase amount (decimal string)
+      type: object
+      required:
+        - plan_id
+      title: BnplPlanItemRequest
+      description: A single BNPL plan item in an upsert request.
+    BusinessCategoryDeleteResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Deleted category identifier (UUID)
+        name:
+          type: string
+          title: Name
+          description: Category name
+        deleted_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Deleted At
+          description: Deletion timestamp (ISO 8601)
+      type: object
+      required:
+        - id
+        - name
+      title: BusinessCategoryDeleteResponse
+      description: Response for business category deletion.
+    BusinessCategoryResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Business category identifier (UUID)
+        name:
+          type: string
+          title: Name
+          description: Category name
+        description:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Description
+          description: Category description
+        mcc:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Mcc
+          description: Merchant Category Code for payment processors
+        is_active:
+          type: boolean
+          title: Is Active
+          description: Whether the category is active
+        created_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Created At
+          description: Creation timestamp (ISO 8601)
+        updated_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Updated At
+          description: Last update timestamp (ISO 8601)
+      type: object
+      required:
+        - id
+        - name
+        - is_active
+      title: BusinessCategoryResponse
+      description: Response for business category endpoints (create, get, update, list item).
+    CalculateShippingBatchRequest:
+      properties:
+        province_id:
+          type: string
+          title: Province Id
+          description: Destination province UUID as string
+        shops:
+          items:
+            $ref: "#/components/schemas/ShopWeightRequest"
+          type: array
+          title: Shops
+          description: List of shops with their total weights (max 20)
+      type: object
+      required:
+        - province_id
+        - shops
+      title: CalculateShippingBatchRequest
+      description: Request body for batch shipping calculation.
+    CancelShopCreationResponse:
+      properties:
+        message:
+          type: string
+          title: Message
+          description: Confirmation message
+        canceled_shop_id:
+          type: string
+          title: Canceled Shop Id
+          description: Canceled shop identifier (UUID)
+        previous_state:
+          type: string
+          title: Previous State
+          description: Lifecycle state before cancellation
+      type: object
+      required:
+        - message
+        - canceled_shop_id
+        - previous_state
+      title: CancelShopCreationResponse
+      description: Response for POST /shop/cancel - cancel incomplete shop creation.
+    CollectionResponse_ActiveBusinessCategoryResponse_:
+      properties:
+        data:
+          items:
+            $ref: "#/components/schemas/ActiveBusinessCategoryResponse"
+          type: array
+          title: Data
+          description: List of items
+        pagination:
+          $ref: "#/components/schemas/PaginationSchema"
+          description: Pagination metadata
+        filters:
+          additionalProperties: true
+          type: object
+          title: Filters
+          description: Applied filters
+        sort:
+          $ref: "#/components/schemas/SortSchema"
+          description: Sort configuration
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+          description: Request metadata
+      type: object
+      required:
+        - data
+        - pagination
+        - sort
+        - metadata
+      title: CollectionResponse[ActiveBusinessCategoryResponse]
+    CollectionResponse_BusinessCategoryResponse_:
+      properties:
+        data:
+          items:
+            $ref: "#/components/schemas/BusinessCategoryResponse"
+          type: array
+          title: Data
+          description: List of items
+        pagination:
+          $ref: "#/components/schemas/PaginationSchema"
+          description: Pagination metadata
+        filters:
+          additionalProperties: true
+          type: object
+          title: Filters
+          description: Applied filters
+        sort:
+          $ref: "#/components/schemas/SortSchema"
+          description: Sort configuration
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+          description: Request metadata
+      type: object
+      required:
+        - data
+        - pagination
+        - sort
+        - metadata
+      title: CollectionResponse[BusinessCategoryResponse]
+    CollectionResponse_NearbyShopResponse_:
+      properties:
+        data:
+          items:
+            $ref: "#/components/schemas/NearbyShopResponse"
+          type: array
+          title: Data
+          description: List of items
+        pagination:
+          $ref: "#/components/schemas/PaginationSchema"
+          description: Pagination metadata
+        filters:
+          additionalProperties: true
+          type: object
+          title: Filters
+          description: Applied filters
+        sort:
+          $ref: "#/components/schemas/SortSchema"
+          description: Sort configuration
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+          description: Request metadata
+      type: object
+      required:
+        - data
+        - pagination
+        - sort
+        - metadata
+      title: CollectionResponse[NearbyShopResponse]
+    CollectionResponse_SettlementResponse_:
+      properties:
+        data:
+          items:
+            $ref: "#/components/schemas/SettlementResponse"
+          type: array
+          title: Data
+          description: List of items
+        pagination:
+          $ref: "#/components/schemas/PaginationSchema"
+          description: Pagination metadata
+        filters:
+          additionalProperties: true
+          type: object
+          title: Filters
+          description: Applied filters
+        sort:
+          $ref: "#/components/schemas/SortSchema"
+          description: Sort configuration
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+          description: Request metadata
+      type: object
+      required:
+        - data
+        - pagination
+        - sort
+        - metadata
+      title: CollectionResponse[SettlementResponse]
+    CollectionResponse_ShippingConfigurationResponse_:
+      properties:
+        data:
+          items:
+            $ref: "#/components/schemas/ShippingConfigurationResponse"
+          type: array
+          title: Data
+          description: List of items
+        pagination:
+          $ref: "#/components/schemas/PaginationSchema"
+          description: Pagination metadata
+        filters:
+          additionalProperties: true
+          type: object
+          title: Filters
+          description: Applied filters
+        sort:
+          $ref: "#/components/schemas/SortSchema"
+          description: Sort configuration
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+          description: Request metadata
+      type: object
+      required:
+        - data
+        - pagination
+        - sort
+        - metadata
+      title: CollectionResponse[ShippingConfigurationResponse]
+    CollectionResponse_ShippingMethodResponse_:
+      properties:
+        data:
+          items:
+            $ref: "#/components/schemas/ShippingMethodResponse"
+          type: array
+          title: Data
+          description: List of items
+        pagination:
+          $ref: "#/components/schemas/PaginationSchema"
+          description: Pagination metadata
+        filters:
+          additionalProperties: true
+          type: object
+          title: Filters
+          description: Applied filters
+        sort:
+          $ref: "#/components/schemas/SortSchema"
+          description: Sort configuration
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+          description: Request metadata
+      type: object
+      required:
+        - data
+        - pagination
+        - sort
+        - metadata
+      title: CollectionResponse[ShippingMethodResponse]
+    CollectionResponse_ShopDetailResponse_:
+      properties:
+        data:
+          items:
+            $ref: "#/components/schemas/ShopDetailResponse"
+          type: array
+          title: Data
+          description: List of items
+        pagination:
+          $ref: "#/components/schemas/PaginationSchema"
+          description: Pagination metadata
+        filters:
+          additionalProperties: true
+          type: object
+          title: Filters
+          description: Applied filters
+        sort:
+          $ref: "#/components/schemas/SortSchema"
+          description: Sort configuration
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+          description: Request metadata
+      type: object
+      required:
+        - data
+        - pagination
+        - sort
+        - metadata
+      title: CollectionResponse[ShopDetailResponse]
+    CollectionResponse_ShopPublicProfileResponse_:
+      properties:
+        data:
+          items:
+            $ref: "#/components/schemas/ShopPublicProfileResponse"
+          type: array
+          title: Data
+          description: List of items
+        pagination:
+          $ref: "#/components/schemas/PaginationSchema"
+          description: Pagination metadata
+        filters:
+          additionalProperties: true
+          type: object
+          title: Filters
+          description: Applied filters
+        sort:
+          $ref: "#/components/schemas/SortSchema"
+          description: Sort configuration
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+          description: Request metadata
+      type: object
+      required:
+        - data
+        - pagination
+        - sort
+        - metadata
+      title: CollectionResponse[ShopPublicProfileResponse]
+    CollectionResponse_ShopStateTransitionResponse_:
+      properties:
+        data:
+          items:
+            $ref: "#/components/schemas/ShopStateTransitionResponse"
+          type: array
+          title: Data
+          description: List of items
+        pagination:
+          $ref: "#/components/schemas/PaginationSchema"
+          description: Pagination metadata
+        filters:
+          additionalProperties: true
+          type: object
+          title: Filters
+          description: Applied filters
+        sort:
+          $ref: "#/components/schemas/SortSchema"
+          description: Sort configuration
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+          description: Request metadata
+      type: object
+      required:
+        - data
+        - pagination
+        - sort
+        - metadata
+      title: CollectionResponse[ShopStateTransitionResponse]
+    ContractClauseResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Clause identifier
+        title:
+          type: string
+          title: Title
+          description: Clause title
+        content:
+          type: string
+          title: Content
+          description: Clause content text
+        order:
+          type: integer
+          title: Order
+          description: Display order
+      type: object
+      required:
+        - id
+        - title
+        - content
+        - order
+      title: ContractClauseResponse
+      description: A single clause within a contract.
+    ContractDetailResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Contract template identifier
+        name:
+          type: string
+          title: Name
+          description: Contract template name
+        version_id:
+          type: string
+          title: Version Id
+          description: Version identifier
+        version_number:
+          type: string
+          title: Version Number
+          description: Version number
+        clauses:
+          items:
+            $ref: "#/components/schemas/ContractClauseResponse"
+          type: array
+          title: Clauses
+          description: Contract clauses
+        variables:
+          title: Variables
+          description: Contract template variables
+        effective_from:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Effective From
+          description: Effective date (ISO 8601)
+        valid_to:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Valid To
+          description: Expiration date (ISO 8601)
+      type: object
+      required:
+        - id
+        - name
+        - version_id
+        - version_number
+        - clauses
+        - variables
+      title: ContractDetailResponse
+      description: Contract template details with clauses and variables.
+    CreateBusinessCategoryRequest:
+      properties:
+        name:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Name
+          description: >-
+            Unique name for the business category. Examples: 'Electronics', 'Fashion', 'Food &
+            Beverage'.
+          examples:
+            - Electronics
+        description:
+          anyOf:
+            - type: string
+              maxLength: 1000
+            - type: "null"
+          title: Description
+          description: >-
+            Optional description of the category. Helps merchants understand which category to
+            choose.
+          examples:
+            - Shops selling electronic devices and accessories
+        mcc:
+          anyOf:
+            - type: string
+              maxLength: 10
+            - type: "null"
+          title: Mcc
+          description: >-
+            Merchant Category Code for Green Bank integration. Required for merchant registration
+            with payment processors. Standard 4-digit code, e.g., '5411' for grocery stores.
+          examples:
+            - "5411"
+      type: object
+      required:
+        - name
+      title: CreateBusinessCategoryRequest
+      description: |-
+        Request body for creating a new business category.
+
+        Business categories are used by merchants to classify their shops.
+        Only staff members can create categories.
+    CustomerEligibleBnplRequest:
+      properties:
+        customer_hovitech_id:
+          type: string
+          title: Customer Hovitech Id
+          description: Customer Hovitech ID for plan eligibility check
+      type: object
+      required:
+        - customer_hovitech_id
+      title: CustomerEligibleBnplRequest
+      description: Request body for customer-eligible BNPL plans endpoint.
+    ErrorResponseSchema:
+      properties:
+        code:
+          type: string
+          title: Code
+        message:
+          type: string
+          title: Message
+        details:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Details
+      type: object
+      required:
+        - code
+        - message
+      title: ErrorResponseSchema
+      description: |-
+        Error response schema per API Design Standard.
+
+        Flat structure: {"code": str, "message": str, "details": dict | null}
+    ExternalContractResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: External contract identifier
+        template_code:
+          type: string
+          title: Template Code
+          description: Template code
+        template_name:
+          type: string
+          title: Template Name
+          description: Template display name
+        contract_text:
+          type: string
+          title: Contract Text
+          description: Full contract text
+        version:
+          type: string
+          title: Version
+          description: Contract version
+        valid_from:
+          title: Valid From
+          description: Valid from date
+        valid_to:
+          title: Valid To
+          description: Valid to date
+      type: object
+      required:
+        - id
+        - template_code
+        - template_name
+        - contract_text
+        - version
+      title: ExternalContractResponse
+      description: External contract associated with the store agreement.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: "#/components/schemas/ValidationError"
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    HovitechShopItem:
+      properties:
+        shop_id:
+          type: string
+          title: Shop Id
+          description: Shop identifier (UUID)
+        lifecycle_state:
+          type: string
+          title: Lifecycle State
+          description: Current lifecycle state
+        suspended:
+          type: boolean
+          title: Suspended
+          description: Whether shop operations are suspended
+        org_id:
+          type: string
+          title: Org Id
+          description: Organization identifier (UUID)
+        created_at:
+          type: string
+          title: Created At
+          description: Shop creation timestamp (ISO 8601)
+      type: object
+      required:
+        - shop_id
+        - lifecycle_state
+        - suspended
+        - org_id
+        - created_at
+      title: HovitechShopItem
+      description: A single shop item in the Hovitech user's shop list.
+    HovitechShopsResponse:
+      properties:
+        hovitech_id:
+          type: string
+          title: Hovitech Id
+          description: Hovitech user identifier (UUID)
+        shops:
+          items:
+            $ref: "#/components/schemas/HovitechShopItem"
+          type: array
+          title: Shops
+          description: Shops owned by the user
+      type: object
+      required:
+        - hovitech_id
+        - shops
+      title: HovitechShopsResponse
+      description: Response for listing shops by Hovitech user ID.
+    MetadataSchema:
+      properties:
+        request_id:
+          type: string
+          title: Request Id
+        timestamp:
+          type: string
+          title: Timestamp
+        processing_time_ms:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Processing Time Ms
+      type: object
+      required:
+        - request_id
+        - timestamp
+      title: MetadataSchema
+      description: |-
+        Response metadata per API Design Standard.
+
+        Fields: request_id, timestamp, processing_time_ms (optional)
+    MutationResponse_ActivateShopResponse_:
+      properties:
+        data:
+          $ref: "#/components/schemas/ActivateShopResponse"
+          description: Response payload
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+          description: Request metadata
+      type: object
+      required:
+        - data
+        - metadata
+      title: MutationResponse[ActivateShopResponse]
+    MutationResponse_AddShopInfoResponse_:
+      properties:
+        data:
+          $ref: "#/components/schemas/AddShopInfoResponse"
+          description: Response payload
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+          description: Request metadata
+      type: object
+      required:
+        - data
+        - metadata
+      title: MutationResponse[AddShopInfoResponse]
+    MutationResponse_BusinessCategoryDeleteResponse_:
+      properties:
+        data:
+          $ref: "#/components/schemas/BusinessCategoryDeleteResponse"
+          description: Response payload
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+          description: Request metadata
+      type: object
+      required:
+        - data
+        - metadata
+      title: MutationResponse[BusinessCategoryDeleteResponse]
+    MutationResponse_BusinessCategoryResponse_:
+      properties:
+        data:
+          $ref: "#/components/schemas/BusinessCategoryResponse"
+          description: Response payload
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+          description: Request metadata
+      type: object
+      required:
+        - data
+        - metadata
+      title: MutationResponse[BusinessCategoryResponse]
+    MutationResponse_CancelShopCreationResponse_:
+      properties:
+        data:
+          $ref: "#/components/schemas/CancelShopCreationResponse"
+          description: Response payload
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+          description: Request metadata
+      type: object
+      required:
+        - data
+        - metadata
+      title: MutationResponse[CancelShopCreationResponse]
+    MutationResponse_RequestPaymentResponse_:
+      properties:
+        data:
+          $ref: "#/components/schemas/RequestPaymentResponse"
+          description: Response payload
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+          description: Request metadata
+      type: object
+      required:
+        - data
+        - metadata
+      title: MutationResponse[RequestPaymentResponse]
+    MutationResponse_SetDefaultShippingConfigResponse_:
+      properties:
+        data:
+          $ref: "#/components/schemas/SetDefaultShippingConfigResponse"
+          description: Response payload
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+          description: Request metadata
+      type: object
+      required:
+        - data
+        - metadata
+      title: MutationResponse[SetDefaultShippingConfigResponse]
+    MutationResponse_SettlementResponse_:
+      properties:
+        data:
+          $ref: "#/components/schemas/SettlementResponse"
+          description: Response payload
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+          description: Request metadata
+      type: object
+      required:
+        - data
+        - metadata
+      title: MutationResponse[SettlementResponse]
+    MutationResponse_ShippingConfigurationResponse_:
+      properties:
+        data:
+          $ref: "#/components/schemas/ShippingConfigurationResponse"
+          description: Response payload
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+          description: Request metadata
+      type: object
+      required:
+        - data
+        - metadata
+      title: MutationResponse[ShippingConfigurationResponse]
+    MutationResponse_ShopCreatedResponse_:
+      properties:
+        data:
+          $ref: "#/components/schemas/ShopCreatedResponse"
+          description: Response payload
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+          description: Request metadata
+      type: object
+      required:
+        - data
+        - metadata
+      title: MutationResponse[ShopCreatedResponse]
+    MutationResponse_ShopSuspendResponse_:
+      properties:
+        data:
+          $ref: "#/components/schemas/ShopSuspendResponse"
+          description: Response payload
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+          description: Request metadata
+      type: object
+      required:
+        - data
+        - metadata
+      title: MutationResponse[ShopSuspendResponse]
+    MutationResponse_SignAddendumResponse_:
+      properties:
+        data:
+          $ref: "#/components/schemas/SignAddendumResponse"
+          description: Response payload
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+          description: Request metadata
+      type: object
+      required:
+        - data
+        - metadata
+      title: MutationResponse[SignAddendumResponse]
+    MutationResponse_SignContractResponse_:
+      properties:
+        data:
+          $ref: "#/components/schemas/SignContractResponse"
+          description: Response payload
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+          description: Request metadata
+      type: object
+      required:
+        - data
+        - metadata
+      title: MutationResponse[SignContractResponse]
+    MutationResponse_dict_:
+      properties:
+        data:
+          additionalProperties: true
+          type: object
+          title: Data
+          description: Response payload
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+          description: Request metadata
+      type: object
+      required:
+        - data
+        - metadata
+      title: MutationResponse[dict]
+    NearbyShopResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Shop identifier (UUID)
+        org_id:
+          type: string
+          title: Org Id
+          description: Organization identifier (UUID)
+        shop_name:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Shop Name
+          description: Shop display name
+        latitude:
+          type: number
+          title: Latitude
+          description: Latitude coordinate
+        longitude:
+          type: number
+          title: Longitude
+          description: Longitude coordinate
+        distance_km:
+          type: number
+          title: Distance Km
+          description: Distance from search point in kilometers
+        business_category_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Business Category Id
+          description: Business category identifier (UUID)
+        logo_url:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Logo Url
+          description: Signed URL for shop logo image
+        bnpl_plans:
+          items:
+            $ref: "#/components/schemas/BnplPlanInfo"
+          type: array
+          title: Bnpl Plans
+          description: Active BNPL plans for this shop
+      type: object
+      required:
+        - id
+        - org_id
+        - latitude
+        - longitude
+        - distance_km
+      title: NearbyShopResponse
+      description: Response item for nearby shop search results.
+    PaginationSchema:
+      properties:
+        page:
+          type: integer
+          title: Page
+        page_size:
+          type: integer
+          title: Page Size
+        total_items:
+          type: integer
+          title: Total Items
+        total_pages:
+          type: integer
+          title: Total Pages
+      type: object
+      required:
+        - page
+        - page_size
+        - total_items
+        - total_pages
+      title: PaginationSchema
+      description: |-
+        Pagination metadata per API Design Standard.
+
+        Fields: page, page_size, total_items, total_pages
+        (No has_next/has_previous - can be calculated client-side)
+    RequestPaymentResponse:
+      properties:
+        shop_id:
+          type: string
+          title: Shop Id
+          description: Shop identifier (UUID)
+        payment_request_id:
+          type: string
+          title: Payment Request Id
+          description: Payment request identifier (UUID)
+        status:
+          type: string
+          title: Status
+          description: Payment request status
+        gb_rrn:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Gb Rrn
+          description: GreenBank RRN (if available)
+        gb_tracking_code:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Gb Tracking Code
+          description: GreenBank tracking code (if available)
+        lifecycle_state:
+          type: string
+          title: Lifecycle State
+          description: Current lifecycle state
+      type: object
+      required:
+        - shop_id
+        - payment_request_id
+        - status
+        - lifecycle_state
+      title: RequestPaymentResponse
+      description: Response for POST /shops/{id}/request-payment.
+    RequestSettlementRequest:
+      properties:
+        amount_minor:
+          type: integer
+          exclusiveMinimum: 0
+          title: Amount Minor
+          description: >-
+            Amount to withdraw in minor currency units (e.g., Rials for IRR). Must be positive and
+            not exceed available wallet balance. Example: 1000000 = 1,000,000 Rials.
+          examples:
+            - 1000000
+      type: object
+      required:
+        - amount_minor
+      title: RequestSettlementRequest
+      description: |-
+        Request body for requesting a settlement (withdrawal).
+
+        Note: shop_id comes from X-SHOP-ID header, hovitech_id from X-HOVITECH-ID header.
+        The default settlement account (Green wallet) is used automatically.
+    RequestShopCreationRequest:
+      properties:
+        default_currency_id:
+          type: string
+          maxLength: 3
+          minLength: 3
+          title: Default Currency Id
+          description: >-
+            ISO 4217 currency code for the shop's default currency. Example: 'IRR' for Iranian Rial,
+            'USD' for US Dollar. This determines the currency used for pricing and settlements.
+          examples:
+            - IRR
+      type: object
+      required:
+        - default_currency_id
+      title: RequestShopCreationRequest
+      description: |-
+        Request body for creating a new shop.
+
+        Note: org_id and doret_social_id are extracted from request headers
+        (X-ORGANIZATION-ID and X-MAIN-SOCIAL-ID respectively).
+    ResolveShopsBatchRequest:
+      properties:
+        shop_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          title: Shop Ids
+          description: List of shop UUIDs to resolve (max 50)
+        include:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Include
+          description: Optional list of relations to embed (e.g. 'shipping')
+      type: object
+      required:
+        - shop_ids
+      title: ResolveShopsBatchRequest
+      description: Request body for batch shop resolution.
+    SetDefaultShippingConfigRequest:
+      properties:
+        config_id:
+          type: string
+          format: uuid
+          title: Config Id
+          description: >-
+            UUID of the shipping configuration to set as default. Must be an existing configuration
+            belonging to this shop.
+      type: object
+      required:
+        - config_id
+      title: SetDefaultShippingConfigRequest
+      description: >-
+        Request body for setting a shipping configuration as the default.
+
+
+        The default configuration is used when no specific configuration is selected during
+        checkout.
+    SetDefaultShippingConfigResponse:
+      properties:
+        config_id:
+          type: string
+          title: Config Id
+          description: Shipping configuration identifier (UUID)
+        shop_id:
+          type: string
+          title: Shop Id
+          description: Shop this configuration belongs to (UUID)
+        shipping_origin_country_id:
+          type: string
+          title: Shipping Origin Country Id
+          description: Origin country identifier (UUID)
+        shipping_origin_province_ids:
+          items:
+            type: string
+          type: array
+          title: Shipping Origin Province Ids
+          description: List of origin province identifiers (UUIDs)
+        shipping_type:
+          type: string
+          title: Shipping Type
+          description: Shipping type (e.g., STANDARD, EXPRESS)
+        base_shipping_price:
+          type: string
+          title: Base Shipping Price
+          description: Base shipping price (decimal as string)
+        additional_price_per_kg:
+          type: string
+          title: Additional Price Per Kg
+          description: Additional price per kg (decimal as string)
+        is_default:
+          type: boolean
+          title: Is Default
+          description: Whether this is the default configuration (always true)
+        updated_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Updated At
+          description: Last update timestamp (ISO 8601)
+      type: object
+      required:
+        - config_id
+        - shop_id
+        - shipping_origin_country_id
+        - shipping_origin_province_ids
+        - shipping_type
+        - base_shipping_price
+        - additional_price_per_kg
+        - is_default
+      title: SetDefaultShippingConfigResponse
+      description: |-
+        Response for setting a shipping configuration as default.
+
+        Returns the configuration without enriched names or lifecycle_state.
+    SettlementResponse:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+          description: Unique settlement request identifier
+        shop_id:
+          type: string
+          format: uuid
+          title: Shop Id
+          description: Shop this settlement belongs to
+        amount_minor:
+          type: integer
+          title: Amount Minor
+          description: Settlement amount in minor currency units
+        currency:
+          type: string
+          title: Currency
+          description: Currency code (e.g., IRR)
+        status:
+          type: string
+          enum:
+            - PENDING
+            - COMPLETED
+            - FAILED
+          title: Status
+          description: >-
+            Settlement status: PENDING (awaiting processing), COMPLETED (funds transferred), FAILED
+            (transfer failed)
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: Request creation timestamp
+        completed_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Completed At
+          description: Completion timestamp (null if not completed)
+        failed_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Failed At
+          description: Failure timestamp (null if not failed)
+        failure_reason:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Failure Reason
+          description: Reason for failure (null if not failed)
+      type: object
+      required:
+        - id
+        - shop_id
+        - amount_minor
+        - currency
+        - status
+        - created_at
+      title: SettlementResponse
+      description: |-
+        Settlement (withdrawal) resource response.
+
+        Returned by settlement creation and retrieval endpoints.
+    ShippingBatchResponse:
+      properties:
+        shops:
+          items:
+            $ref: "#/components/schemas/ShopShippingOptionsResponse"
+          type: array
+          title: Shops
+          description: Shipping options per shop
+      type: object
+      required:
+        - shops
+      title: ShippingBatchResponse
+      description: Response for batch shipping calculation.
+    ShippingConfigSummary:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Shipping configuration identifier (UUID)
+        shipping_type:
+          type: string
+          title: Shipping Type
+          description: Shipping method code (e.g. tipax)
+        base_shipping_price:
+          type: string
+          title: Base Shipping Price
+          description: Base shipping price (decimal string)
+        additional_price_per_kg:
+          type: string
+          title: Additional Price Per Kg
+          description: Additional price per kg (decimal string)
+        is_default:
+          type: boolean
+          title: Is Default
+          description: Whether this is the default shipping method
+        provinces:
+          items:
+            type: string
+          type: array
+          title: Provinces
+          description: List of province UUIDs covered by this config
+      type: object
+      required:
+        - id
+        - shipping_type
+        - base_shipping_price
+        - additional_price_per_kg
+        - is_default
+        - provinces
+      title: ShippingConfigSummary
+      description: Summary of a shipping configuration in batch resolve response.
+    ShippingConfigurationResponse:
+      properties:
+        config_id:
+          type: string
+          title: Config Id
+          description: Shipping configuration identifier (UUID)
+        shop_id:
+          type: string
+          title: Shop Id
+          description: Shop this configuration belongs to (UUID)
+        shipping_origin_country_id:
+          type: string
+          title: Shipping Origin Country Id
+          description: Origin country identifier (UUID)
+        shipping_origin_country_name:
+          type: string
+          title: Shipping Origin Country Name
+          description: Origin country display name
+        shipping_origin_province_ids:
+          items:
+            type: string
+          type: array
+          title: Shipping Origin Province Ids
+          description: List of origin province identifiers (UUIDs)
+        shipping_origin_province_names:
+          items:
+            type: string
+          type: array
+          title: Shipping Origin Province Names
+          description: List of origin province display names
+        shipping_type:
+          type: string
+          title: Shipping Type
+          description: Shipping type (e.g., STANDARD, EXPRESS)
+        base_shipping_price:
+          type: string
+          title: Base Shipping Price
+          description: Base shipping price (decimal as string)
+        additional_price_per_kg:
+          type: string
+          title: Additional Price Per Kg
+          description: Additional price per kg (decimal as string)
+        is_default:
+          type: boolean
+          title: Is Default
+          description: Whether this is the default configuration
+        lifecycle_state:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Lifecycle State
+          description: Shop lifecycle state (present on creation)
+        created_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Created At
+          description: Creation timestamp (ISO 8601)
+        updated_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Updated At
+          description: Last update timestamp (ISO 8601)
+      type: object
+      required:
+        - config_id
+        - shop_id
+        - shipping_origin_country_id
+        - shipping_origin_country_name
+        - shipping_origin_province_ids
+        - shipping_origin_province_names
+        - shipping_type
+        - base_shipping_price
+        - additional_price_per_kg
+        - is_default
+      title: ShippingConfigurationResponse
+      description: |-
+        Full shipping configuration response with enriched province/country names.
+
+        Returned by add, get, update, and list shipping configuration endpoints.
+    ShippingMethodResponse:
+      properties:
+        code:
+          type: string
+          title: Code
+          description: Shipping method code (e.g., 'post-pishtaz')
+        label:
+          type: string
+          title: Label
+          description: Shipping method display label (Persian)
+      type: object
+      required:
+        - code
+        - label
+      title: ShippingMethodResponse
+      description: Response item for shipping methods.
+    ShippingOptionResponse:
+      properties:
+        method_id:
+          type: string
+          title: Method Id
+          description: Shipping method identifier (e.g. tipax)
+        name:
+          type: string
+          title: Name
+          description: Shipping method name
+        fee_minor:
+          type: integer
+          title: Fee Minor
+          description: Shipping fee in minor currency units
+        estimated_days:
+          type: integer
+          title: Estimated Days
+          description: Estimated delivery days (0 = unknown)
+        is_default:
+          type: boolean
+          title: Is Default
+          description: Whether this is the default shipping method
+      type: object
+      required:
+        - method_id
+        - name
+        - fee_minor
+        - estimated_days
+        - is_default
+      title: ShippingOptionResponse
+      description: A single shipping option for a shop.
+    ShippingType:
+      type: string
+      enum:
+        - post-pishtaz
+        - tipax
+        - chapar
+        - mahex
+        - peyk
+        - seller-delivery
+      title: ShippingType
+      description: Available shipping/courier providers for delivery configuration.
+    ShopCreatedResponse:
+      properties:
+        shop_id:
+          type: string
+          title: Shop Id
+          description: Created shop identifier (UUID)
+        lifecycle_state:
+          type: string
+          title: Lifecycle State
+          description: Initial lifecycle state (REQUESTED)
+        created_at:
+          type: string
+          title: Created At
+          description: Creation timestamp (ISO 8601)
+      type: object
+      required:
+        - shop_id
+        - lifecycle_state
+        - created_at
+      title: ShopCreatedResponse
+      description: Response for POST /shops - shop creation.
+    ShopDetailResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Unique shop identifier (UUID)
+        org_id:
+          type: string
+          title: Org Id
+          description: Organization this shop belongs to (UUID)
+        doret_social_id:
+          type: string
+          title: Doret Social Id
+          description: Doret social profile ID for the shop
+        lifecycle_state:
+          type: string
+          title: Lifecycle State
+          description: >-
+            Current lifecycle state. Values: REQUESTED, CONTRACT_SIGNED, SHOP_INFO_ADDED,
+            SHIPMENT_INFO_ADDED, PAID, ACTIVE, ADDENDUM_PENDING, SUSPENDED, CLOSED
+        suspended:
+          type: boolean
+          title: Suspended
+          description: Whether shop operations are suspended
+        default_currency_id:
+          type: string
+          title: Default Currency Id
+          description: ISO 4217 currency code (e.g., IRR)
+        default_currency_instrument:
+          type: string
+          title: Default Currency Instrument
+          description: Currency instrument identifier
+        created_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Created At
+          description: Shop creation timestamp (ISO 8601)
+        updated_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Updated At
+          description: Last update timestamp (ISO 8601)
+        shop_name:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Shop Name
+          description: Shop display name
+        shop_english_name:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Shop English Name
+          description: Shop English name
+        website_address:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Website Address
+          description: Shop website URL
+        phone:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Phone
+          description: Shop phone number
+        business_category_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Business Category Id
+          description: Business category UUID
+        logo_image_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Logo Image Id
+          description: Logo image UUID from Media Service
+        logo_url:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Logo Url
+          description: Signed URL for shop logo image
+        owner_name:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Owner Name
+          description: Shop owner's first name
+        owner_family_name:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Owner Family Name
+          description: Shop owner's family name
+        city_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: City Id
+          description: City identifier
+        province_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Province Id
+          description: Province identifier
+        postal_code:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Postal Code
+          description: Postal/ZIP code
+        physical_address:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Physical Address
+          description: Physical address
+        address_description:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Address Description
+          description: Address description or directions
+        latitude:
+          anyOf:
+            - type: number
+            - type: "null"
+          title: Latitude
+          description: Latitude coordinate
+        longitude:
+          anyOf:
+            - type: number
+            - type: "null"
+          title: Longitude
+          description: Longitude coordinate
+      type: object
+      required:
+        - id
+        - org_id
+        - doret_social_id
+        - lifecycle_state
+        - suspended
+        - default_currency_id
+        - default_currency_instrument
+      title: ShopDetailResponse
+      description: |-
+        Full shop resource response with all fields.
+
+        Returned by GET /shop (get my shop) endpoint.
+        Includes all shop details: identity, owner info, address, and timestamps.
+    ShopInternalResponse:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+          description: Unique shop identifier
+        org_id:
+          type: string
+          format: uuid
+          title: Org Id
+          description: Organization this shop belongs to
+        lifecycle_state:
+          type: string
+          title: Lifecycle State
+          description: Current lifecycle state
+        suspended:
+          type: boolean
+          title: Suspended
+          description: Whether shop operations are suspended
+        merchant_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Merchant Id
+          description: GreenBank merchant ID
+        contract_no:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Contract No
+          description: GreenBank contract number
+        name:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Name
+          description: Shop display name
+        doret_social_id:
+          type: string
+          title: Doret Social Id
+          description: Doret social profile identifier
+        default_currency_id:
+          type: string
+          title: Default Currency Id
+          description: Default currency code
+        default_currency_instrument:
+          additionalProperties: true
+          type: object
+          title: Default Currency Instrument
+          description: Currency instrument config (symbol, format, decimal_places)
+        business_category:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Business Category
+          description: Business category {id, name} or null
+        bnpl_plans:
+          items: {}
+          type: array
+          title: Bnpl Plans
+          description: List of ACTIVE BNPL plan objects
+        shipping_configurations:
+          items: {}
+          type: array
+          title: Shipping Configurations
+          description: List of shipping configuration objects
+      type: object
+      required:
+        - id
+        - org_id
+        - lifecycle_state
+        - suspended
+        - doret_social_id
+        - default_currency_id
+        - default_currency_instrument
+      title: ShopInternalResponse
+      description: |-
+        Enriched shop response for internal service-to-service calls.
+
+        Contains all fields needed by other services for order processing,
+        BNPL plan compatibility checks, and shipping configuration.
+    ShopPublicProfileResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Shop identifier (UUID)
+        org_id:
+          type: string
+          title: Org Id
+          description: Organization identifier (UUID)
+        doret_social_id:
+          type: string
+          title: Doret Social Id
+          description: Doret social page identifier
+        doret_business_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Doret Business Id
+          description: Doret business entity identifier (UUID)
+        shop_name:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Shop Name
+          description: Shop display name
+        shop_english_name:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Shop English Name
+          description: Shop English name
+        business_category:
+          anyOf:
+            - $ref: "#/components/schemas/core__api__v1__generic__schemas__BusinessCategoryInfo"
+            - type: "null"
+          description: Business category info
+        website_address:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Website Address
+          description: Shop website URL
+        phone:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Phone
+          description: Shop contact phone
+        latitude:
+          anyOf:
+            - type: number
+            - type: "null"
+          title: Latitude
+          description: Latitude coordinate
+        longitude:
+          anyOf:
+            - type: number
+            - type: "null"
+          title: Longitude
+          description: Longitude coordinate
+        physical_address:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Physical Address
+          description: Physical street address
+        address_description:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Address Description
+          description: Additional address details
+        city_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: City Id
+          description: City identifier
+        province_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Province Id
+          description: Province identifier
+        logo_url:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Logo Url
+          description: Signed URL for shop logo image
+        default_currency_id:
+          type: string
+          title: Default Currency Id
+          description: Default currency code (e.g., IRR)
+        default_currency_instrument:
+          additionalProperties: true
+          type: object
+          title: Default Currency Instrument
+          description: Currency formatting instrument (symbol, format, decimal_places)
+        bnpl_plans:
+          items:
+            $ref: "#/components/schemas/BnplPlanInfo"
+          type: array
+          title: Bnpl Plans
+          description: Active BNPL plans for this shop
+      type: object
+      required:
+        - id
+        - org_id
+        - doret_social_id
+        - default_currency_id
+        - default_currency_instrument
+      title: ShopPublicProfileResponse
+      description: Response schema for public shop profile.
+    ShopShippingOptionsResponse:
+      properties:
+        shop_id:
+          type: string
+          title: Shop Id
+          description: Shop identifier (UUID)
+        shop_name:
+          type: string
+          title: Shop Name
+          description: Shop display name
+        total_weight_grams:
+          type: integer
+          title: Total Weight Grams
+          description: Total weight in grams
+        options:
+          items:
+            $ref: "#/components/schemas/ShippingOptionResponse"
+          type: array
+          title: Options
+          description: Available shipping options
+        shipping_available:
+          type: boolean
+          title: Shipping Available
+          description: Whether shipping is available to the destination
+      type: object
+      required:
+        - shop_id
+        - shop_name
+        - total_weight_grams
+        - options
+        - shipping_available
+      title: ShopShippingOptionsResponse
+      description: Shipping options for a single shop.
+    ShopStateTransitionResponse:
+      properties:
+        log_id:
+          type: string
+          title: Log Id
+          description: State log identifier (UUID)
+        shop_id:
+          type: string
+          title: Shop Id
+          description: Shop identifier (UUID)
+        from_state:
+          type: string
+          title: From State
+          description: Previous lifecycle state
+        to_state:
+          type: string
+          title: To State
+          description: New lifecycle state
+        transitioned_at:
+          type: string
+          title: Transitioned At
+          description: Transition timestamp (ISO 8601)
+        transitioned_by:
+          type: string
+          title: Transitioned By
+          description: User who triggered the transition
+        transition_trigger:
+          type: string
+          title: Transition Trigger
+          description: What caused the transition
+        correlation_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Correlation Id
+          description: Correlation ID for tracing (UUID)
+        transition_metadata:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Transition Metadata
+          description: Additional metadata
+      type: object
+      required:
+        - log_id
+        - shop_id
+        - from_state
+        - to_state
+        - transitioned_at
+        - transitioned_by
+        - transition_trigger
+      title: ShopStateTransitionResponse
+      description: A single state transition in shop state history.
+    ShopSuspendResponse:
+      properties:
+        shop_id:
+          type: string
+          title: Shop Id
+          description: Shop identifier (UUID)
+        suspended:
+          type: boolean
+          title: Suspended
+          description: Current suspension status
+        suspended_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Suspended At
+          description: Suspension timestamp (ISO 8601)
+        suspended_by:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Suspended By
+          description: User who suspended (UUID)
+        suspension_reason:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Suspension Reason
+          description: Reason for suspension
+        updated_at:
+          type: string
+          title: Updated At
+          description: Last update timestamp (ISO 8601)
+      type: object
+      required:
+        - shop_id
+        - suspended
+        - updated_at
+      title: ShopSuspendResponse
+      description: Response for shop suspend/unsuspend endpoints.
+    ShopWeightRequest:
+      properties:
+        shop_id:
+          type: string
+          format: uuid
+          title: Shop Id
+          description: Shop identifier (UUID)
+        shop_name:
+          type: string
+          title: Shop Name
+          description: Shop display name
+        total_weight_grams:
+          type: integer
+          minimum: 0
+          title: Total Weight Grams
+          description: Total weight of items in grams
+      type: object
+      required:
+        - shop_id
+        - shop_name
+        - total_weight_grams
+      title: ShopWeightRequest
+      description: A shop with its total weight for shipping calculation.
+    ShopsByOrgResponse:
+      properties:
+        shop_ids:
+          items:
+            type: string
+          type: array
+          title: Shop Ids
+          description: List of shop UUIDs in the organization
+      type: object
+      required:
+        - shop_ids
+      title: ShopsByOrgResponse
+      description: Response for listing shop IDs by organization.
+    SignAddendumResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Shop identifier (UUID)
+        lifecycle_state:
+          type: string
+          title: Lifecycle State
+          description: New lifecycle state (ACTIVE)
+      type: object
+      required:
+        - id
+        - lifecycle_state
+      title: SignAddendumResponse
+      description: Response for POST /shops/{id}/sign-addendum.
+    SignContractRequest:
+      properties:
+        contract_no:
+          type: string
+          maxLength: 100
+          minLength: 1
+          title: Contract No
+          description: Contract number from Contract Service. Provided after user signs the contract.
+          examples:
+            - CNT-2026-00001
+      type: object
+      required:
+        - contract_no
+      title: SignContractRequest
+      description: |-
+        Request body for signing a contract.
+
+        Contract number is provided by the frontend after user signs in Contract Service.
+    SignContractResponse:
+      properties:
+        shop_id:
+          type: string
+          title: Shop Id
+          description: Shop identifier (UUID)
+        lifecycle_state:
+          type: string
+          title: Lifecycle State
+          description: New lifecycle state (CONTRACT_SIGNED)
+        contract_no:
+          type: string
+          title: Contract No
+          description: Assigned contract number
+        updated_at:
+          type: string
+          title: Updated At
+          description: Update timestamp (ISO 8601)
+      type: object
+      required:
+        - shop_id
+        - lifecycle_state
+        - contract_no
+        - updated_at
+      title: SignContractResponse
+      description: Response for POST /shops/{id}/sign-contract.
+    SortSchema:
+      properties:
+        fields:
+          items:
+            type: string
+          type: array
+          title: Fields
+        orders:
+          items:
+            type: string
+          type: array
+          title: Orders
+      type: object
+      required:
+        - fields
+        - orders
+      title: SortSchema
+      description: |-
+        Sort metadata per API Design Standard.
+
+        Fields: fields (array), orders (array)
+    StoreContractResponse:
+      properties:
+        agreement_id:
+          type: string
+          title: Agreement Id
+          description: Store agreement identifier (UUID)
+        store_id:
+          type: string
+          title: Store Id
+          description: Store identifier (UUID)
+        organization_id:
+          type: string
+          title: Organization Id
+          description: Organization identifier (UUID)
+        status:
+          type: string
+          title: Status
+          description: Agreement status
+        signed_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Signed At
+          description: Signing timestamp (ISO 8601)
+        contract:
+          $ref: "#/components/schemas/ContractDetailResponse"
+          description: Contract template details
+        external_contracts:
+          items:
+            $ref: "#/components/schemas/ExternalContractResponse"
+          type: array
+          title: External Contracts
+          description: Associated external contracts
+      type: object
+      required:
+        - agreement_id
+        - store_id
+        - organization_id
+        - status
+        - contract
+        - external_contracts
+      title: StoreContractResponse
+      description: Response for GET /shops/{id}/contract - store contract details.
+    SuspendShopRequest:
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+          minLength: 1
+          title: Reason
+          description: >-
+            Reason for suspending the shop. This is recorded for audit purposes and shown to the
+            shop owner. Examples: 'Policy violation', 'Fraudulent activity', 'Owner request'.
+          examples:
+            - Policy violation - counterfeit goods detected
+      type: object
+      required:
+        - reason
+      title: SuspendShopRequest
+      description: |-
+        Request body for suspending a shop.
+
+        Suspension prevents the shop from processing new orders while preserving all data.
+        Only staff members can suspend shops.
+    UpdateBusinessCategoryRequest:
+      properties:
+        name:
+          anyOf:
+            - type: string
+              maxLength: 255
+              minLength: 1
+            - type: "null"
+          title: Name
+          description: New name for the category (must be unique).
+          examples:
+            - Consumer Electronics
+        description:
+          anyOf:
+            - type: string
+              maxLength: 1000
+            - type: "null"
+          title: Description
+          description: New description for the category.
+          examples:
+            - Shops selling consumer electronic devices
+        mcc:
+          anyOf:
+            - type: string
+              maxLength: 10
+            - type: "null"
+          title: Mcc
+          description: >-
+            Merchant Category Code for Green Bank integration. Standard 4-digit code, e.g., '5411'
+            for grocery stores.
+          examples:
+            - "5411"
+        is_active:
+          anyOf:
+            - type: boolean
+            - type: "null"
+          title: Is Active
+          description: >-
+            Whether the category is active and available for selection. Inactive categories are
+            hidden from merchants.
+          examples:
+            - true
+      type: object
+      title: UpdateBusinessCategoryRequest
+      description: |-
+        Request body for updating a business category.
+
+        All fields are optional - only provided fields will be updated.
+    UpdateShippingConfigurationRequest:
+      properties:
+        shipping_origin_province_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          minItems: 1
+          title: Shipping Origin Province Ids
+          description: >-
+            Updated list of Province UUIDs. Replaces the existing list entirely. Each province can
+            only be assigned to one configuration per shipping type.
+          examples:
+            - - 550e8400-e29b-41d4-a716-446655440000
+        base_shipping_price:
+          anyOf:
+            - type: number
+              minimum: 0
+            - type: string
+              pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Base Shipping Price
+          description: Updated base shipping price in the shop's default currency (minor units).
+          examples:
+            - 60000
+        additional_price_per_kg:
+          anyOf:
+            - type: number
+              minimum: 0
+            - type: string
+              pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Additional Price Per Kg
+          description: Updated additional cost per kilogram of package weight (minor units).
+          examples:
+            - 12000
+      type: object
+      required:
+        - shipping_origin_province_ids
+        - base_shipping_price
+        - additional_price_per_kg
+      title: UpdateShippingConfigurationRequest
+      description: |-
+        Request body for updating a shipping configuration.
+
+        Updates prices and provinces. Shipping type and country are immutable.
+        Province list is fully replaced (not merged).
+    UpdateShopLogoRequest:
+      properties:
+        logo_image_id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Logo Image Id
+          description: Logo image UUID from Media Service. Set to null to remove the current logo.
+      type: object
+      title: UpdateShopLogoRequest
+      description: |-
+        Request body for updating or removing the shop logo.
+
+        Set logo_image_id to null to remove the current logo.
+    UpsertBnplPlansRequest:
+      properties:
+        plans:
+          items:
+            $ref: "#/components/schemas/BnplPlanItemRequest"
+          type: array
+          title: Plans
+          description: Complete list of BNPL plans (replaces all existing plans)
+      type: object
+      title: UpsertBnplPlansRequest
+      description: Request body for upserting BNPL plans for a shop.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+        - loc
+        - msg
+        - type
+      title: ValidationError
+    WalletBalanceResponse:
+      properties:
+        shop_id:
+          type: string
+          format: uuid
+          title: Shop Id
+          description: Shop this wallet belongs to
+        balance_minor:
+          type: integer
+          title: Balance Minor
+          description: Total balance in minor currency units
+        currency:
+          type: string
+          title: Currency
+          description: Currency code (e.g., IRR)
+        available_for_settlement:
+          type: integer
+          title: Available For Settlement
+          description: Amount available for withdrawal in minor currency units
+      type: object
+      required:
+        - shop_id
+        - balance_minor
+        - currency
+        - available_for_settlement
+      title: WalletBalanceResponse
+      description: |-
+        Wallet balance response.
+
+        Returns current balance available for settlement.
+    core__api__v1__common__schemas__HealthResponse:
+      properties:
+        status:
+          type: string
+          title: Status
+        service:
+          type: string
+          title: Service
+        version:
+          type: string
+          title: Version
+      type: object
+      required:
+        - status
+        - service
+        - version
+      title: HealthResponse
+      description: Health check response
+    core__api__v1__customer__schemas__BusinessCategoryInfo:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Business category identifier (UUID)
+        name:
+          type: string
+          title: Name
+          description: Business category display name
+      type: object
+      required:
+        - id
+        - name
+      title: BusinessCategoryInfo
+      description: Business category nested in add shop info response.
+    core__api__v1__generic__schemas__BusinessCategoryInfo:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Business category identifier (UUID)
+        name:
+          type: string
+          title: Name
+          description: Business category display name
+      type: object
+      required:
+        - id
+        - name
+      title: BusinessCategoryInfo
+      description: Business category nested in shop public profile response.
+    core__api__v1__generic__schemas__HealthResponse:
+      properties:
+        status:
+          type: string
+          title: Status
+        service:
+          type: string
+          title: Service
+        version:
+          type: string
+          title: Version
+      type: object
+      required:
+        - status
+        - service
+        - version
+      title: HealthResponse
+      description: Response schema for health check
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    XDoretClientType:
+      name: x-doret-client-type
+      in: header
+      required: false
+      schema:
+        type: string
+        example: app
+      description: Client type identifier
+    XDoretMainSocialId:
+      name: x-doret-main-social-id
+      in: header
+      required: false
+      schema:
+        type: string
+        format: uuid
+        example: 019c7609-d734-76a0-9276-32183ac26e04
+      description: Main social ID
+    XDoretBusinessSocialId:
+      name: X-Doret-Business-Social-Id
+      in: header
+      required: false
+      schema:
+        type: string
+        format: uuid
+      description: Business social ID
+security:
+  - BearerAuth: []
+  - {}

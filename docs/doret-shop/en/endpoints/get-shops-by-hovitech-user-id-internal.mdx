@@ -1,0 +1,159 @@
+<Endpoint
+title="Get shops by Hovitech user ID (internal)"
+method="GET"
+category="internal"
+baseUrl="https://api.example.com"
+path="/api/v1/internal/shops/by-hovitech-id/\{hovitech_id\}"
+summary="Get shops by Hovitech user ID (internal)"
+description={`Get all shops owned by a Hovitech user. Internal service-to-service endpoint. Returns all shops across all pages owned by the user (a user can own multiple pages). Used when services need to query user-level shop data. No authentication required - trusted internal network only.`}
+hasAuthentication={true}
+curl={`curl --request GET \
+  --url "{baseUrl}/api/v1/internal/shops/by-hovitech-id/123" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value"`}
+languages={{
+javascript: `fetch("{baseUrl}/api/v1/internal/shops/by-hovitech-id/\${hovitech_id}", {
+  "method": "GET"
+})
+  .then(response => response.json())
+  .then(data => console.log(data));`,
+python: `import requests
+
+url = "{baseUrl}/api/v1/internal/shops/by-hovitech-id/{hovitech_id}"
+
+headers = {
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [
+    {
+      "description": "No description provided",
+      "required": true,
+      "title": "hovitech_id",
+      "type": "string (uuid)"
+    }
+  ],
+  "query": []
+}}
+requestBody={{
+  "properties": [],
+  "required": false
+}}
+responses={{
+  "200": [
+    {
+      "description": "Hovitech user identifier (UUID)",
+      "title": "hovitech_id",
+      "type": "string"
+    },
+    {
+      "description": "Shops owned by the user",
+      "title": "shops",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "Shop identifier (UUID)",
+            "title": "shop_id",
+            "type": "string"
+          },
+          {
+            "description": "Current lifecycle state",
+            "title": "lifecycle_state",
+            "type": "string"
+          },
+          {
+            "description": "Whether shop operations are suspended",
+            "title": "suspended",
+            "type": "boolean"
+          },
+          {
+            "description": "Organization identifier (UUID)",
+            "title": "org_id",
+            "type": "string"
+          },
+          {
+            "description": "Shop creation timestamp (ISO 8601)",
+            "title": "created_at",
+            "type": "string"
+          }
+        ],
+        "title": "HovitechShopItem"
+      }
+    }
+  ],
+  "404": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

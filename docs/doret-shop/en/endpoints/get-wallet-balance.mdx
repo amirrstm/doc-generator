@@ -1,0 +1,166 @@
+<Endpoint
+title="Get wallet balance"
+method="GET"
+category="merchant"
+baseUrl="https://api.example.com"
+path="/api/v1/merchant/wallet/balance"
+summary="Get wallet balance"
+description={`Get the current wallet balance for the shop. Requires X-COMMERCE-SHOP-ID header to specify the shop context. Returns the total balance and amount available for settlement. Balance is fetched in real-time from the Green wallet service.`}
+hasAuthentication={true}
+curl={`curl --request GET \
+  --url "{baseUrl}/api/v1/merchant/wallet/balance" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value"`}
+languages={{
+javascript: `fetch("{baseUrl}/api/v1/merchant/wallet/balance", {
+  "method": "GET"
+})
+  .then(response => response.json())
+  .then(data => console.log(data));`,
+python: `import requests
+
+url = "{baseUrl}/api/v1/merchant/wallet/balance"
+
+headers = {
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [],
+  "query": []
+}}
+requestBody={{
+  "properties": [],
+  "required": false
+}}
+responses={{
+  "200": [
+    {
+      "description": "Shop this wallet belongs to",
+      "title": "shop_id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Total balance in minor currency units",
+      "title": "balance_minor",
+      "type": "integer"
+    },
+    {
+      "description": "Currency code (e.g., IRR)",
+      "title": "currency",
+      "type": "string"
+    },
+    {
+      "description": "Amount available for withdrawal in minor currency units",
+      "title": "available_for_settlement",
+      "type": "integer"
+    }
+  ],
+  "400": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "404": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ],
+  "503": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ]
+}}
+/>

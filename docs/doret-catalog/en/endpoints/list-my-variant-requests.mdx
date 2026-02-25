@@ -1,0 +1,136 @@
+<Endpoint
+title="List my variant requests"
+method="GET"
+category="seller"
+baseUrl="https://api.example.com"
+path="/api/v1/seller/variants/my-requests"
+summary="List my variant requests"
+description={`Returns variants requested by the current seller's shop with computed status (pending, approved, rejected). Rejected variants include rejection reason.`}
+hasAuthentication={true}
+curl={`curl --request GET \
+  --url "{baseUrl}/api/v1/seller/variants/my-requests" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value"`}
+languages={{
+javascript: `fetch("{baseUrl}/api/v1/seller/variants/my-requests?status=value&page_size=123&page=123", {
+  "method": "GET"
+})
+  .then(response => response.json())
+  .then(data => console.log(data));`,
+python: `import requests
+
+url = "{baseUrl}/api/v1/seller/variants/my-requests"
+
+headers = {
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+params = {
+"status": "value",
+"page_size": 123,
+"page": 123
+}
+
+response = requests.get(url, headers=headers, params=params)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [],
+  "query": [
+    {
+      "description": "Filter by status: pending, approved, rejected",
+      "required": false,
+      "title": "status",
+      "type": "unknown"
+    },
+    {
+      "description": "Number of results (max 100)",
+      "required": false,
+      "title": "page_size",
+      "type": "integer"
+    },
+    {
+      "description": "Page number",
+      "required": false,
+      "title": "page",
+      "type": "integer"
+    }
+  ]
+}}
+requestBody={{
+  "properties": [],
+  "required": false
+}}
+responses={{
+  "200": [],
+  "400": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

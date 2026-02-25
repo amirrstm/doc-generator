@@ -162,9 +162,34 @@ function hasAuthentication(operation, spec) {
 }
 
 /**
+ * Resolve a $ref pointer against the spec document.
+ * Returns the referenced object or null if not found.
+ */
+function resolveRef(ref, spec) {
+  if (!ref || !ref.startsWith("#/")) return null;
+  const parts = ref.replace("#/", "").split("/");
+  let current = spec;
+  for (const part of parts) {
+    if (current == null || typeof current !== "object") return null;
+    current = current[part];
+  }
+  return current || null;
+}
+
+/**
+ * Return resolved parameters for an operation (dereferences any $ref entries).
+ */
+function getResolvedParameters(operation, spec) {
+  if (!operation.parameters) return [];
+  return operation.parameters
+    .map((p) => (p.$ref ? resolveRef(p.$ref, spec) : p))
+    .filter(Boolean);
+}
+
+/**
  * Extract parameters from operation (path, query, header, etc.)
  */
-function extractParameters(operation, _spec) {
+function extractParameters(operation, spec) {
   const parameters = {
     cookie: [],
     header: [],
@@ -172,8 +197,8 @@ function extractParameters(operation, _spec) {
     query: []
   };
 
-  if (operation.parameters) {
-    for (const param of operation.parameters) {
+  const resolved = getResolvedParameters(operation, spec);
+  for (const param of resolved) {
       const paramInfo = {
         description: param.description || "No description provided",
         required: param.required || false,
@@ -210,7 +235,6 @@ function extractParameters(operation, _spec) {
       if (parameters[location]) {
         parameters[location].push(paramInfo);
       }
-    }
   }
 
   return parameters;
@@ -447,17 +471,15 @@ function generateCurlCommand(method, pathKey, operation, spec) {
   }
 
   // Add header parameters
-  if (operation.parameters) {
-    operation.parameters.forEach((param) => {
-      if (param.in === "header") {
-        let exampleValue = "value";
-        if (param.schema && param.schema.example) {
-          exampleValue = param.schema.example;
-        }
-        headers.push(`--header "${param.name}: ${exampleValue}"`);
+  getResolvedParameters(operation, spec).forEach((param) => {
+    if (param.in === "header") {
+      let exampleValue = "value";
+      if (param.schema && param.schema.example) {
+        exampleValue = param.schema.example;
       }
-    });
-  }
+      headers.push(`--header "${param.name}: ${exampleValue}"`);
+    }
+  });
 
   curlParts.push(...headers);
 
@@ -511,25 +533,23 @@ function generateJavaScriptCode(method, pathKey, operation, spec) {
 
   // Add query parameters if any
   const queryParams = [];
-  if (operation.parameters) {
-    operation.parameters.forEach((param) => {
-      if (param.in === "query") {
-        let exampleValue = "value";
-        if (param.schema) {
-          if (param.schema.type === "integer") {
-            exampleValue = "123";
-          } else if (param.schema.type === "boolean") {
-            exampleValue = "true";
-          } else if (param.schema.example) {
-            exampleValue = param.schema.example;
-          } else if (param.schema.enum) {
-            exampleValue = param.schema.enum[0];
-          }
+  getResolvedParameters(operation, spec).forEach((param) => {
+    if (param.in === "query") {
+      let exampleValue = "value";
+      if (param.schema) {
+        if (param.schema.type === "integer") {
+          exampleValue = "123";
+        } else if (param.schema.type === "boolean") {
+          exampleValue = "true";
+        } else if (param.schema.example) {
+          exampleValue = param.schema.example;
+        } else if (param.schema.enum) {
+          exampleValue = param.schema.enum[0];
         }
-        queryParams.push(`${param.name}=${exampleValue}`);
       }
-    });
-  }
+      queryParams.push(`${param.name}=${exampleValue}`);
+    }
+  });
 
   if (queryParams.length > 0) {
     url += `?${queryParams.join("&")}`;
@@ -555,19 +575,17 @@ function generateJavaScriptCode(method, pathKey, operation, spec) {
 
     // Add header params (but not Content-Type — browser sets it for FormData)
     const headerLines = [];
-    if (operation.parameters) {
-      operation.parameters.forEach((param) => {
-        if (param.in === "header") {
-          let exampleValue = "<token>";
-          if (param.name.toLowerCase().includes("authorization")) {
-            exampleValue = "Bearer <token>";
-          } else if (param.schema && param.schema.example) {
-            exampleValue = param.schema.example;
-          }
-          headerLines.push(`  "${param.name}": "${exampleValue}"`);
+    getResolvedParameters(operation, spec).forEach((param) => {
+      if (param.in === "header") {
+        let exampleValue = "<token>";
+        if (param.name.toLowerCase().includes("authorization")) {
+          exampleValue = "Bearer <token>";
+        } else if (param.schema && param.schema.example) {
+          exampleValue = param.schema.example;
         }
-      });
-    }
+        headerLines.push(`  "${param.name}": "${exampleValue}"`);
+      }
+    });
 
     const fetchOptions = { method: method.toUpperCase() };
     if (headerLines.length > 0) {
@@ -728,19 +746,17 @@ function generatePythonCode(method, pathKey, operation, spec) {
   }
 
   // Add header parameters
-  if (operation.parameters) {
-    operation.parameters.forEach((param) => {
-      if (param.in === "header") {
-        let exampleValue = "<token>";
-        if (param.name.toLowerCase().includes("authorization")) {
-          exampleValue = "Bearer <token>";
-        } else if (param.schema && param.schema.example) {
-          exampleValue = param.schema.example;
-        }
-        headers[param.name] = exampleValue;
+  getResolvedParameters(operation, spec).forEach((param) => {
+    if (param.in === "header") {
+      let exampleValue = "<token>";
+      if (param.name.toLowerCase().includes("authorization")) {
+        exampleValue = "Bearer <token>";
+      } else if (param.schema && param.schema.example) {
+        exampleValue = param.schema.example;
       }
-    });
-  }
+      headers[param.name] = exampleValue;
+    }
+  });
 
   if (Object.keys(headers).length > 0) {
     codeLines.push("headers = {");
@@ -756,25 +772,23 @@ function generatePythonCode(method, pathKey, operation, spec) {
 
   // Add query parameters if any
   const queryParams = {};
-  if (operation.parameters) {
-    operation.parameters.forEach((param) => {
-      if (param.in === "query") {
-        let exampleValue = "value";
-        if (param.schema) {
-          if (param.schema.type === "integer") {
-            exampleValue = 123;
-          } else if (param.schema.type === "boolean") {
-            exampleValue = true;
-          } else if (param.schema.example) {
-            exampleValue = param.schema.example;
-          } else if (param.schema.enum) {
-            exampleValue = param.schema.enum[0];
-          }
+  getResolvedParameters(operation, spec).forEach((param) => {
+    if (param.in === "query") {
+      let exampleValue = "value";
+      if (param.schema) {
+        if (param.schema.type === "integer") {
+          exampleValue = 123;
+        } else if (param.schema.type === "boolean") {
+          exampleValue = true;
+        } else if (param.schema.example) {
+          exampleValue = param.schema.example;
+        } else if (param.schema.enum) {
+          exampleValue = param.schema.enum[0];
         }
-        queryParams[param.name] = exampleValue;
       }
-    });
-  }
+      queryParams[param.name] = exampleValue;
+    }
+  });
 
   // Build the request call
   const requestParts = [`url`];

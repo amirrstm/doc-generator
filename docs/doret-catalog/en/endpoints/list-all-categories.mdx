@@ -1,0 +1,170 @@
+<Endpoint
+title="List all categories"
+method="GET"
+category="staff"
+baseUrl="https://api.example.com"
+path="/api/v1/staff/categories"
+summary="List all categories"
+description={`Returns all non-deleted categories for staff management.`}
+hasAuthentication={true}
+curl={`curl --request GET \
+  --url "{baseUrl}/api/v1/staff/categories" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value"`}
+languages={{
+javascript: `fetch("{baseUrl}/api/v1/staff/categories", {
+  "method": "GET"
+})
+  .then(response => response.json())
+  .then(data => console.log(data));`,
+python: `import requests
+
+url = "{baseUrl}/api/v1/staff/categories"
+
+headers = {
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [],
+  "query": []
+}}
+requestBody={{
+  "properties": [],
+  "required": false
+}}
+responses={{
+  "200": [
+    {
+      "description": "No description provided",
+      "title": "category_id (array item)",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "No description provided",
+      "title": "parent_id (array item)",
+      "type": "unknown"
+    },
+    {
+      "description": "No description provided",
+      "title": "name_fa (array item)",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "name_en (array item)",
+      "type": "unknown"
+    },
+    {
+      "description": "No description provided",
+      "title": "slug (array item)",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "is_leaf_node (array item)",
+      "type": "boolean"
+    },
+    {
+      "description": "No description provided",
+      "title": "required_attributes (array item)",
+      "type": "unknown"
+    },
+    {
+      "description": "No description provided",
+      "title": "variation_themes (array item)",
+      "type": "unknown"
+    },
+    {
+      "description": "No description provided",
+      "title": "is_gtin_required (array item)",
+      "type": "boolean"
+    },
+    {
+      "description": "No description provided",
+      "title": "icon (array item)",
+      "type": "unknown"
+    },
+    {
+      "description": "No description provided",
+      "title": "is_active (array item)",
+      "type": "boolean"
+    },
+    {
+      "description": "No description provided",
+      "title": "is_deleted (array item)",
+      "type": "boolean"
+    },
+    {
+      "description": "No description provided",
+      "title": "deleted_at (array item)",
+      "type": "unknown"
+    },
+    {
+      "description": "No description provided",
+      "title": "created_at (array item)",
+      "type": "string (date-time)"
+    },
+    {
+      "description": "No description provided",
+      "title": "updated_at (array item)",
+      "type": "string (date-time)"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

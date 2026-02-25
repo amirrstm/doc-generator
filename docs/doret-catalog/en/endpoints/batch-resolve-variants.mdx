@@ -1,0 +1,129 @@
+<Endpoint
+title="Batch resolve variants"
+method="POST"
+category="internal"
+baseUrl="https://api.example.com"
+path="/api/v1/internal/variants/resolve-batch"
+summary="Batch resolve variants"
+description={`Resolve multiple variants by ID. Returns enriched variant data for found variants.`}
+hasAuthentication={true}
+curl={`curl --request POST \
+  --url "{baseUrl}/api/v1/internal/variants/resolve-batch" \
+  --header "Content-Type: application/json" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value" \
+  --data '{
+  "variant_ids": [
+    "string"
+  ]
+}'`}
+languages={{
+javascript: `const requestBody = {
+"variant_ids": [
+"string"
+]
+};
+
+fetch("{baseUrl}/api/v1/internal/variants/resolve-batch", {
+"method": "POST",
+"headers": {
+"Content-Type": "application/json"
+},
+"body": JSON.stringify(requestBody)
+})
+.then(response => response.json())
+.then(data => console.log(data));`,
+    python: `import requests
+
+url = "{baseUrl}/api/v1/internal/variants/resolve-batch"
+
+payload = {
+"variant_ids": ["string"]
+}
+
+headers = {
+"Content-Type": "application/json",
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [],
+  "query": []
+}}
+requestBody={{
+  "contentType": "application/json",
+  "properties": [
+    {
+      "description": "No description provided",
+      "title": "variant_ids",
+      "type": "array",
+      "required": true
+    }
+  ],
+  "required": true
+}}
+responses={{
+  "200": [
+    {
+      "description": "No description provided",
+      "title": "variants",
+      "type": "object"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

@@ -1,0 +1,294 @@
+<Endpoint
+title="Add shipping configuration"
+method="POST"
+category="merchant"
+baseUrl="https://api.example.com"
+path="/api/v1/merchant/shipping-configurations"
+summary="Add shipping configuration"
+description={`Add a shipping configuration to an active shop. Multiple configurations can exist; use PUT /default to change the default. First configuration is automatically set as default.`}
+hasAuthentication={true}
+curl={`curl --request POST \
+  --url "{baseUrl}/api/v1/merchant/shipping-configurations" \
+  --header "Content-Type: application/json" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value" \
+  --data '{
+  "shipping_origin_country_id": null,
+  "shipping_origin_province_ids": [
+    "xxxxxxxx-xxxxx"
+  ],
+  "shipping_type": "post-pishtaz",
+  "base_shipping_price": null,
+  "additional_price_per_kg": null
+}'`}
+languages={{
+javascript: `const requestBody = {
+"shipping_origin_country_id": null,
+"shipping_origin_province_ids": [
+"xxxxxxxx-xxxxx"
+],
+"shipping_type": "post-pishtaz",
+"base_shipping_price": null,
+"additional_price_per_kg": null
+};
+
+fetch("{baseUrl}/api/v1/merchant/shipping-configurations", {
+"method": "POST",
+"headers": {
+"Content-Type": "application/json"
+},
+"body": JSON.stringify(requestBody)
+})
+.then(response => response.json())
+.then(data => console.log(data));`,
+    python: `import requests
+
+url = "{baseUrl}/api/v1/merchant/shipping-configurations"
+
+payload = {
+"shipping_origin_country_id": null,
+"shipping_origin_province_ids": ["xxxxxxxx-xxxxx"],
+"shipping_type": "post-pishtaz",
+"base_shipping_price": null,
+"additional_price_per_kg": null
+}
+
+headers = {
+"Content-Type": "application/json",
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [],
+  "query": []
+}}
+requestBody={{
+  "contentType": "application/json",
+  "properties": [
+    {
+      "description": "Country UUID from Location Service where shipments originate. Optional - defaults to Iran if not provided. Used to calculate shipping costs and delivery times.",
+      "title": "shipping_origin_country_id",
+      "type": "unknown",
+      "required": false
+    },
+    {
+      "description": "List of Province UUIDs from Location Service within the origin country. Each province can only be assigned to one configuration per shipping type. At least one province is required.",
+      "title": "shipping_origin_province_ids",
+      "type": "array",
+      "required": true
+    },
+    {
+      "description": "Shipping method code. Available options: post-pishtaz (پست پیشتاز), tipax (تیپاکس), chapar (چاپار), mahex (ماهکس), peyk (پیک موتوری), seller-delivery (ارسال توسط فروشنده). Use GET /generic/v1/shipping-methods to get the full list with labels.",
+      "title": "shipping_type",
+      "type": "object",
+      "required": true
+    },
+    {
+      "description": "Base shipping price in the shop's default currency (minor units). Minimum shipping cost before weight-based additions.",
+      "title": "base_shipping_price",
+      "type": "unknown",
+      "required": true
+    },
+    {
+      "description": "Additional cost per kilogram of package weight (minor units). Total shipping = base_price + (weight_kg * additional_price_per_kg).",
+      "title": "additional_price_per_kg",
+      "type": "unknown",
+      "required": true
+    }
+  ],
+  "required": true
+}}
+responses={{
+  "201": [
+    {
+      "description": "Response payload",
+      "title": "data",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "Shipping configuration identifier (UUID)",
+            "title": "config_id",
+            "type": "string"
+          },
+          {
+            "description": "Shop this configuration belongs to (UUID)",
+            "title": "shop_id",
+            "type": "string"
+          },
+          {
+            "description": "Origin country identifier (UUID)",
+            "title": "shipping_origin_country_id",
+            "type": "string"
+          },
+          {
+            "description": "Origin country display name",
+            "title": "shipping_origin_country_name",
+            "type": "string"
+          },
+          {
+            "description": "List of origin province identifiers (UUIDs)",
+            "title": "shipping_origin_province_ids",
+            "type": "array"
+          },
+          {
+            "description": "List of origin province display names",
+            "title": "shipping_origin_province_names",
+            "type": "array"
+          },
+          {
+            "description": "Shipping type (e.g., STANDARD, EXPRESS)",
+            "title": "shipping_type",
+            "type": "string"
+          },
+          {
+            "description": "Base shipping price (decimal as string)",
+            "title": "base_shipping_price",
+            "type": "string"
+          },
+          {
+            "description": "Additional price per kg (decimal as string)",
+            "title": "additional_price_per_kg",
+            "type": "string"
+          },
+          {
+            "description": "Whether this is the default configuration",
+            "title": "is_default",
+            "type": "boolean"
+          },
+          {
+            "description": "Shop lifecycle state (present on creation)",
+            "title": "lifecycle_state",
+            "type": "unknown"
+          },
+          {
+            "description": "Creation timestamp (ISO 8601)",
+            "title": "created_at",
+            "type": "unknown"
+          },
+          {
+            "description": "Last update timestamp (ISO 8601)",
+            "title": "updated_at",
+            "type": "unknown"
+          }
+        ],
+        "title": "ShippingConfigurationResponse"
+      }
+    },
+    {
+      "description": "Request metadata",
+      "title": "metadata",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "request_id",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "timestamp",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "processing_time_ms",
+            "type": "unknown"
+          }
+        ],
+        "title": "MetadataSchema"
+      }
+    }
+  ],
+  "404": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "409": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

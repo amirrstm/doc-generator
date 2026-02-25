@@ -1,0 +1,337 @@
+[
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "health-check",
+        "title": "Health Check"
+      }
+    ],
+    "section": "common"
+  },
+  {
+    "items": [
+      {
+        "method": "POST",
+        "slug": "request-shop-creation",
+        "title": "Request shop creation"
+      },
+      {
+        "method": "GET",
+        "slug": "get-my-shop-for-current-page",
+        "title": "Get my shop for current page"
+      },
+      {
+        "method": "POST",
+        "slug": "cancel-incomplete-shop-creation",
+        "title": "Cancel incomplete shop creation"
+      },
+      {
+        "method": "GET",
+        "slug": "get-store-contract-for-shop",
+        "title": "Get store contract for shop"
+      },
+      {
+        "method": "POST",
+        "slug": "sign-contract-for-shop",
+        "title": "Sign contract for shop"
+      },
+      {
+        "method": "POST",
+        "slug": "sign-contract-addendum-for-shop",
+        "title": "Sign contract addendum for shop"
+      },
+      {
+        "method": "PUT",
+        "slug": "add-or-update-shop-information",
+        "title": "Add or update shop information"
+      },
+      {
+        "method": "POST",
+        "slug": "add-shipping-configuration",
+        "title": "Add shipping configuration"
+      },
+      {
+        "method": "GET",
+        "slug": "list-shipping-configurations",
+        "title": "List shipping configurations"
+      },
+      {
+        "method": "PUT",
+        "slug": "set-default-shipping-configuration",
+        "title": "Set default shipping configuration"
+      },
+      {
+        "method": "GET",
+        "slug": "get-shipping-configuration",
+        "title": "Get shipping configuration"
+      },
+      {
+        "method": "PUT",
+        "slug": "update-shipping-configuration",
+        "title": "Update shipping configuration"
+      },
+      {
+        "method": "DELETE",
+        "slug": "delete-shipping-configuration",
+        "title": "Delete shipping configuration"
+      },
+      {
+        "method": "POST",
+        "slug": "request-payment-for-shop-registration",
+        "title": "Request payment for shop registration"
+      },
+      {
+        "method": "POST",
+        "slug": "retry-merchant-registration-and-activate-shop",
+        "title": "Retry merchant registration and activate shop"
+      }
+    ],
+    "section": "customer"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "health-check",
+        "title": "Health check"
+      },
+      {
+        "method": "GET",
+        "slug": "list-active-business-categories",
+        "title": "List active business categories"
+      },
+      {
+        "method": "GET",
+        "slug": "list-available-shipping-methods",
+        "title": "List available shipping methods"
+      },
+      {
+        "method": "GET",
+        "slug": "list-active-shops",
+        "title": "List active shops"
+      },
+      {
+        "method": "GET",
+        "slug": "search-nearby-shops",
+        "title": "Search nearby shops"
+      },
+      {
+        "method": "GET",
+        "slug": "get-shop-public-profile-by-social-id",
+        "title": "Get shop public profile by social ID"
+      },
+      {
+        "method": "GET",
+        "slug": "get-shop-public-profile",
+        "title": "Get shop public profile"
+      }
+    ],
+    "section": "generic"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "list-shops-by-organization-internal",
+        "title": "List shops by organization (internal)"
+      },
+      {
+        "method": "GET",
+        "slug": "get-shop-internal",
+        "title": "Get shop (internal)"
+      },
+      {
+        "method": "GET",
+        "slug": "get-shop-by-doret-social-id-internal",
+        "title": "Get shop by Doret social ID (internal)"
+      },
+      {
+        "method": "PUT",
+        "slug": "upsert-bnpl-plans-for-a-shop-by-doret-social-id-internal",
+        "title": "Upsert BNPL plans for a shop by Doret social ID (internal)"
+      },
+      {
+        "method": "POST",
+        "slug": "require-contract-addendum-signing-internal",
+        "title": "Require contract addendum signing (internal)"
+      },
+      {
+        "method": "GET",
+        "slug": "get-shops-by-hovitech-user-id-internal",
+        "title": "Get shops by Hovitech user ID (internal)"
+      },
+      {
+        "method": "POST",
+        "slug": "get-customer-eligible-bnpl-plans-for-a-shop-internal",
+        "title": "Get customer-eligible BNPL plans for a shop (internal)"
+      },
+      {
+        "method": "POST",
+        "slug": "resolve-multiple-shops-by-ids-internal",
+        "title": "Resolve multiple shops by IDs (internal)"
+      },
+      {
+        "method": "POST",
+        "slug": "calculate-shipping-options-for-multiple-shops-internal",
+        "title": "Calculate shipping options for multiple shops (internal)"
+      }
+    ],
+    "section": "internal"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "get-current-merchants-shop",
+        "title": "Get current merchant's shop"
+      },
+      {
+        "method": "PUT",
+        "slug": "update-shop-information",
+        "title": "Update shop information"
+      },
+      {
+        "method": "PATCH",
+        "slug": "update-or-remove-shop-logo",
+        "title": "Update or remove shop logo"
+      },
+      {
+        "method": "POST",
+        "slug": "add-shipping-configuration",
+        "title": "Add shipping configuration"
+      },
+      {
+        "method": "GET",
+        "slug": "list-shipping-configurations",
+        "title": "List shipping configurations"
+      },
+      {
+        "method": "PUT",
+        "slug": "set-default-shipping-configuration",
+        "title": "Set default shipping configuration"
+      },
+      {
+        "method": "GET",
+        "slug": "get-shipping-configuration",
+        "title": "Get shipping configuration"
+      },
+      {
+        "method": "PUT",
+        "slug": "update-shipping-configuration",
+        "title": "Update shipping configuration"
+      },
+      {
+        "method": "DELETE",
+        "slug": "delete-shipping-configuration",
+        "title": "Delete shipping configuration"
+      },
+      {
+        "method": "POST",
+        "slug": "request-settlement-withdrawal",
+        "title": "Request settlement (withdrawal)"
+      },
+      {
+        "method": "GET",
+        "slug": "list-settlements",
+        "title": "List settlements"
+      },
+      {
+        "method": "GET",
+        "slug": "get-settlement-details",
+        "title": "Get settlement details"
+      },
+      {
+        "method": "GET",
+        "slug": "get-wallet-balance",
+        "title": "Get wallet balance"
+      },
+      {
+        "method": "GET",
+        "slug": "get-available-bnpl-plans",
+        "title": "Get available BNPL plans"
+      },
+      {
+        "method": "GET",
+        "slug": "get-bnpl-plan-contract",
+        "title": "Get BNPL plan contract"
+      },
+      {
+        "method": "POST",
+        "slug": "register-for-a-bnpl-plan",
+        "title": "Register for a BNPL plan"
+      },
+      {
+        "method": "GET",
+        "slug": "get-my-registered-bnpl-plans",
+        "title": "Get my registered BNPL plans"
+      }
+    ],
+    "section": "merchant"
+  },
+  {
+    "items": [
+      {
+        "method": "POST",
+        "slug": "create-business-category",
+        "title": "Create business category"
+      },
+      {
+        "method": "GET",
+        "slug": "list-business-categories",
+        "title": "List business categories"
+      },
+      {
+        "method": "GET",
+        "slug": "get-business-category",
+        "title": "Get business category"
+      },
+      {
+        "method": "PUT",
+        "slug": "update-business-category",
+        "title": "Update business category"
+      },
+      {
+        "method": "DELETE",
+        "slug": "delete-business-category",
+        "title": "Delete business category"
+      },
+      {
+        "method": "GET",
+        "slug": "list-all-shops",
+        "title": "List all shops"
+      },
+      {
+        "method": "GET",
+        "slug": "get-shop-details",
+        "title": "Get shop details"
+      },
+      {
+        "method": "GET",
+        "slug": "get-shop-state-history",
+        "title": "Get shop state history"
+      },
+      {
+        "method": "POST",
+        "slug": "suspend-shop",
+        "title": "Suspend shop"
+      },
+      {
+        "method": "POST",
+        "slug": "unsuspend-shop",
+        "title": "Unsuspend shop"
+      }
+    ],
+    "section": "staff"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "root",
+        "title": "Root"
+      }
+    ],
+    "section": "General"
+  }
+]

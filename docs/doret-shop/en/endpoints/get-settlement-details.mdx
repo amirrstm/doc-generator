@@ -1,0 +1,164 @@
+<Endpoint
+title="Get settlement details"
+method="GET"
+category="merchant"
+baseUrl="https://api.example.com"
+path="/api/v1/merchant/settlements/\{settlement_id\}"
+summary="Get settlement details"
+description={`Get detailed information about a specific settlement request. Includes status, amount, timestamps, and failure reason if applicable.`}
+hasAuthentication={true}
+curl={`curl --request GET \
+  --url "{baseUrl}/api/v1/merchant/settlements/123" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value"`}
+languages={{
+javascript: `fetch("{baseUrl}/api/v1/merchant/settlements/\${settlement_id}", {
+  "method": "GET"
+})
+  .then(response => response.json())
+  .then(data => console.log(data));`,
+python: `import requests
+
+url = "{baseUrl}/api/v1/merchant/settlements/{settlement_id}"
+
+headers = {
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [
+    {
+      "description": "No description provided",
+      "required": true,
+      "title": "settlement_id",
+      "type": "string (uuid)"
+    }
+  ],
+  "query": []
+}}
+requestBody={{
+  "properties": [],
+  "required": false
+}}
+responses={{
+  "200": [
+    {
+      "description": "Unique settlement request identifier",
+      "title": "id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Shop this settlement belongs to",
+      "title": "shop_id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Settlement amount in minor currency units",
+      "title": "amount_minor",
+      "type": "integer"
+    },
+    {
+      "description": "Currency code (e.g., IRR)",
+      "title": "currency",
+      "type": "string"
+    },
+    {
+      "description": "Settlement status: PENDING (awaiting processing), COMPLETED (funds transferred), FAILED (transfer failed) Possible values: [PENDING, COMPLETED, FAILED]",
+      "title": "status",
+      "type": "enum<string>"
+    },
+    {
+      "description": "Request creation timestamp",
+      "title": "created_at",
+      "type": "string (date-time)"
+    },
+    {
+      "description": "Completion timestamp (null if not completed)",
+      "title": "completed_at",
+      "type": "unknown"
+    },
+    {
+      "description": "Failure timestamp (null if not failed)",
+      "title": "failed_at",
+      "type": "unknown"
+    },
+    {
+      "description": "Reason for failure (null if not failed)",
+      "title": "failure_reason",
+      "type": "unknown"
+    }
+  ],
+  "404": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

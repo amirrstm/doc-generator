@@ -1,0 +1,167 @@
+<Endpoint
+title="Search product groups"
+method="GET"
+category="seller"
+baseUrl="https://api.example.com"
+path="/api/v1/seller/product-groups/search"
+summary="Search product groups"
+description={`Full-text search across brand names, titles, and descriptions. Results are ordered by relevance. Helps sellers find existing product groups before creating variants.`}
+hasAuthentication={true}
+curl={`curl --request GET \
+  --url "{baseUrl}/api/v1/seller/product-groups/search" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value"`}
+languages={{
+javascript: `fetch("{baseUrl}/api/v1/seller/product-groups/search?q=value&category_id=value&page=123&page_size=123&include_variants=true", {
+  "method": "GET"
+})
+  .then(response => response.json())
+  .then(data => console.log(data));`,
+python: `import requests
+
+url = "{baseUrl}/api/v1/seller/product-groups/search"
+
+headers = {
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+params = {
+"q": "value",
+"category_id": "value",
+"page": 123,
+"page_size": 123,
+"include_variants": true
+}
+
+response = requests.get(url, headers=headers, params=params)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [],
+  "query": [
+    {
+      "description": "Search query string",
+      "required": true,
+      "title": "q",
+      "type": "string"
+    },
+    {
+      "description": "Filter by category ID",
+      "required": false,
+      "title": "category_id",
+      "type": "unknown"
+    },
+    {
+      "description": "Page number (1-indexed). Default: 1.",
+      "required": false,
+      "title": "page",
+      "type": "integer"
+    },
+    {
+      "description": "Number of items per page. Default: 20, Max: 100.",
+      "required": false,
+      "title": "page_size",
+      "type": "integer"
+    },
+    {
+      "description": "Include variants in response",
+      "required": false,
+      "title": "include_variants",
+      "type": "boolean"
+    }
+  ]
+}}
+requestBody={{
+  "properties": [],
+  "required": false
+}}
+responses={{
+  "200": [],
+  "400": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "404": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

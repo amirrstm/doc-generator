@@ -1,0 +1,137 @@
+[
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "health-check",
+        "title": "Health Check"
+      }
+    ],
+    "section": "common"
+  },
+  {
+    "items": [
+      {
+        "method": "POST",
+        "slug": "initiate-checkout",
+        "title": "Initiate checkout"
+      },
+      {
+        "method": "GET",
+        "slug": "get-checkout-status",
+        "title": "Get checkout status"
+      },
+      {
+        "method": "POST",
+        "slug": "validate-products",
+        "title": "Validate products"
+      },
+      {
+        "method": "POST",
+        "slug": "select-shipping-address",
+        "title": "Select shipping address"
+      },
+      {
+        "method": "GET",
+        "slug": "get-shipping-options",
+        "title": "Get shipping options"
+      },
+      {
+        "method": "POST",
+        "slug": "select-shipping-methods",
+        "title": "Select shipping methods"
+      },
+      {
+        "method": "POST",
+        "slug": "calculate-checkout-totals",
+        "title": "Calculate checkout totals"
+      },
+      {
+        "method": "POST",
+        "slug": "confirm-cart-changes",
+        "title": "Confirm cart changes"
+      },
+      {
+        "method": "POST",
+        "slug": "initiate-payment",
+        "title": "Initiate payment"
+      },
+      {
+        "method": "GET",
+        "slug": "get-bnpl-plans-for-all-shops",
+        "title": "Get BNPL plans for all shops"
+      },
+      {
+        "method": "POST",
+        "slug": "pay-shop-via-bnpl",
+        "title": "Pay shop via BNPL"
+      },
+      {
+        "method": "POST",
+        "slug": "calculate-bnpl-installments",
+        "title": "Calculate BNPL installments"
+      }
+    ],
+    "section": "customer"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "health-check",
+        "title": "Health Check"
+      },
+      {
+        "method": "GET",
+        "slug": "readiness-check",
+        "title": "Readiness Check"
+      }
+    ],
+    "section": "generic"
+  },
+  {
+    "items": [
+      {
+        "method": "POST",
+        "slug": "continue-saga-after-payment-success",
+        "title": "Continue saga after payment success"
+      },
+      {
+        "method": "POST",
+        "slug": "handle-payment-failure",
+        "title": "Handle payment failure"
+      }
+    ],
+    "section": "internal"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "list-checkouts-staff",
+        "title": "List checkouts (staff)"
+      },
+      {
+        "method": "GET",
+        "slug": "get-checkout-details-staff",
+        "title": "Get checkout details (staff)"
+      },
+      {
+        "method": "GET",
+        "slug": "list-abuse-reports-staff",
+        "title": "List abuse reports (staff)"
+      }
+    ],
+    "section": "staff"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "root",
+        "title": "Root"
+      }
+    ],
+    "section": "General"
+  }
+]

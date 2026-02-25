@@ -1,0 +1,224 @@
+<Endpoint
+title="List listings with filters"
+method="GET"
+category="staff"
+baseUrl="https://api.example.com"
+path="/api/v1/staff/listings"
+summary="List listings with filters"
+description={`Supports filtering by seller, variant, and condition.`}
+hasAuthentication={true}
+curl={`curl --request GET \
+  --url "{baseUrl}/api/v1/staff/listings" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value"`}
+languages={{
+javascript: `fetch("{baseUrl}/api/v1/staff/listings?seller_id=value&variant_id=value&condition=value&page=123&page_size=123", {
+  "method": "GET"
+})
+  .then(response => response.json())
+  .then(data => console.log(data));`,
+python: `import requests
+
+url = "{baseUrl}/api/v1/staff/listings"
+
+headers = {
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+params = {
+"seller_id": "value",
+"variant_id": "value",
+"condition": "value",
+"page": 123,
+"page_size": 123
+}
+
+response = requests.get(url, headers=headers, params=params)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [],
+  "query": [
+    {
+      "description": "Filter by seller ID (UUID)",
+      "required": false,
+      "title": "seller_id",
+      "type": "unknown"
+    },
+    {
+      "description": "Filter by variant ID",
+      "required": false,
+      "title": "variant_id",
+      "type": "unknown"
+    },
+    {
+      "description": "Filter by condition",
+      "required": false,
+      "title": "condition",
+      "type": "unknown"
+    },
+    {
+      "description": "Page number",
+      "required": false,
+      "title": "page",
+      "type": "integer"
+    },
+    {
+      "description": "Number of items per page",
+      "required": false,
+      "title": "page_size",
+      "type": "integer"
+    }
+  ]
+}}
+requestBody={{
+  "properties": [],
+  "required": false
+}}
+responses={{
+  "200": [
+    {
+      "description": "No description provided",
+      "title": "listing_id (array item)",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "variant_id (array item)",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "seller_id (array item)",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "sku (array item)",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "condition (array item)",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "cover_image (array item)",
+      "type": "unknown"
+    },
+    {
+      "description": "No description provided",
+      "title": "status (array item)",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "availability (array item)",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "is_deleted (array item)",
+      "type": "boolean"
+    },
+    {
+      "description": "No description provided",
+      "title": "deleted_at (array item)",
+      "type": "unknown"
+    },
+    {
+      "description": "No description provided",
+      "title": "rejection_reason (array item)",
+      "type": "unknown"
+    },
+    {
+      "description": "No description provided",
+      "title": "rejected_at (array item)",
+      "type": "unknown"
+    },
+    {
+      "description": "No description provided",
+      "title": "rejected_by (array item)",
+      "type": "unknown"
+    },
+    {
+      "description": "No description provided",
+      "title": "deactivated_by (array item)",
+      "type": "unknown"
+    },
+    {
+      "description": "No description provided",
+      "title": "deactivated_at (array item)",
+      "type": "unknown"
+    },
+    {
+      "description": "No description provided",
+      "title": "deactivation_reason (array item)",
+      "type": "unknown"
+    },
+    {
+      "description": "No description provided",
+      "title": "created_at (array item)",
+      "type": "string (date-time)"
+    },
+    {
+      "description": "No description provided",
+      "title": "updated_at (array item)",
+      "type": "string (date-time)"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

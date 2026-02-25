@@ -1,0 +1,234 @@
+<Endpoint
+title="Create variant with new product group"
+method="POST"
+category="seller"
+baseUrl="https://api.example.com"
+path="/api/v1/seller/variants/create-new"
+summary="Create variant with new product group"
+description={`Creates a new ProductGroup and an initial CatalogVariant. Used when adding a completely new product to the catalog.`}
+hasAuthentication={true}
+curl={`curl --request POST \
+  --url "{baseUrl}/api/v1/seller/variants/create-new" \
+  --header "Content-Type: application/json" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value" \
+  --data '{
+  "category_id": "xxxxxxxx-xxxxx",
+  "brand_name": "string",
+  "master_title": "string",
+  "master_description": null,
+  "catalog_images": null,
+  "cover_image": null,
+  "gtin": null,
+  "mpn": null,
+  "static_attributes": null,
+  "weight_grams": 123
+}'`}
+languages={{
+javascript: `const requestBody = {
+"category_id": "xxxxxxxx-xxxxx",
+"brand_name": "string",
+"master_title": "string",
+"master_description": null,
+"catalog_images": null,
+"cover_image": null,
+"gtin": null,
+"mpn": null,
+"static_attributes": null,
+"weight_grams": 123
+};
+
+fetch("{baseUrl}/api/v1/seller/variants/create-new", {
+"method": "POST",
+"headers": {
+"Content-Type": "application/json"
+},
+"body": JSON.stringify(requestBody)
+})
+.then(response => response.json())
+.then(data => console.log(data));`,
+    python: `import requests
+
+url = "{baseUrl}/api/v1/seller/variants/create-new"
+
+payload = {
+"category_id": "xxxxxxxx-xxxxx",
+"brand_name": "string",
+"master_title": "string",
+"master_description": null,
+"catalog_images": null,
+"cover_image": null,
+"gtin": null,
+"mpn": null,
+"static_attributes": null,
+"weight_grams": 123
+}
+
+headers = {
+"Content-Type": "application/json",
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [],
+  "query": []
+}}
+requestBody={{
+  "contentType": "application/json",
+  "properties": [
+    {
+      "description": "No description provided",
+      "title": "category_id",
+      "type": "string (uuid)",
+      "required": true
+    },
+    {
+      "description": "No description provided",
+      "title": "brand_name",
+      "type": "string",
+      "required": true
+    },
+    {
+      "description": "No description provided",
+      "title": "master_title",
+      "type": "string",
+      "required": true
+    },
+    {
+      "description": "No description provided",
+      "title": "master_description",
+      "type": "unknown",
+      "required": false
+    },
+    {
+      "description": "No description provided",
+      "title": "catalog_images",
+      "type": "unknown",
+      "required": false
+    },
+    {
+      "description": "No description provided",
+      "title": "cover_image",
+      "type": "unknown",
+      "required": false
+    },
+    {
+      "description": "No description provided",
+      "title": "gtin",
+      "type": "unknown",
+      "required": false
+    },
+    {
+      "description": "No description provided",
+      "title": "mpn",
+      "type": "unknown",
+      "required": false
+    },
+    {
+      "description": "No description provided",
+      "title": "static_attributes",
+      "type": "unknown",
+      "required": false
+    },
+    {
+      "description": "No description provided",
+      "title": "weight_grams",
+      "type": "integer",
+      "required": false
+    }
+  ],
+  "required": true
+}}
+responses={{
+  "201": [],
+  "400": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "404": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

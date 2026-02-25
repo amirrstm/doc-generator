@@ -1,0 +1,6479 @@
+openapi: 3.1.0
+info:
+  title: Catalog
+  version: 1.0.0
+paths:
+  /api/v1/common/health:
+    get:
+      tags:
+        - common
+      summary: Health Check
+      description: Health check endpoint.
+      operationId: health_check_api_v1_common_health_get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/customer/categories/root:
+    get:
+      tags:
+        - customer
+        - customer-categories
+      summary: Get root categories
+      description: |-
+        Get all root categories (categories with no parent).
+
+        Returns all categories where parent_id IS NULL.
+        Useful for displaying top-level navigation.
+        icon field contains resolved signed URL or null.
+      operationId: get_root_categories_api_v1_customer_categories_root_get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/CategoryResponse"
+                type: array
+                title: Response Get Root Categories Api V1 Customer Categories Root Get
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/customer/categories/{category_id}/children:
+    get:
+      tags:
+        - customer
+        - customer-categories
+      summary: Get category children
+      description: |-
+        Get all immediate children of a category.
+
+        Returns all categories where parent_id matches the given category_id.
+        Returns 404 if the parent category doesn't exist.
+        icon field contains resolved signed URL or null.
+      operationId: get_category_children_api_v1_customer_categories__category_id__children_get
+      parameters:
+        - name: category_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Category Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CategoryResponse"
+                title: >-
+                  Response Get Category Children Api V1 Customer Categories  Category Id  Children
+                  Get
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/categories/tree:
+    get:
+      tags:
+        - customer
+        - customer-categories
+      summary: Get category tree
+      description: Get the complete category hierarchy as a nested tree for customers.
+      operationId: get_category_tree_api_v1_customer_categories_tree_get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/CustomerCategoryTreeNodeResponse"
+                type: array
+                title: Response Get Category Tree Api V1 Customer Categories Tree Get
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/customer/categories/{category_id}/rules:
+    get:
+      tags:
+        - customer
+        - customer-categories
+      summary: Get category rules
+      description: |-
+        Get category rules (required_attributes, variation_themes, is_gtin_required).
+
+        Returns the validation rules for products in this category.
+        Returns 404 if the category doesn't exist.
+      operationId: get_category_rules_api_v1_customer_categories__category_id__rules_get
+      parameters:
+        - name: category_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Category Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CategoryRulesResponse"
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/variants/:
+    get:
+      tags:
+        - customer
+        - customer-variants
+      summary: List variants (paginated, optional category filter)
+      description: |-
+        List catalog variants with page-based pagination and optional category filtering.
+
+        **Category Filtering** (optional, choose at most one):
+        - `category_id`: UUID of the category
+        - `category_slug`: URL slug of the category
+
+        If no category filter is provided, all active variants are returned.
+
+        **Pagination**:
+        - `page`: Page number (starts at 1, default: 1)
+        - `page_size`: Items per page (1-100, default: 20)
+
+        **Examples**:
+        - `?page=1&page_size=20` (all variants)
+        - `?category_slug=electronics&page=2&page_size=20` (filtered by category)
+
+        Response includes pagination metadata: `page`, `page_size`, `total_items`.
+      operationId: list_variants_api_v1_customer_variants__get
+      parameters:
+        - name: category_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: "null"
+            title: Category Id
+        - name: category_slug
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            title: Category Slug
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Page number (starts at 1)
+            default: 1
+            title: Page
+          description: Page number (starts at 1)
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            description: Items per page
+            default: 20
+            title: Page Size
+          description: Items per page
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VariantWithGroupResponse"
+                title: Response List Variants Api V1 Customer Variants  Get
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/variants/group/{group_id}:
+    get:
+      tags:
+        - customer
+        - customer-variants
+      summary: Get variants by product group
+      description: |-
+        Get all variants for a product group (product family).
+
+        Note: This endpoint returns variants without nested product group data,
+        so no image URL resolution is needed.
+      operationId: get_variants_by_group_api_v1_customer_variants_group__group_id__get
+      parameters:
+        - name: group_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Group Id
+        - name: active_only
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: true
+            title: Active Only
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VariantResponse"
+                title: Response Get Variants By Group Api V1 Customer Variants Group  Group Id  Get
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/variants/{variant_id}:
+    get:
+      tags:
+        - customer
+        - customer-variants
+      summary: Get variant by ID
+      description: |-
+        Get a catalog variant by ID with product group details.
+
+        Product group catalog_images contain signed URLs (resolved from media IDs).
+      operationId: get_variant_by_id_api_v1_customer_variants__variant_id__get
+      parameters:
+        - name: variant_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Variant Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VariantWithGroupResponse"
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/listings:
+    get:
+      tags:
+        - customer
+        - customer-listings
+      summary: Browse listings
+      description: Browse customer-visible listings with filters, pagination, and enriched product data.
+      operationId: list_listings_api_v1_customer_listings_get
+      parameters:
+        - name: category_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: "null"
+            description: Filter by category ID
+            title: Category Id
+          description: Filter by category ID
+        - name: seller_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: "null"
+            description: Filter by seller ID
+            title: Seller Id
+          description: Filter by seller ID
+        - name: condition
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                minLength: 1
+                maxLength: 50
+              - type: "null"
+            description: Filter by condition
+            title: Condition
+          description: Filter by condition
+        - name: brand_name
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                minLength: 1
+                maxLength: 200
+              - type: "null"
+            description: Filter by brand name
+            title: Brand Name
+          description: Filter by brand name
+        - name: price_min
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            description: Minimum price (inclusive)
+            title: Price Min
+          description: Minimum price (inclusive)
+        - name: price_max
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            description: Maximum price (inclusive)
+            title: Price Max
+          description: Maximum price (inclusive)
+        - name: sort_by
+          in: query
+          required: false
+          schema:
+            type: string
+            description: "Sort order: newest, price_asc, price_desc"
+            default: newest
+            title: Sort By
+          description: "Sort order: newest, price_asc, price_desc"
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Page number
+            default: 1
+            title: Page
+          description: Page number
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            description: Number of items per page (max 100)
+            default: 20
+            title: Page Size
+          description: Number of items per page (max 100)
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CustomerListingResponse"
+                title: Response List Listings Api V1 Customer Listings Get
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/listings/variant/{variant_id}:
+    get:
+      tags:
+        - customer
+        - customer-listings
+      summary: Get listings by variant
+      description: |-
+        Get all seller listings for a catalog variant with enriched data.
+
+        Returns listings with nested variant, product group, and category (with tree).
+        All media IDs (listing, product group) are resolved to signed URLs.
+      operationId: get_listings_by_variant_api_v1_customer_listings_variant__variant_id__get
+      parameters:
+        - name: variant_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Variant Id
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Page number
+            default: 1
+            title: Page
+          description: Page number
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            description: Number of items per page (max 100)
+            default: 50
+            title: Page Size
+          description: Number of items per page (max 100)
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ListingResponse"
+                title: Response Get Listings By Variant Api V1 Customer Listings Variant  Variant Id  Get
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/listings/batch:
+    post:
+      tags:
+        - customer
+        - customer-listings
+      summary: Batch enrich listings
+      description: Batch lookup of listings with enriched product display data for (seller_id, sku) pairs.
+      operationId: batch_enrich_listings_api_v1_customer_listings_batch_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/core__api__v1__internal__listings__schemas__BatchEnrichRequest"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/core__api__v1__customer__listings__schemas__BatchEnrichResponse
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/customer/listings/{listing_id}:
+    get:
+      tags:
+        - customer
+        - customer-listings
+      summary: Get listing detail
+      description: Get a single listing with enriched variant, product group, and category data.
+      operationId: get_listing_detail_api_v1_customer_listings__listing_id__get
+      parameters:
+        - name: listing_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Listing Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerListingResponse"
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/product-groups/search:
+    get:
+      tags:
+        - customer
+        - customer-product-groups
+      summary: Search product groups
+      description: |-
+        Search product groups using full-text search.
+
+        Searches across brand name, master title, and master description.
+        Results are ordered by relevance (highest first).
+        catalog_images contain signed URLs (resolved from media IDs).
+      operationId: search_product_groups_api_v1_customer_product_groups_search_get
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+            description: Search query string
+            title: Q
+          description: Search query string
+        - name: category_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: "null"
+            description: Filter by category ID
+            title: Category Id
+          description: Filter by category ID
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: "Page number (1-indexed). Default: 1."
+            default: 1
+            title: Page
+          description: "Page number (1-indexed). Default: 1."
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            description: "Number of items per page. Default: 20, Max: 100."
+            default: 20
+            title: Page Size
+          description: "Number of items per page. Default: 20, Max: 100."
+        - name: include_variants
+          in: query
+          required: false
+          schema:
+            type: boolean
+            description: Include variants in response
+            default: false
+            title: Include Variants
+          description: Include variants in response
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/product-groups/filters:
+    get:
+      tags:
+        - customer
+        - customer-product-groups
+      summary: Get product group filters for a category
+      description: |-
+        Get dynamic filter values for a category.
+
+        Returns distinct values from variants' static_attributes for each
+        required attribute of the category. Includes counts per value.
+      operationId: get_filters_api_v1_customer_product_groups_filters_get
+      parameters:
+        - name: category_id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+            description: Category ID to get filters for
+            title: Category Id
+          description: Category ID to get filters for
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/product-groups/{group_id}:
+    get:
+      tags:
+        - customer
+        - customer-product-groups
+      summary: Get product group by ID
+      description: |-
+        Get a single product group by ID with all active variants.
+
+        Returns product group with variant data.
+        catalog_images and cover_image contain signed URLs (resolved from media IDs).
+      operationId: get_product_group_api_v1_customer_product_groups__group_id__get
+      parameters:
+        - name: group_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Group Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/product-groups:
+    get:
+      tags:
+        - customer
+        - customer-product-groups
+      summary: List product groups
+      description: |-
+        List product groups with optional filters.
+
+        Returns paginated list of product groups with their active variants.
+        Results are ordered by creation date (newest first).
+        catalog_images and cover_image contain signed URLs (resolved from media IDs).
+      operationId: list_product_groups_api_v1_customer_product_groups_get
+      parameters:
+        - name: category_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: "null"
+            description: Filter by category ID
+            title: Category Id
+          description: Filter by category ID
+        - name: brand_name
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                minLength: 1
+                maxLength: 200
+              - type: "null"
+            description: Filter by brand name
+            title: Brand Name
+          description: Filter by brand name
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: "Page number (1-indexed). Default: 1."
+            default: 1
+            title: Page
+          description: "Page number (1-indexed). Default: 1."
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            description: "Number of items per page. Default: 20, Max: 100."
+            default: 20
+            title: Page Size
+          description: "Number of items per page. Default: 20, Max: 100."
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/shops/{shop_id}/categories:
+    get:
+      tags:
+        - customer
+        - customer-shops
+      summary: Get shop categories with listings
+      description: >-
+        Returns leaf categories that have active listings for the specified shop, with each listing
+        including variant and product group data.
+      operationId: get_shop_categories_api_v1_customer_shops__shop_id__categories_get
+      parameters:
+        - name: shop_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Shop Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ShopCategoryResponse"
+                title: Response Get Shop Categories Api V1 Customer Shops  Shop Id  Categories Get
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/seller/categories/search:
+    get:
+      tags:
+        - seller
+        - seller-categories
+      summary: Search categories
+      description: >-
+        Full-text search for categories by name (Farsi or English). Returns results with breadcrumb
+        path.
+      operationId: search_categories_api_v1_seller_categories_search_get
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            description: Search query
+            title: Q
+          description: Search query
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Page number
+            default: 1
+            title: Page
+          description: Page number
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            description: Number of items per page
+            default: 20
+            title: Page Size
+          description: Number of items per page
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SellerCategorySearchResponse"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/seller/categories/tree:
+    get:
+      tags:
+        - seller
+        - seller-categories
+      summary: Get category tree for sellers
+      description: Get the complete category hierarchy with rule fields for variant/listing creation.
+      operationId: get_category_tree_api_v1_seller_categories_tree_get
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SellerCategoryTreeNodeResponse"
+                title: Response Get Category Tree Api V1 Seller Categories Tree Get
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/seller/variants/search:
+    get:
+      tags:
+        - seller
+        - seller-variants
+      summary: Search variants
+      description: >-
+        Full-text search across product group fields (master_title, brand_name, master_description).
+        Returns variant-level results ranked by relevance with nested product group and category
+        data.
+      operationId: search_variants_api_v1_seller_variants_search_get
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+            description: Search query string
+            title: Q
+          description: Search query string
+        - name: category_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: "null"
+            description: Filter by category ID
+            title: Category Id
+          description: Filter by category ID
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Page number
+            default: 1
+            title: Page
+          description: Page number
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            description: Number of items per page (max 100)
+            default: 20
+            title: Page Size
+          description: Number of items per page (max 100)
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/seller/variants/my-requests:
+    get:
+      tags:
+        - seller
+        - seller-variants
+      summary: List my variant requests
+      description: >-
+        Returns variants requested by the current seller's shop with computed status (pending,
+        approved, rejected). Rejected variants include rejection reason.
+      operationId: get_my_variant_requests_api_v1_seller_variants_my_requests_get
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            description: "Filter by status: pending, approved, rejected"
+            title: Status
+          description: "Filter by status: pending, approved, rejected"
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Number of results (max 100)
+            default: 20
+            title: Page Size
+          description: Number of results (max 100)
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Page number
+            default: 1
+            title: Page
+          description: Page number
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/seller/variants/{variant_id}:
+    get:
+      tags:
+        - seller
+        - seller-variants
+      summary: Get variant by ID
+      description: >-
+        Returns variant with nested product group and category data. Only shows non-deleted variants
+        in active categories.
+      operationId: get_variant_api_v1_seller_variants__variant_id__get
+      parameters:
+        - name: variant_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Variant Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/seller/variants:
+    get:
+      tags:
+        - seller
+        - seller-variants
+      summary: List variants
+      description: >-
+        Paginated list of variants with optional filters (category, brand, group, active status).
+        Includes nested product group and category data. Only shows non-deleted variants in active
+        categories. Results are ordered by creation date (newest first).
+      operationId: list_variants_api_v1_seller_variants_get
+      parameters:
+        - name: category_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: "null"
+            description: Filter by category ID
+            title: Category Id
+          description: Filter by category ID
+        - name: brand_name
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                minLength: 1
+                maxLength: 200
+              - type: "null"
+            description: Filter by brand name
+            title: Brand Name
+          description: Filter by brand name
+        - name: group_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: integer
+              - type: "null"
+            description: Filter by product group ID
+            title: Group Id
+          description: Filter by product group ID
+        - name: is_active
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: boolean
+              - type: "null"
+            description: Filter by active status
+            title: Is Active
+          description: Filter by active status
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Page number
+            default: 1
+            title: Page
+          description: Page number
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            description: Number of items per page (max 100)
+            default: 20
+            title: Page Size
+          description: Number of items per page (max 100)
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/seller/variants/create-new:
+    post:
+      tags:
+        - seller
+        - seller-variants
+      summary: Create variant with new product group
+      description: >-
+        Creates a new ProductGroup and an initial CatalogVariant. Used when adding a completely new
+        product to the catalog.
+      operationId: create_new_variant_api_v1_seller_variants_create_new_post
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateNewVariantRequest"
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/seller/variants/add-to-group:
+    post:
+      tags:
+        - seller
+        - seller-variants
+      summary: Add variant to existing product group
+      description: >-
+        Creates a new CatalogVariant and associates it with an existing ProductGroup. Used when
+        adding a color/size/storage variant to an existing product.
+      operationId: add_variant_to_group_api_v1_seller_variants_add_to_group_post
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddVariantToGroupRequest"
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/seller/variants/bulk-add-to-group:
+    post:
+      tags:
+        - seller
+        - seller-variants
+      summary: Bulk add variants to existing product group
+      description: >-
+        Creates multiple CatalogVariants and associates them with an existing ProductGroup. Maximum
+        50 variants per request. Supports partial success: valid variants are created, failures are
+        returned with reasons.
+      operationId: bulk_add_variants_to_group_api_v1_seller_variants_bulk_add_to_group_post
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BulkAddVariantsToGroupRequest"
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/seller/listings:
+    get:
+      tags:
+        - seller
+        - seller-listings
+      summary: List seller listings
+      description: List seller's own listings with enriched variant, product group, and category data.
+      operationId: get_seller_listings_api_v1_seller_listings_get
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            description: Filter by status (pending, accepted, rejected)
+            title: Status
+          description: Filter by status (pending, accepted, rejected)
+        - name: availability
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            description: Filter by availability (active, inactive)
+            title: Availability
+          description: Filter by availability (active, inactive)
+        - name: condition
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            description: Filter by item condition
+            title: Condition
+          description: Filter by item condition
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Page number
+            default: 1
+            title: Page
+          description: Page number
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            description: Number of items per page (max 100)
+            default: 50
+            title: Page Size
+          description: Number of items per page (max 100)
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    post:
+      tags:
+        - seller
+        - seller-listings
+      summary: Create listing
+      description: |-
+        Create a new seller listing.
+
+        Requires variant to be active (is_active=TRUE).
+        Seller identity is extracted from merchant context (shop_id).
+      operationId: create_listing_api_v1_seller_listings_post
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateListingRequest"
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/seller/listings/{listing_id}:
+    get:
+      tags:
+        - seller
+        - seller-listings
+      summary: Get seller listing detail
+      description: Get a single listing with enriched variant, product group, and category data.
+      operationId: get_listing_api_v1_seller_listings__listing_id__get
+      parameters:
+        - name: listing_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Listing Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    patch:
+      tags:
+        - seller
+        - seller-listings
+      summary: Update listing
+      description: Partial update of a seller listing. Sets status='pending' for re-moderation.
+      operationId: update_listing_api_v1_seller_listings__listing_id__patch
+      parameters:
+        - name: listing_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Listing Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateListingRequest"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/seller/listings/{listing_id}/deactivate:
+    post:
+      tags:
+        - seller
+        - seller-listings
+      summary: Deactivate listing
+      description: Hide an accepted listing from customers. Does not affect moderation status.
+      operationId: deactivate_listing_api_v1_seller_listings__listing_id__deactivate_post
+      parameters:
+        - name: listing_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Listing Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+                - $ref: "#/components/schemas/DeactivateListingRequest"
+                - type: "null"
+              title: Request
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/seller/listings/{listing_id}/activate:
+    post:
+      tags:
+        - seller
+        - seller-listings
+      summary: Activate listing
+      description: Make a deactivated listing visible to customers again.
+      operationId: activate_listing_api_v1_seller_listings__listing_id__activate_post
+      parameters:
+        - name: listing_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Listing Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/seller/product-groups/get/{group_id}:
+    get:
+      tags:
+        - seller
+        - seller-product-groups
+      summary: Get product group by ID
+      description: >-
+        Returns product group with nested category data and variant count. Only shows non-deleted
+        product groups in active categories.
+      operationId: get_product_group_api_v1_seller_product_groups_get__group_id__get
+      parameters:
+        - name: group_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Group Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/seller/product-groups/search:
+    get:
+      tags:
+        - seller
+        - seller-product-groups
+      summary: Search product groups
+      description: >-
+        Full-text search across brand names, titles, and descriptions. Results are ordered by
+        relevance. Helps sellers find existing product groups before creating variants.
+      operationId: search_product_groups_api_v1_seller_product_groups_search_get
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+            description: Search query string
+            title: Q
+          description: Search query string
+        - name: category_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: "null"
+            description: Filter by category ID
+            title: Category Id
+          description: Filter by category ID
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: "Page number (1-indexed). Default: 1."
+            default: 1
+            title: Page
+          description: "Page number (1-indexed). Default: 1."
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            description: "Number of items per page. Default: 20, Max: 100."
+            default: 20
+            title: Page Size
+          description: "Number of items per page. Default: 20, Max: 100."
+        - name: include_variants
+          in: query
+          required: false
+          schema:
+            type: boolean
+            description: Include variants in response
+            default: false
+            title: Include Variants
+          description: Include variants in response
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/seller/product-groups:
+    get:
+      tags:
+        - seller
+        - seller-product-groups
+      summary: List product groups
+      description: >-
+        Paginated list of product groups with optional filters (category, brand name). Includes
+        variant count per group. Only shows active, non-deleted product groups. Results are ordered
+        by creation date (newest first).
+      operationId: list_product_groups_api_v1_seller_product_groups_get
+      parameters:
+        - name: category_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: "null"
+            description: Filter by category ID
+            title: Category Id
+          description: Filter by category ID
+        - name: brand_name
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                minLength: 1
+                maxLength: 200
+              - type: "null"
+            description: Filter by brand name
+            title: Brand Name
+          description: Filter by brand name
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: "Page number (1-indexed). Default: 1."
+            default: 1
+            title: Page
+          description: "Page number (1-indexed). Default: 1."
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            description: "Number of items per page. Default: 20, Max: 100."
+            default: 20
+            title: Page Size
+          description: "Number of items per page. Default: 20, Max: 100."
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/seller/product-groups/filters:
+    get:
+      tags:
+        - seller
+        - seller-product-groups
+      summary: Get filter values
+      description: >-
+        Returns available filter values based on category's required attributes. Extracts distinct
+        values from variants' static_attributes with counts. Used to build dynamic filter UI for
+        sellers.
+      operationId: get_filters_api_v1_seller_product_groups_filters_get
+      parameters:
+        - name: category_id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+            description: Category ID to get filters for
+            title: Category Id
+          description: Category ID to get filters for
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/categories:
+    get:
+      tags:
+        - staff
+        - staff-categories
+      summary: List all categories
+      description: Returns all non-deleted categories for staff management.
+      operationId: list_categories_api_v1_staff_categories_get
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StaffCategoryResponse"
+                title: Response List Categories Api V1 Staff Categories Get
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    post:
+      tags:
+        - staff
+        - staff-categories
+      summary: Create a new category
+      description: Staff can create categories with optional parent_id for hierarchy.
+      operationId: create_category_api_v1_staff_categories_post
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCategoryRequest"
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateCategoryResponse"
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/categories/{category_id}:
+    get:
+      tags:
+        - staff
+        - staff-categories
+      summary: Get category by ID
+      description: Returns category details including required_attributes and variation_themes.
+      operationId: get_category_api_v1_staff_categories__category_id__get
+      parameters:
+        - name: category_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Category Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaffCategoryResponse"
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    put:
+      tags:
+        - staff
+        - staff-categories
+      summary: Update a category
+      description: Only provided fields will be updated.
+      operationId: update_category_api_v1_staff_categories__category_id__put
+      parameters:
+        - name: category_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Category Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCategoryRequest"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateCategoryResponse"
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - staff
+        - staff-categories
+      summary: Disable a category
+      description: Disables the category, all descendant categories, and deactivates all variants.
+      operationId: disable_category_api_v1_staff_categories__category_id__delete
+      parameters:
+        - name: category_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Category Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DisableCategoryResponse"
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/product-groups:
+    get:
+      tags:
+        - staff
+        - staff-product-groups
+      summary: List product groups with filters
+      description: Supports filtering by category, brand, and deleted status. Includes variant count.
+      operationId: list_product_groups_api_v1_staff_product_groups_get
+      parameters:
+        - name: category_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: "null"
+            description: Filter by category ID
+            title: Category Id
+          description: Filter by category ID
+        - name: brand_name
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            description: Filter by brand name
+            title: Brand Name
+          description: Filter by brand name
+        - name: is_deleted
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: boolean
+              - type: "null"
+            description: Filter by deleted status
+            title: Is Deleted
+          description: Filter by deleted status
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Page number
+            default: 1
+            title: Page
+          description: Page number
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            description: Number of items per page
+            default: 50
+            title: Page Size
+          description: Number of items per page
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: >-
+                    #/components/schemas/core__api__v1__staff__product_groups__schemas__StaffProductGroupResponse
+                title: Response List Product Groups Api V1 Staff Product Groups Get
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    post:
+      tags:
+        - staff
+        - staff-product-groups
+      summary: Create a new product group
+      description: Staff can create product groups directly. Must be assigned to leaf categories.
+      operationId: create_product_group_api_v1_staff_product_groups_post
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProductGroupRequest"
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateProductGroupResponse"
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/product-groups/{group_id}:
+    get:
+      tags:
+        - staff
+        - staff-product-groups
+      summary: Get product group details
+      description: Returns product group with variant count. Staff can see deleted groups.
+      operationId: get_product_group_api_v1_staff_product_groups__group_id__get
+      parameters:
+        - name: group_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Group Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/core__api__v1__staff__product_groups__schemas__StaffProductGroupResponse
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    put:
+      tags:
+        - staff
+        - staff-product-groups
+      summary: Update a product group
+      description: Only provided fields will be updated.
+      operationId: update_product_group_api_v1_staff_product_groups__group_id__put
+      parameters:
+        - name: group_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Group Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProductGroupRequest"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateProductGroupResponse"
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - staff
+        - staff-product-groups
+      summary: Soft-delete a product group
+      description: Sets is_deleted=TRUE and deleted_at timestamp.
+      operationId: delete_product_group_api_v1_staff_product_groups__group_id__delete
+      parameters:
+        - name: group_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Group Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteProductGroupResponse"
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/variants:
+    get:
+      tags:
+        - staff
+        - staff-variants
+      summary: List variants with filters
+      description: Supports filtering by category, brand, active status, and deleted status.
+      operationId: list_variants_api_v1_staff_variants_get
+      parameters:
+        - name: category_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: integer
+              - type: "null"
+            description: Filter by category ID
+            title: Category Id
+          description: Filter by category ID
+        - name: brand_name
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            description: Filter by brand name
+            title: Brand Name
+          description: Filter by brand name
+        - name: is_active
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: boolean
+              - type: "null"
+            description: Filter by active status
+            title: Is Active
+          description: Filter by active status
+        - name: is_deleted
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: boolean
+              - type: "null"
+            description: Filter by deleted status
+            title: Is Deleted
+          description: Filter by deleted status
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Page number
+            default: 1
+            title: Page
+          description: Page number
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            description: Number of items per page
+            default: 50
+            title: Page Size
+          description: Number of items per page
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StaffVariantResponse"
+                title: Response List Variants Api V1 Staff Variants Get
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    post:
+      tags:
+        - staff
+        - staff-variants
+      summary: Create a new variant
+      description: Staff-created variants bypass the pending state.
+      operationId: create_variant_api_v1_staff_variants_post
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateVariantRequest"
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateVariantResponse"
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/variants/pending:
+    get:
+      tags:
+        - staff
+        - staff-variants
+      summary: List pending variants for moderation
+      description: Returns variants with is_active=FALSE and is_deleted=FALSE.
+      operationId: list_pending_variants_api_v1_staff_variants_pending_get
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Page number
+            default: 1
+            title: Page
+          description: Page number
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            description: Number of items per page
+            default: 50
+            title: Page Size
+          description: Number of items per page
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StaffVariantResponse"
+                title: Response List Pending Variants Api V1 Staff Variants Pending Get
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/variants/bulk-approve:
+    post:
+      tags:
+        - staff
+        - staff-variants
+      summary: Bulk approve variants
+      description: Maximum 100 variants per request.
+      operationId: bulk_approve_variants_api_v1_staff_variants_bulk_approve_post
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BulkApproveRequest"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BulkApproveResponse"
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/variants/bulk-create:
+    post:
+      tags:
+        - staff
+        - staff-variants
+      summary: Bulk create variants for existing product group
+      description: >-
+        Creates multiple variants for an existing product group. Maximum 50 variants per request.
+        Staff-created variants are immediately active. Supports partial success: valid variants are
+        created, failures are returned with reasons.
+      operationId: bulk_create_variants_api_v1_staff_variants_bulk_create_post
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StaffBulkCreateVariantsRequest"
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaffBulkCreateVariantsResponse"
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/variants/{variant_id}:
+    get:
+      tags:
+        - staff
+        - staff-variants
+      summary: Get variant details
+      description: Returns variant with product group details. Staff can see deleted variants.
+      operationId: get_variant_api_v1_staff_variants__variant_id__get
+      parameters:
+        - name: variant_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Variant Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaffVariantDetailResponse"
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    put:
+      tags:
+        - staff
+        - staff-variants
+      summary: Update a variant
+      description: Only provided fields will be updated.
+      operationId: update_variant_api_v1_staff_variants__variant_id__put
+      parameters:
+        - name: variant_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Variant Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateVariantRequest"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateVariantResponse"
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - staff
+        - staff-variants
+      summary: Soft-delete a variant
+      description: Sets is_deleted=TRUE and deleted_at timestamp.
+      operationId: delete_variant_api_v1_staff_variants__variant_id__delete
+      parameters:
+        - name: variant_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Variant Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteVariantResponse"
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/variants/{variant_id}/approve:
+    post:
+      tags:
+        - staff
+        - staff-variants
+      summary: Approve a pending variant
+      description: Sets is_active=TRUE.
+      operationId: approve_variant_api_v1_staff_variants__variant_id__approve_post
+      parameters:
+        - name: variant_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Variant Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApproveVariantResponse"
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/variants/{variant_id}/reject:
+    post:
+      tags:
+        - staff
+        - staff-variants
+      summary: Reject a pending variant
+      description: Sets is_deleted=TRUE with rejection_reason.
+      operationId: reject_variant_api_v1_staff_variants__variant_id__reject_post
+      parameters:
+        - name: variant_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Variant Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RejectVariantRequest"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RejectVariantResponse"
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/listings/pending:
+    get:
+      tags:
+        - staff
+        - staff-listings
+      summary: List pending listings for moderation
+      description: Returns listings awaiting moderation (status='pending', is_deleted=FALSE).
+      operationId: list_pending_listings_api_v1_staff_listings_pending_get
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Page number
+            default: 1
+            title: Page
+          description: Page number
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            description: Number of items per page
+            default: 50
+            title: Page Size
+          description: Number of items per page
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StaffListingResponse"
+                title: Response List Pending Listings Api V1 Staff Listings Pending Get
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/listings/bulk-approve:
+    post:
+      tags:
+        - staff
+        - staff-listings
+      summary: Bulk approve pending listings
+      description: Approve multiple pending listings. Maximum 100 per request.
+      operationId: bulk_approve_listings_api_v1_staff_listings_bulk_approve_post
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BulkApproveListingsRequest"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BulkApproveListingsResponse"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/listings:
+    get:
+      tags:
+        - staff
+        - staff-listings
+      summary: List listings with filters
+      description: Supports filtering by seller, variant, and condition.
+      operationId: list_listings_api_v1_staff_listings_get
+      parameters:
+        - name: seller_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            description: Filter by seller ID (UUID)
+            title: Seller Id
+          description: Filter by seller ID (UUID)
+        - name: variant_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            description: Filter by variant ID
+            title: Variant Id
+          description: Filter by variant ID
+        - name: condition
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            description: Filter by condition
+            title: Condition
+          description: Filter by condition
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Page number
+            default: 1
+            title: Page
+          description: Page number
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            description: Number of items per page
+            default: 50
+            title: Page Size
+          description: Number of items per page
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StaffListingResponse"
+                title: Response List Listings Api V1 Staff Listings Get
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/listings/{listing_id}:
+    delete:
+      tags:
+        - staff
+        - staff-listings
+      summary: Soft-delete a listing
+      description: Sets is_deleted=TRUE and deleted_at timestamp. Soft-delete is separate from rejection.
+      operationId: delete_listing_api_v1_staff_listings__listing_id__delete
+      parameters:
+        - name: listing_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Listing Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteListingResponse"
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/listings/{listing_id}/approve:
+    post:
+      tags:
+        - staff
+        - staff-listings
+      summary: Approve a pending listing
+      description: Sets status='accepted'. Returns 400 if listing is already accepted.
+      operationId: approve_listing_api_v1_staff_listings__listing_id__approve_post
+      parameters:
+        - name: listing_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Listing Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApproveListingResponse"
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/listings/{listing_id}/reject:
+    post:
+      tags:
+        - staff
+        - staff-listings
+      summary: Reject a pending listing
+      description: Sets status='rejected' with rejection reason and staff ID.
+      operationId: reject_listing_api_v1_staff_listings__listing_id__reject_post
+      parameters:
+        - name: listing_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Listing Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RejectListingRequest"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RejectListingResponse"
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/listings/{listing_id}/deactivate:
+    post:
+      tags:
+        - staff
+        - staff-listings
+      summary: Deactivate a listing
+      description: Hide listing from customers without affecting moderation status.
+      operationId: deactivate_listing_api_v1_staff_listings__listing_id__deactivate_post
+      parameters:
+        - name: listing_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Listing Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+                - $ref: "#/components/schemas/StaffDeactivateListingRequest"
+                - type: "null"
+              title: Request
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaffDeactivateListingResponse"
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/listings/{listing_id}/activate:
+    post:
+      tags:
+        - staff
+        - staff-listings
+      summary: Activate a listing
+      description: Make a deactivated listing visible to customers again.
+      operationId: activate_listing_api_v1_staff_listings__listing_id__activate_post
+      parameters:
+        - name: listing_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Listing Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaffActivateListingResponse"
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Bad Request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseSchema"
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/stats/pending:
+    get:
+      tags:
+        - staff
+        - staff-stats
+      summary: Get pending moderation statistics
+      description: Returns counts of pending variants and top 10 categories by pending count.
+      operationId: get_pending_stats_api_v1_staff_stats_pending_get
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PendingStatsResponse"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/internal/categories/tree:
+    get:
+      tags:
+        - internal
+        - internal-categories
+      summary: Get category tree
+      description: Get the complete category hierarchy as a nested tree structure.
+      operationId: get_category_tree_api_v1_internal_categories_tree_get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/CategoryTreeNodeResponse"
+                type: array
+                title: Response Get Category Tree Api V1 Internal Categories Tree Get
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/internal/listings/inquiry:
+    get:
+      tags:
+        - internal
+        - internal-listings
+      summary: Check if listing exists
+      description: Check if an active listing exists for a seller and SKU.
+      operationId: check_listing_exists_api_v1_internal_listings_inquiry_get
+      parameters:
+        - name: seller_id
+          in: query
+          required: true
+          schema:
+            type: string
+            description: Seller identifier (UUID)
+            title: Seller Id
+          description: Seller identifier (UUID)
+        - name: sku
+          in: query
+          required: true
+          schema:
+            type: string
+            description: Stock Keeping Unit
+            title: Sku
+          description: Stock Keeping Unit
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListingExistsResponse"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/internal/listings/batch-enrich:
+    post:
+      tags:
+        - internal
+        - internal-listings
+      summary: Batch enrich listings
+      description: Batch lookup of listings with enriched product display data.
+      operationId: batch_enrich_listings_api_v1_internal_listings_batch_enrich_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/core__api__v1__internal__listings__schemas__BatchEnrichRequest"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/core__api__v1__internal__listings__schemas__BatchEnrichResponse
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/internal/listings/batch-enrich-by-ids:
+    post:
+      tags:
+        - internal
+        - internal-listings
+      summary: Batch enrich listings by IDs
+      description: >-
+        Batch lookup of listings by listing IDs with enriched product display data. Accepts 1-50
+        listing IDs. Unmatched IDs return with found: false.
+      operationId: batch_enrich_listings_by_ids_api_v1_internal_listings_batch_enrich_by_ids_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BatchEnrichByIdsRequest"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BatchEnrichByIdsResponse"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/internal/variants:
+    get:
+      tags:
+        - internal
+        - internal-variants
+      summary: List all variants
+      description: Get paginated list of all active variants with flattened product group and category data.
+      operationId: list_variants_api_v1_internal_variants_get
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Page number
+            default: 1
+            title: Page
+          description: Page number
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 1000
+            minimum: 1
+            description: Items per page
+            default: 100
+            title: Page Size
+          description: Items per page
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VariantsListResponse"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/internal/variants/resolve-batch:
+    post:
+      tags:
+        - internal
+        - internal-variants
+      summary: Batch resolve variants
+      description: Resolve multiple variants by ID. Returns enriched variant data for found variants.
+      operationId: resolve_variants_batch_api_v1_internal_variants_resolve_batch_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BatchResolveVariantsRequest"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BatchResolveVariantsResponse"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /:
+    get:
+      summary: Root
+      description: Root endpoint
+      operationId: root__get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /health:
+    get:
+      summary: Health
+      description: Health check endpoint
+      operationId: health_health_get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+components:
+  schemas:
+    AddVariantToGroupRequest:
+      properties:
+        product_group_id:
+          type: integer
+          title: Product Group Id
+        gtin:
+          anyOf:
+            - type: string
+              maxLength: 14
+            - type: "null"
+          title: Gtin
+        mpn:
+          anyOf:
+            - type: string
+              maxLength: 100
+            - type: "null"
+          title: Mpn
+        static_attributes:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Static Attributes
+        weight_grams:
+          type: integer
+          minimum: 0
+          title: Weight Grams
+          default: 0
+      type: object
+      required:
+        - product_group_id
+      title: AddVariantToGroupRequest
+      description: |-
+        Request schema for adding a variant to an existing product group.
+
+        Endpoint: POST /api/v1/seller/variants/add-to-group
+
+        This creates a new CatalogVariant and associates it with an existing ProductGroup.
+        Used when adding a color/size/storage variant to an existing product.
+    ApproveListingResponse:
+      properties:
+        listing_id:
+          type: string
+          title: Listing Id
+      type: object
+      required:
+        - listing_id
+      title: ApproveListingResponse
+      description: Response schema for listing approval.
+    ApproveVariantResponse:
+      properties:
+        variant_id:
+          type: string
+          title: Variant Id
+      type: object
+      required:
+        - variant_id
+      title: ApproveVariantResponse
+      description: Response schema for variant approval.
+    AttributeItemSchema:
+      properties:
+        name_en:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Name En
+        name_fa:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Name Fa
+        type:
+          type: string
+          maxLength: 50
+          minLength: 1
+          title: Type
+        value:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Value
+      type: object
+      required:
+        - name_en
+        - name_fa
+        - type
+        - value
+      title: AttributeItemSchema
+      description: Schema for a category attribute item (required_attributes / variation_themes).
+    BatchEnrichByIdItemResponse:
+      properties:
+        listing_id:
+          type: string
+          title: Listing Id
+        found:
+          type: boolean
+          title: Found
+        variant_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Variant Id
+        variant_name:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Variant Name
+        variant_sku:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Variant Sku
+        product_title:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Product Title
+        brand_name:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Brand Name
+        cover_image:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Cover Image
+        category_name_fa:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Category Name Fa
+      type: object
+      required:
+        - listing_id
+        - found
+      title: BatchEnrichByIdItemResponse
+      description: Single item in a batch enrichment by ID response.
+    BatchEnrichByIdsRequest:
+      properties:
+        listing_ids:
+          items:
+            type: string
+          type: array
+          maxItems: 50
+          minItems: 1
+          title: Listing Ids
+      type: object
+      required:
+        - listing_ids
+      title: BatchEnrichByIdsRequest
+      description: Request body for batch listing enrichment by listing IDs.
+    BatchEnrichByIdsResponse:
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/BatchEnrichByIdItemResponse"
+          type: array
+          title: Items
+      type: object
+      required:
+        - items
+      title: BatchEnrichByIdsResponse
+      description: Response body for batch listing enrichment by listing IDs.
+    BatchResolveVariantItem:
+      properties:
+        variant_id:
+          type: string
+          title: Variant Id
+        found:
+          type: boolean
+          title: Found
+        gtin:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Gtin
+        mpn:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Mpn
+        brand_name:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Brand Name
+        static_attributes:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Static Attributes
+        weight_grams:
+          type: integer
+          title: Weight Grams
+          default: 0
+        is_active:
+          anyOf:
+            - type: boolean
+            - type: "null"
+          title: Is Active
+        variant_created_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Variant Created At
+        variant_updated_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Variant Updated At
+        group_id:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Group Id
+        group_brand_name:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Group Brand Name
+        master_title:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Master Title
+        master_description:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Master Description
+        catalog_images:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Catalog Images
+        cover_image:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Cover Image
+        group_created_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Group Created At
+        group_updated_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Group Updated At
+        category_id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Category Id
+        category_name_fa:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Category Name Fa
+        category_name_en:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Category Name En
+        category_slug:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Category Slug
+        category_is_leaf_node:
+          anyOf:
+            - type: boolean
+            - type: "null"
+          title: Category Is Leaf Node
+      type: object
+      required:
+        - variant_id
+        - found
+      title: BatchResolveVariantItem
+      description: Single item in a batch resolve response.
+    BatchResolveVariantsRequest:
+      properties:
+        variant_ids:
+          items:
+            type: string
+          type: array
+          maxItems: 50
+          minItems: 1
+          title: Variant Ids
+      type: object
+      required:
+        - variant_ids
+      title: BatchResolveVariantsRequest
+      description: Request body for batch variant resolution.
+    BatchResolveVariantsResponse:
+      properties:
+        variants:
+          additionalProperties:
+            $ref: "#/components/schemas/BatchResolveVariantItem"
+          type: object
+          title: Variants
+      type: object
+      required:
+        - variants
+      title: BatchResolveVariantsResponse
+      description: |-
+        Response body for batch variant resolution.
+
+        Contains a map of variant_id to BatchResolveVariantItem.
+    BulkAddVariantsToGroupRequest:
+      properties:
+        product_group_id:
+          type: integer
+          title: Product Group Id
+        variants:
+          items:
+            $ref: "#/components/schemas/BulkVariantInput"
+          type: array
+          maxItems: 50
+          title: Variants
+      type: object
+      required:
+        - product_group_id
+        - variants
+      title: BulkAddVariantsToGroupRequest
+      description: |-
+        Request schema for bulk adding variants to an existing product group.
+
+        Endpoint: POST /api/v1/seller/variants/bulk-add-to-group
+
+        Maximum 50 variants per request.
+        Supports partial success: valid variants are created, failures are returned with reasons.
+    BulkApproveFailureResponse:
+      properties:
+        variant_id:
+          type: string
+          title: Variant Id
+        reason:
+          type: string
+          title: Reason
+      type: object
+      required:
+        - variant_id
+        - reason
+      title: BulkApproveFailureResponse
+      description: Response schema for a failed approval in bulk operation.
+    BulkApproveListingFailureResponse:
+      properties:
+        listing_id:
+          type: string
+          title: Listing Id
+        reason:
+          type: string
+          title: Reason
+      type: object
+      required:
+        - listing_id
+        - reason
+      title: BulkApproveListingFailureResponse
+      description: Details of a failed approval in bulk operation.
+    BulkApproveListingsRequest:
+      properties:
+        listing_ids:
+          items:
+            type: string
+          type: array
+          maxItems: 100
+          title: Listing Ids
+      type: object
+      required:
+        - listing_ids
+      title: BulkApproveListingsRequest
+      description: Request schema for bulk listing approval.
+    BulkApproveListingsResponse:
+      properties:
+        approved:
+          items:
+            type: string
+          type: array
+          title: Approved
+        failed:
+          items:
+            $ref: "#/components/schemas/BulkApproveListingFailureResponse"
+          type: array
+          title: Failed
+      type: object
+      required:
+        - approved
+        - failed
+      title: BulkApproveListingsResponse
+      description: Response schema for bulk listing approval.
+    BulkApproveRequest:
+      properties:
+        variant_ids:
+          items:
+            type: string
+          type: array
+          maxItems: 100
+          title: Variant Ids
+      type: object
+      required:
+        - variant_ids
+      title: BulkApproveRequest
+      description: Request schema for bulk approving variants.
+    BulkApproveResponse:
+      properties:
+        approved:
+          items:
+            type: string
+          type: array
+          title: Approved
+        failed:
+          items:
+            $ref: "#/components/schemas/BulkApproveFailureResponse"
+          type: array
+          title: Failed
+      type: object
+      required:
+        - approved
+        - failed
+      title: BulkApproveResponse
+      description: Response schema for bulk variant approval.
+    BulkVariantInput:
+      properties:
+        gtin:
+          anyOf:
+            - type: string
+              maxLength: 14
+            - type: "null"
+          title: Gtin
+        mpn:
+          anyOf:
+            - type: string
+              maxLength: 100
+            - type: "null"
+          title: Mpn
+        static_attributes:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Static Attributes
+        weight_grams:
+          type: integer
+          minimum: 0
+          title: Weight Grams
+          default: 0
+      type: object
+      title: BulkVariantInput
+      description: |-
+        Input for a single variant in bulk creation request.
+
+        All fields are optional as different products have different requirements.
+    CategoryBreadcrumbNodeResponse:
+      properties:
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        name_fa:
+          type: string
+          title: Name Fa
+        name_en:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Name En
+        slug:
+          type: string
+          title: Slug
+        is_leaf_node:
+          type: boolean
+          title: Is Leaf Node
+        icon:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Icon
+      type: object
+      required:
+        - category_id
+        - name_fa
+        - name_en
+        - slug
+        - is_leaf_node
+      title: CategoryBreadcrumbNodeResponse
+      description: Response for a category node in the ancestor breadcrumb tree.
+    CategoryPendingCountResponse:
+      properties:
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        count:
+          type: integer
+          title: Count
+      type: object
+      required:
+        - category_id
+        - count
+      title: CategoryPendingCountResponse
+      description: Pending variant count for a category.
+    CategoryResponse:
+      properties:
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        parent_id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Parent Id
+        name_fa:
+          type: string
+          title: Name Fa
+        name_en:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Name En
+        slug:
+          type: string
+          title: Slug
+        is_leaf_node:
+          type: boolean
+          title: Is Leaf Node
+        required_attributes:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Required Attributes
+        variation_themes:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Variation Themes
+        is_gtin_required:
+          type: boolean
+          title: Is Gtin Required
+        icon:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Icon
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+        - category_id
+        - parent_id
+        - name_fa
+        - name_en
+        - slug
+        - is_leaf_node
+        - is_gtin_required
+        - created_at
+        - updated_at
+      title: CategoryResponse
+      description: Response schema for category data (root and children endpoints).
+    CategoryRulesResponse:
+      properties:
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        variation_themes:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Variation Themes
+        required_attributes:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Required Attributes
+        is_gtin_required:
+          type: boolean
+          title: Is Gtin Required
+      type: object
+      required:
+        - category_id
+        - is_gtin_required
+      title: CategoryRulesResponse
+      description: Response schema for category rules endpoint.
+    CategoryTreeNodeResponse:
+      properties:
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        parent_id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Parent Id
+        name_fa:
+          type: string
+          title: Name Fa
+        name_en:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Name En
+        slug:
+          type: string
+          title: Slug
+        is_leaf_node:
+          type: boolean
+          title: Is Leaf Node
+        icon:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Icon
+        children:
+          items:
+            $ref: "#/components/schemas/CategoryTreeNodeResponse"
+          type: array
+          title: Children
+      type: object
+      required:
+        - category_id
+        - parent_id
+        - name_fa
+        - name_en
+        - slug
+        - is_leaf_node
+      title: CategoryTreeNodeResponse
+      description: Response schema for a category tree node with recursive children.
+    CategoryWithTreeResponse:
+      properties:
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        name_fa:
+          type: string
+          title: Name Fa
+        name_en:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Name En
+        slug:
+          type: string
+          title: Slug
+        is_leaf_node:
+          type: boolean
+          title: Is Leaf Node
+        icon:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Icon
+        tree:
+          items:
+            $ref: "#/components/schemas/CategoryBreadcrumbNodeResponse"
+          type: array
+          title: Tree
+      type: object
+      required:
+        - category_id
+        - name_fa
+        - name_en
+        - slug
+        - is_leaf_node
+        - tree
+      title: CategoryWithTreeResponse
+      description: Response for category with ancestor tree (breadcrumb from root to current).
+    CreateCategoryRequest:
+      properties:
+        name_fa:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Name Fa
+        name_en:
+          anyOf:
+            - type: string
+              maxLength: 255
+            - type: "null"
+          title: Name En
+        slug:
+          type: string
+          maxLength: 255
+          minLength: 1
+          pattern: ^[a-z0-9-]+$
+          title: Slug
+        parent_id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Parent Id
+        is_leaf_node:
+          type: boolean
+          title: Is Leaf Node
+          default: false
+        required_attributes:
+          anyOf:
+            - items:
+                $ref: "#/components/schemas/AttributeItemSchema"
+              type: array
+            - type: "null"
+          title: Required Attributes
+        variation_themes:
+          anyOf:
+            - items:
+                $ref: "#/components/schemas/AttributeItemSchema"
+              type: array
+            - type: "null"
+          title: Variation Themes
+        is_gtin_required:
+          type: boolean
+          title: Is Gtin Required
+          default: true
+        icon:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Icon
+      type: object
+      required:
+        - name_fa
+        - slug
+      title: CreateCategoryRequest
+      description: Request schema for creating a category.
+    CreateCategoryResponse:
+      properties:
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        slug:
+          type: string
+          title: Slug
+      type: object
+      required:
+        - category_id
+        - slug
+      title: CreateCategoryResponse
+      description: Response schema for category creation.
+    CreateListingRequest:
+      properties:
+        variant_id:
+          type: string
+          title: Variant Id
+        sku:
+          type: string
+          title: Sku
+        condition:
+          type: string
+          title: Condition
+        price:
+          anyOf:
+            - type: number
+            - type: string
+              pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Price
+        image_urls:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Image Urls
+        cover_image:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Cover Image
+      type: object
+      required:
+        - variant_id
+        - sku
+        - condition
+        - price
+      title: CreateListingRequest
+      description: Request schema for creating a seller listing.
+    CreateNewVariantRequest:
+      properties:
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        brand_name:
+          type: string
+          title: Brand Name
+        master_title:
+          type: string
+          title: Master Title
+        master_description:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Master Description
+        catalog_images:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Catalog Images
+        cover_image:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Cover Image
+        gtin:
+          anyOf:
+            - type: string
+              maxLength: 14
+            - type: "null"
+          title: Gtin
+        mpn:
+          anyOf:
+            - type: string
+              maxLength: 100
+            - type: "null"
+          title: Mpn
+        static_attributes:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Static Attributes
+        weight_grams:
+          type: integer
+          minimum: 0
+          title: Weight Grams
+          default: 0
+      type: object
+      required:
+        - category_id
+        - brand_name
+        - master_title
+      title: CreateNewVariantRequest
+      description: |-
+        Request schema for creating a variant with a new product group.
+
+        Endpoint: POST /api/v1/seller/variants/create-new
+
+        This creates a new ProductGroup and an initial CatalogVariant.
+        Used when adding a completely new product to the catalog.
+    CreateProductGroupRequest:
+      properties:
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        brand_name:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Brand Name
+        master_title:
+          type: string
+          maxLength: 500
+          minLength: 1
+          title: Master Title
+        master_description:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Master Description
+        catalog_images:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Catalog Images
+      type: object
+      required:
+        - category_id
+        - brand_name
+        - master_title
+      title: CreateProductGroupRequest
+      description: Request schema for creating a product group.
+    CreateProductGroupResponse:
+      properties:
+        group_id:
+          type: integer
+          title: Group Id
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+      type: object
+      required:
+        - group_id
+        - category_id
+      title: CreateProductGroupResponse
+      description: Response schema for product group creation.
+    CreateVariantRequest:
+      properties:
+        category_id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Category Id
+        product_group_id:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Product Group Id
+        brand_name:
+          anyOf:
+            - type: string
+              maxLength: 255
+              minLength: 1
+            - type: "null"
+          title: Brand Name
+        master_title:
+          anyOf:
+            - type: string
+              maxLength: 500
+              minLength: 1
+            - type: "null"
+          title: Master Title
+        master_description:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Master Description
+        catalog_images:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Catalog Images
+        cover_image:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Cover Image
+        gtin:
+          anyOf:
+            - type: string
+              maxLength: 14
+              minLength: 8
+            - type: "null"
+          title: Gtin
+        mpn:
+          anyOf:
+            - type: string
+              maxLength: 100
+            - type: "null"
+          title: Mpn
+        static_attributes:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Static Attributes
+        weight_grams:
+          type: integer
+          minimum: 0
+          title: Weight Grams
+          default: 0
+      type: object
+      title: CreateVariantRequest
+      description: Request schema for creating a variant.
+    CreateVariantResponse:
+      properties:
+        variant_id:
+          type: string
+          title: Variant Id
+        group_id:
+          type: integer
+          title: Group Id
+        is_new_group:
+          type: boolean
+          title: Is New Group
+      type: object
+      required:
+        - variant_id
+        - group_id
+        - is_new_group
+      title: CreateVariantResponse
+      description: Response schema for variant creation.
+    CustomerCategoryTreeNodeResponse:
+      properties:
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        parent_id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Parent Id
+        name_fa:
+          type: string
+          title: Name Fa
+        name_en:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Name En
+        slug:
+          type: string
+          title: Slug
+        is_leaf_node:
+          type: boolean
+          title: Is Leaf Node
+        icon:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Icon
+        children:
+          items:
+            $ref: "#/components/schemas/CustomerCategoryTreeNodeResponse"
+          type: array
+          title: Children
+      type: object
+      required:
+        - category_id
+        - parent_id
+        - name_fa
+        - name_en
+        - slug
+        - is_leaf_node
+      title: CustomerCategoryTreeNodeResponse
+      description: Response schema for a customer category tree node with recursive children.
+    CustomerListingCategoryResponse:
+      properties:
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        name_fa:
+          type: string
+          title: Name Fa
+        name_en:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Name En
+        slug:
+          type: string
+          title: Slug
+      type: object
+      required:
+        - category_id
+        - name_fa
+        - name_en
+        - slug
+      title: CustomerListingCategoryResponse
+      description: Category data nested in customer listing response.
+    CustomerListingGroupResponse:
+      properties:
+        group_id:
+          type: integer
+          title: Group Id
+        master_title:
+          type: string
+          title: Master Title
+        master_description:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Master Description
+        catalog_images:
+          items:
+            type: string
+          type: array
+          title: Catalog Images
+        cover_image:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Cover Image
+      type: object
+      required:
+        - group_id
+        - master_title
+        - master_description
+        - catalog_images
+      title: CustomerListingGroupResponse
+      description: Product group data nested in customer listing response.
+    CustomerListingResponse:
+      properties:
+        listing_id:
+          type: string
+          title: Listing Id
+        seller_id:
+          type: string
+          title: Seller Id
+        sku:
+          type: string
+          title: Sku
+        condition:
+          type: string
+          title: Condition
+        price:
+          type: string
+          title: Price
+        image_urls:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Image Urls
+        cover_image:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Cover Image
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+        variant:
+          $ref: "#/components/schemas/CustomerListingVariantResponse"
+        product_group:
+          $ref: "#/components/schemas/CustomerListingGroupResponse"
+        category:
+          $ref: "#/components/schemas/CustomerListingCategoryResponse"
+      type: object
+      required:
+        - listing_id
+        - seller_id
+        - sku
+        - condition
+        - price
+        - created_at
+        - updated_at
+        - variant
+        - product_group
+        - category
+      title: CustomerListingResponse
+      description: Customer-facing listing with enriched product data.
+    CustomerListingVariantResponse:
+      properties:
+        variant_id:
+          type: string
+          title: Variant Id
+        brand_name:
+          type: string
+          title: Brand Name
+        gtin:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Gtin
+        mpn:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Mpn
+        static_attributes:
+          additionalProperties: true
+          type: object
+          title: Static Attributes
+        weight_grams:
+          type: integer
+          title: Weight Grams
+          default: 0
+      type: object
+      required:
+        - variant_id
+        - brand_name
+        - gtin
+        - mpn
+        - static_attributes
+      title: CustomerListingVariantResponse
+      description: Variant data nested in customer listing response.
+    DeactivateListingRequest:
+      properties:
+        deactivation_reason:
+          anyOf:
+            - type: string
+              maxLength: 1000
+            - type: "null"
+          title: Deactivation Reason
+      type: object
+      title: DeactivateListingRequest
+      description: Request schema for seller listing deactivation.
+    DeleteListingResponse:
+      properties:
+        listing_id:
+          type: string
+          title: Listing Id
+      type: object
+      required:
+        - listing_id
+      title: DeleteListingResponse
+      description: Response schema for listing deletion.
+    DeleteProductGroupResponse:
+      properties:
+        group_id:
+          type: integer
+          title: Group Id
+      type: object
+      required:
+        - group_id
+      title: DeleteProductGroupResponse
+      description: Response schema for product group deletion.
+    DeleteVariantResponse:
+      properties:
+        variant_id:
+          type: string
+          title: Variant Id
+      type: object
+      required:
+        - variant_id
+      title: DeleteVariantResponse
+      description: Response schema for variant deletion.
+    DisableCategoryResponse:
+      properties:
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        disabled_categories_count:
+          type: integer
+          title: Disabled Categories Count
+        deactivated_variants_count:
+          type: integer
+          title: Deactivated Variants Count
+      type: object
+      required:
+        - category_id
+        - disabled_categories_count
+        - deactivated_variants_count
+      title: DisableCategoryResponse
+      description: Response schema for category disable with cascade counts.
+    ErrorResponseSchema:
+      properties:
+        code:
+          type: string
+          title: Code
+        message:
+          type: string
+          title: Message
+        details:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Details
+      type: object
+      required:
+        - code
+        - message
+      title: ErrorResponseSchema
+      description: Standard error response schema.
+    FlatVariantResponse:
+      properties:
+        variant_id:
+          type: string
+          title: Variant Id
+        gtin:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Gtin
+        mpn:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Mpn
+        brand_name:
+          type: string
+          title: Brand Name
+        static_attributes:
+          additionalProperties: true
+          type: object
+          title: Static Attributes
+        weight_grams:
+          type: integer
+          title: Weight Grams
+          default: 0
+        is_active:
+          type: boolean
+          title: Is Active
+        variant_created_at:
+          type: string
+          format: date-time
+          title: Variant Created At
+        variant_updated_at:
+          type: string
+          format: date-time
+          title: Variant Updated At
+        group_id:
+          type: integer
+          title: Group Id
+        group_brand_name:
+          type: string
+          title: Group Brand Name
+        master_title:
+          type: string
+          title: Master Title
+        master_description:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Master Description
+        catalog_images:
+          items:
+            type: string
+          type: array
+          title: Catalog Images
+        cover_image:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Cover Image
+        group_created_at:
+          type: string
+          format: date-time
+          title: Group Created At
+        group_updated_at:
+          type: string
+          format: date-time
+          title: Group Updated At
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        category_name_fa:
+          type: string
+          title: Category Name Fa
+        category_name_en:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Category Name En
+        category_slug:
+          type: string
+          title: Category Slug
+        category_is_leaf_node:
+          type: boolean
+          title: Category Is Leaf Node
+      type: object
+      required:
+        - variant_id
+        - gtin
+        - mpn
+        - brand_name
+        - static_attributes
+        - is_active
+        - variant_created_at
+        - variant_updated_at
+        - group_id
+        - group_brand_name
+        - master_title
+        - master_description
+        - catalog_images
+        - group_created_at
+        - group_updated_at
+        - category_id
+        - category_name_fa
+        - category_name_en
+        - category_slug
+        - category_is_leaf_node
+      title: FlatVariantResponse
+      description: |-
+        Flat variant response with denormalized product group and category data.
+
+        All fields from variant, product group, and category are flattened
+        for easy consumption by other services.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: "#/components/schemas/ValidationError"
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ListingExistsResponse:
+      properties:
+        exists:
+          type: boolean
+          title: Exists
+      type: object
+      required:
+        - exists
+      title: ListingExistsResponse
+      description: Response schema for listing existence check.
+    ListingResponse:
+      properties:
+        listing_id:
+          type: string
+          title: Listing Id
+        variant_id:
+          type: string
+          title: Variant Id
+        seller_id:
+          type: string
+          title: Seller Id
+        sku:
+          type: string
+          title: Sku
+        condition:
+          type: string
+          title: Condition
+        cover_image:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Cover Image
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+        - listing_id
+        - variant_id
+        - seller_id
+        - sku
+        - condition
+        - created_at
+        - updated_at
+      title: ListingResponse
+      description: Response schema for basic listing data.
+    PaginationMeta:
+      properties:
+        page:
+          type: integer
+          title: Page
+        page_size:
+          type: integer
+          title: Page Size
+        total:
+          type: integer
+          title: Total
+        total_pages:
+          type: integer
+          title: Total Pages
+        has_more:
+          type: boolean
+          title: Has More
+      type: object
+      required:
+        - page
+        - page_size
+        - total
+        - total_pages
+        - has_more
+      title: PaginationMeta
+      description: Pagination metadata.
+    PendingStatsResponse:
+      properties:
+        pending_variants:
+          type: integer
+          title: Pending Variants
+        pending_by_category:
+          items:
+            $ref: "#/components/schemas/CategoryPendingCountResponse"
+          type: array
+          title: Pending By Category
+      type: object
+      required:
+        - pending_variants
+        - pending_by_category
+      title: PendingStatsResponse
+      description: Pending moderation statistics.
+    ProductGroupResponse:
+      properties:
+        group_id:
+          type: integer
+          title: Group Id
+        brand_name:
+          type: string
+          title: Brand Name
+        master_title:
+          type: string
+          title: Master Title
+        master_description:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Master Description
+        catalog_images:
+          items:
+            type: string
+          type: array
+          title: Catalog Images
+        cover_image:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Cover Image
+        category:
+          anyOf:
+            - $ref: "#/components/schemas/CategoryWithTreeResponse"
+            - type: "null"
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+        - group_id
+        - brand_name
+        - master_title
+        - master_description
+        - catalog_images
+        - created_at
+        - updated_at
+      title: ProductGroupResponse
+      description: Response schema for product group data.
+    RejectListingRequest:
+      properties:
+        rejection_reason:
+          type: string
+          maxLength: 1000
+          minLength: 1
+          title: Rejection Reason
+      type: object
+      required:
+        - rejection_reason
+      title: RejectListingRequest
+      description: Request schema for listing rejection.
+    RejectListingResponse:
+      properties:
+        listing_id:
+          type: string
+          title: Listing Id
+      type: object
+      required:
+        - listing_id
+      title: RejectListingResponse
+      description: Response schema for listing rejection.
+    RejectVariantRequest:
+      properties:
+        rejection_reason:
+          type: string
+          maxLength: 1000
+          minLength: 1
+          title: Rejection Reason
+        staff_id:
+          type: integer
+          title: Staff Id
+      type: object
+      required:
+        - rejection_reason
+        - staff_id
+      title: RejectVariantRequest
+      description: Request schema for rejecting a variant.
+    RejectVariantResponse:
+      properties:
+        variant_id:
+          type: string
+          title: Variant Id
+      type: object
+      required:
+        - variant_id
+      title: RejectVariantResponse
+      description: Response schema for variant rejection.
+    SellerCategorySearchResponse:
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/SellerCategorySearchResultResponse"
+          type: array
+          title: Items
+        total:
+          type: integer
+          title: Total
+        limit:
+          type: integer
+          title: Limit
+        offset:
+          type: integer
+          title: Offset
+      type: object
+      required:
+        - items
+        - total
+        - limit
+        - offset
+      title: SellerCategorySearchResponse
+      description: Paginated response for category search results.
+    SellerCategorySearchResultResponse:
+      properties:
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        name_fa:
+          type: string
+          title: Name Fa
+        name_en:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Name En
+        slug:
+          type: string
+          title: Slug
+        is_leaf_node:
+          type: boolean
+          title: Is Leaf Node
+        icon:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Icon
+        required_attributes:
+          anyOf:
+            - items: {}
+              type: array
+            - type: "null"
+          title: Required Attributes
+        variation_themes:
+          anyOf:
+            - items: {}
+              type: array
+            - type: "null"
+          title: Variation Themes
+        is_gtin_required:
+          type: boolean
+          title: Is Gtin Required
+          default: true
+        rank:
+          type: number
+          title: Rank
+          default: 0
+        path:
+          items:
+            type: string
+          type: array
+          title: Path
+      type: object
+      required:
+        - category_id
+        - name_fa
+        - name_en
+        - slug
+        - is_leaf_node
+      title: SellerCategorySearchResultResponse
+      description: Response schema for a single category search result.
+    SellerCategoryTreeNodeResponse:
+      properties:
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        parent_id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Parent Id
+        name_fa:
+          type: string
+          title: Name Fa
+        name_en:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Name En
+        slug:
+          type: string
+          title: Slug
+        is_leaf_node:
+          type: boolean
+          title: Is Leaf Node
+        icon:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Icon
+        required_attributes:
+          anyOf:
+            - items: {}
+              type: array
+            - type: "null"
+          title: Required Attributes
+        variation_themes:
+          anyOf:
+            - items: {}
+              type: array
+            - type: "null"
+          title: Variation Themes
+        is_gtin_required:
+          type: boolean
+          title: Is Gtin Required
+          default: false
+        children:
+          items:
+            $ref: "#/components/schemas/SellerCategoryTreeNodeResponse"
+          type: array
+          title: Children
+      type: object
+      required:
+        - category_id
+        - parent_id
+        - name_fa
+        - name_en
+        - slug
+        - is_leaf_node
+      title: SellerCategoryTreeNodeResponse
+      description: Response schema for a seller category tree node with rule fields and recursive children.
+    ShopCategoryResponse:
+      properties:
+        category_id:
+          type: string
+          title: Category Id
+        name_fa:
+          type: string
+          title: Name Fa
+        name_en:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Name En
+        slug:
+          type: string
+          title: Slug
+        icon:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Icon
+        listings:
+          items:
+            $ref: "#/components/schemas/ShopListingResponse"
+          type: array
+          title: Listings
+      type: object
+      required:
+        - category_id
+        - name_fa
+        - slug
+        - listings
+      title: ShopCategoryResponse
+      description: Category with its listings for a shop.
+    ShopListingGroupResponse:
+      properties:
+        group_id:
+          type: integer
+          title: Group Id
+        master_title:
+          type: string
+          title: Master Title
+        cover_image:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Cover Image
+      type: object
+      required:
+        - group_id
+        - master_title
+      title: ShopListingGroupResponse
+      description: Product group data nested in a shop listing.
+    ShopListingResponse:
+      properties:
+        listing_id:
+          type: string
+          title: Listing Id
+        sku:
+          type: string
+          title: Sku
+        condition:
+          type: string
+          title: Condition
+        price:
+          type: string
+          title: Price
+        image_urls:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Image Urls
+        cover_image:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Cover Image
+        variant:
+          $ref: "#/components/schemas/ShopListingVariantResponse"
+        product_group:
+          $ref: "#/components/schemas/ShopListingGroupResponse"
+      type: object
+      required:
+        - listing_id
+        - sku
+        - condition
+        - price
+        - variant
+        - product_group
+      title: ShopListingResponse
+      description: Single listing within a shop category.
+    ShopListingVariantResponse:
+      properties:
+        variant_id:
+          type: string
+          title: Variant Id
+        brand_name:
+          type: string
+          title: Brand Name
+        static_attributes:
+          additionalProperties: true
+          type: object
+          title: Static Attributes
+        weight_grams:
+          type: integer
+          title: Weight Grams
+          default: 0
+      type: object
+      required:
+        - variant_id
+        - brand_name
+        - static_attributes
+      title: ShopListingVariantResponse
+      description: Variant data nested in a shop listing.
+    StaffActivateListingResponse:
+      properties:
+        listing_id:
+          type: string
+          title: Listing Id
+      type: object
+      required:
+        - listing_id
+      title: StaffActivateListingResponse
+      description: Response schema for staff listing activation.
+    StaffBulkCreateFailureResponse:
+      properties:
+        index:
+          type: integer
+          title: Index
+        gtin:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Gtin
+        mpn:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Mpn
+        reason:
+          type: string
+          title: Reason
+      type: object
+      required:
+        - index
+        - gtin
+        - mpn
+        - reason
+      title: StaffBulkCreateFailureResponse
+      description: Details of a failed variant creation in staff bulk operation.
+    StaffBulkCreateVariantsRequest:
+      properties:
+        product_group_id:
+          type: integer
+          title: Product Group Id
+        variants:
+          items:
+            $ref: "#/components/schemas/StaffBulkVariantInput"
+          type: array
+          maxItems: 50
+          title: Variants
+      type: object
+      required:
+        - product_group_id
+        - variants
+      title: StaffBulkCreateVariantsRequest
+      description: |-
+        Request schema for staff bulk creating variants for an existing product group.
+
+        Endpoint: POST /api/v1/staff/variants/bulk-create
+
+        Maximum 50 variants per request.
+        Staff-created variants are immediately active (no moderation).
+        Supports partial success: valid variants are created, failures are returned with reasons.
+    StaffBulkCreateVariantsResponse:
+      properties:
+        created:
+          items:
+            $ref: "#/components/schemas/StaffBulkCreatedVariantInfo"
+          type: array
+          title: Created
+        failed:
+          items:
+            $ref: "#/components/schemas/StaffBulkCreateFailureResponse"
+          type: array
+          title: Failed
+      type: object
+      required:
+        - created
+        - failed
+      title: StaffBulkCreateVariantsResponse
+      description: |-
+        Response schema for staff bulk variant creation.
+
+        Staff-created variants are immediately active.
+        Follows partial success pattern:
+        - created: list of successfully created variants
+        - failed: list of failed variants with reasons
+    StaffBulkCreatedVariantInfo:
+      properties:
+        variant_id:
+          type: string
+          title: Variant Id
+        index:
+          type: integer
+          title: Index
+      type: object
+      required:
+        - variant_id
+        - index
+      title: StaffBulkCreatedVariantInfo
+      description: Information about a successfully created variant in bulk operation.
+    StaffBulkVariantInput:
+      properties:
+        gtin:
+          anyOf:
+            - type: string
+              maxLength: 14
+              minLength: 8
+            - type: "null"
+          title: Gtin
+        mpn:
+          anyOf:
+            - type: string
+              maxLength: 100
+            - type: "null"
+          title: Mpn
+        static_attributes:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Static Attributes
+        weight_grams:
+          type: integer
+          minimum: 0
+          title: Weight Grams
+          default: 0
+      type: object
+      title: StaffBulkVariantInput
+      description: |-
+        Input for a single variant in staff bulk creation request.
+
+        All fields are optional as different products have different requirements.
+    StaffCategoryResponse:
+      properties:
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        parent_id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Parent Id
+        name_fa:
+          type: string
+          title: Name Fa
+        name_en:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Name En
+        slug:
+          type: string
+          title: Slug
+        is_leaf_node:
+          type: boolean
+          title: Is Leaf Node
+        required_attributes:
+          anyOf:
+            - items: {}
+              type: array
+            - type: "null"
+          title: Required Attributes
+        variation_themes:
+          anyOf:
+            - items: {}
+              type: array
+            - type: "null"
+          title: Variation Themes
+        is_gtin_required:
+          type: boolean
+          title: Is Gtin Required
+        icon:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Icon
+        is_active:
+          type: boolean
+          title: Is Active
+        is_deleted:
+          type: boolean
+          title: Is Deleted
+        deleted_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Deleted At
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+        - category_id
+        - parent_id
+        - name_fa
+        - name_en
+        - slug
+        - is_leaf_node
+        - is_gtin_required
+        - is_active
+        - is_deleted
+        - created_at
+        - updated_at
+      title: StaffCategoryResponse
+      description: Response schema for staff category data.
+    StaffDeactivateListingRequest:
+      properties:
+        deactivation_reason:
+          anyOf:
+            - type: string
+              maxLength: 1000
+            - type: "null"
+          title: Deactivation Reason
+        staff_id:
+          type: string
+          title: Staff Id
+      type: object
+      required:
+        - staff_id
+      title: StaffDeactivateListingRequest
+      description: Request schema for staff listing deactivation.
+    StaffDeactivateListingResponse:
+      properties:
+        listing_id:
+          type: string
+          title: Listing Id
+      type: object
+      required:
+        - listing_id
+      title: StaffDeactivateListingResponse
+      description: Response schema for staff listing deactivation.
+    StaffListingResponse:
+      properties:
+        listing_id:
+          type: string
+          title: Listing Id
+        variant_id:
+          type: string
+          title: Variant Id
+        seller_id:
+          type: string
+          title: Seller Id
+        sku:
+          type: string
+          title: Sku
+        condition:
+          type: string
+          title: Condition
+        cover_image:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Cover Image
+        status:
+          type: string
+          title: Status
+          default: pending
+        availability:
+          type: string
+          title: Availability
+          default: active
+        is_deleted:
+          type: boolean
+          title: Is Deleted
+          default: false
+        deleted_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Deleted At
+        rejection_reason:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Rejection Reason
+        rejected_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Rejected At
+        rejected_by:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Rejected By
+        deactivated_by:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Deactivated By
+        deactivated_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Deactivated At
+        deactivation_reason:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Deactivation Reason
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+        - listing_id
+        - variant_id
+        - seller_id
+        - sku
+        - condition
+        - created_at
+        - updated_at
+      title: StaffListingResponse
+      description: Response schema for staff listing data.
+    StaffVariantDetailResponse:
+      properties:
+        variant_id:
+          type: string
+          title: Variant Id
+        group_id:
+          type: integer
+          title: Group Id
+        brand_name:
+          type: string
+          title: Brand Name
+        gtin:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Gtin
+        mpn:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Mpn
+        static_attributes:
+          additionalProperties: true
+          type: object
+          title: Static Attributes
+        weight_grams:
+          type: integer
+          title: Weight Grams
+          default: 0
+        is_active:
+          type: boolean
+          title: Is Active
+        is_deleted:
+          type: boolean
+          title: Is Deleted
+          default: false
+        deleted_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Deleted At
+        rejection_reason:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Rejection Reason
+        rejected_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Rejected At
+        rejected_by:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Rejected By
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+        group:
+          $ref: "#/components/schemas/core__api__v1__staff__variants__schemas__StaffProductGroupResponse"
+      type: object
+      required:
+        - variant_id
+        - group_id
+        - brand_name
+        - gtin
+        - mpn
+        - static_attributes
+        - is_active
+        - created_at
+        - updated_at
+        - group
+      title: StaffVariantDetailResponse
+      description: Response schema for staff variant detail with nested product group.
+    StaffVariantResponse:
+      properties:
+        variant_id:
+          type: string
+          title: Variant Id
+        group_id:
+          type: integer
+          title: Group Id
+        brand_name:
+          type: string
+          title: Brand Name
+        gtin:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Gtin
+        mpn:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Mpn
+        static_attributes:
+          additionalProperties: true
+          type: object
+          title: Static Attributes
+        weight_grams:
+          type: integer
+          title: Weight Grams
+          default: 0
+        is_active:
+          type: boolean
+          title: Is Active
+        is_deleted:
+          type: boolean
+          title: Is Deleted
+          default: false
+        deleted_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Deleted At
+        rejection_reason:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Rejection Reason
+        rejected_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Rejected At
+        rejected_by:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Rejected By
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+        - variant_id
+        - group_id
+        - brand_name
+        - gtin
+        - mpn
+        - static_attributes
+        - is_active
+        - created_at
+        - updated_at
+      title: StaffVariantResponse
+      description: Response schema for staff variant data.
+    UpdateCategoryRequest:
+      properties:
+        name_fa:
+          anyOf:
+            - type: string
+              maxLength: 255
+              minLength: 1
+            - type: "null"
+          title: Name Fa
+        name_en:
+          anyOf:
+            - type: string
+              maxLength: 255
+            - type: "null"
+          title: Name En
+        slug:
+          anyOf:
+            - type: string
+              maxLength: 255
+              minLength: 1
+              pattern: ^[a-z0-9-]+$
+            - type: "null"
+          title: Slug
+        is_leaf_node:
+          anyOf:
+            - type: boolean
+            - type: "null"
+          title: Is Leaf Node
+        required_attributes:
+          anyOf:
+            - items:
+                $ref: "#/components/schemas/AttributeItemSchema"
+              type: array
+            - type: "null"
+          title: Required Attributes
+        variation_themes:
+          anyOf:
+            - items:
+                $ref: "#/components/schemas/AttributeItemSchema"
+              type: array
+            - type: "null"
+          title: Variation Themes
+        is_gtin_required:
+          anyOf:
+            - type: boolean
+            - type: "null"
+          title: Is Gtin Required
+        icon:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Icon
+      type: object
+      title: UpdateCategoryRequest
+      description: Request schema for updating a category.
+    UpdateCategoryResponse:
+      properties:
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        slug:
+          type: string
+          title: Slug
+      type: object
+      required:
+        - category_id
+        - slug
+      title: UpdateCategoryResponse
+      description: Response schema for category update.
+    UpdateListingRequest:
+      properties:
+        sku:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Sku
+        condition:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Condition
+        price:
+          anyOf:
+            - type: number
+            - type: string
+              pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+            - type: "null"
+          title: Price
+        image_urls:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Image Urls
+        cover_image:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Cover Image
+      type: object
+      title: UpdateListingRequest
+      description: Request schema for updating a seller listing (partial update).
+    UpdateProductGroupRequest:
+      properties:
+        brand_name:
+          anyOf:
+            - type: string
+              maxLength: 255
+              minLength: 1
+            - type: "null"
+          title: Brand Name
+        master_title:
+          anyOf:
+            - type: string
+              maxLength: 500
+              minLength: 1
+            - type: "null"
+          title: Master Title
+        master_description:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Master Description
+        catalog_images:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Catalog Images
+      type: object
+      title: UpdateProductGroupRequest
+      description: Request schema for updating a product group.
+    UpdateProductGroupResponse:
+      properties:
+        group_id:
+          type: integer
+          title: Group Id
+      type: object
+      required:
+        - group_id
+      title: UpdateProductGroupResponse
+      description: Response schema for product group update.
+    UpdateVariantRequest:
+      properties:
+        gtin:
+          anyOf:
+            - type: string
+              maxLength: 14
+              minLength: 8
+            - type: "null"
+          title: Gtin
+        mpn:
+          anyOf:
+            - type: string
+              maxLength: 100
+            - type: "null"
+          title: Mpn
+        brand_name:
+          anyOf:
+            - type: string
+              maxLength: 255
+              minLength: 1
+            - type: "null"
+          title: Brand Name
+        static_attributes:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Static Attributes
+        weight_grams:
+          anyOf:
+            - type: integer
+              minimum: 0
+            - type: "null"
+          title: Weight Grams
+      type: object
+      title: UpdateVariantRequest
+      description: Request schema for updating a variant.
+    UpdateVariantResponse:
+      properties:
+        variant_id:
+          type: string
+          title: Variant Id
+      type: object
+      required:
+        - variant_id
+      title: UpdateVariantResponse
+      description: Response schema for variant update.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+        - loc
+        - msg
+        - type
+      title: ValidationError
+    VariantResponse:
+      properties:
+        variant_id:
+          type: string
+          title: Variant Id
+        group_id:
+          type: integer
+          title: Group Id
+        brand_name:
+          type: string
+          title: Brand Name
+        gtin:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Gtin
+        mpn:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Mpn
+        static_attributes:
+          additionalProperties: true
+          type: object
+          title: Static Attributes
+        weight_grams:
+          type: integer
+          title: Weight Grams
+          default: 0
+        is_active:
+          type: boolean
+          title: Is Active
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+        - variant_id
+        - group_id
+        - brand_name
+        - gtin
+        - mpn
+        - static_attributes
+        - is_active
+        - created_at
+        - updated_at
+      title: VariantResponse
+      description: Response schema for basic variant data.
+    VariantWithGroupResponse:
+      properties:
+        variant_id:
+          type: string
+          title: Variant Id
+        group_id:
+          type: integer
+          title: Group Id
+        brand_name:
+          type: string
+          title: Brand Name
+        gtin:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Gtin
+        mpn:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Mpn
+        static_attributes:
+          additionalProperties: true
+          type: object
+          title: Static Attributes
+        weight_grams:
+          type: integer
+          title: Weight Grams
+          default: 0
+        is_active:
+          type: boolean
+          title: Is Active
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+        min_price:
+          anyOf:
+            - type: number
+            - type: "null"
+          title: Min Price
+          description: Minimum price from active approved listings (null if no active listings)
+        group:
+          $ref: "#/components/schemas/ProductGroupResponse"
+      type: object
+      required:
+        - variant_id
+        - group_id
+        - brand_name
+        - gtin
+        - mpn
+        - static_attributes
+        - is_active
+        - created_at
+        - updated_at
+        - group
+      title: VariantWithGroupResponse
+      description: Response schema for variant with nested product group data.
+    VariantsListResponse:
+      properties:
+        data:
+          items:
+            $ref: "#/components/schemas/FlatVariantResponse"
+          type: array
+          title: Data
+        pagination:
+          $ref: "#/components/schemas/PaginationMeta"
+      type: object
+      required:
+        - data
+        - pagination
+      title: VariantsListResponse
+      description: Response for paginated variants list.
+    core__api__v1__customer__listings__schemas__BatchEnrichItemRequest:
+      properties:
+        seller_id:
+          type: string
+          title: Seller Id
+        sku:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Sku
+      type: object
+      required:
+        - seller_id
+        - sku
+      title: BatchEnrichItemRequest
+      description: Single item in a batch enrichment request.
+    core__api__v1__customer__listings__schemas__BatchEnrichItemResponse:
+      properties:
+        seller_id:
+          type: string
+          title: Seller Id
+        sku:
+          type: string
+          title: Sku
+        found:
+          type: boolean
+          title: Found
+        listing_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Listing Id
+        variant_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Variant Id
+        condition:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Condition
+        master_title:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Master Title
+        brand_name:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Brand Name
+        cover_image:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Cover Image
+        catalog_images:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Catalog Images
+        static_attributes:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Static Attributes
+        category_name_fa:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Category Name Fa
+      type: object
+      required:
+        - seller_id
+        - sku
+        - found
+      title: BatchEnrichItemResponse
+      description: Single item in a batch enrichment response.
+    core__api__v1__customer__listings__schemas__BatchEnrichResponse:
+      properties:
+        items:
+          items:
+            $ref: >-
+              #/components/schemas/core__api__v1__customer__listings__schemas__BatchEnrichItemResponse
+          type: array
+          title: Items
+      type: object
+      required:
+        - items
+      title: BatchEnrichResponse
+      description: Response body for batch listing enrichment.
+    core__api__v1__internal__listings__schemas__BatchEnrichItemResponse:
+      properties:
+        seller_id:
+          type: string
+          title: Seller Id
+        sku:
+          type: string
+          title: Sku
+        found:
+          type: boolean
+          title: Found
+        listing_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Listing Id
+        variant_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Variant Id
+        condition:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Condition
+        master_title:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Master Title
+        brand_name:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Brand Name
+        cover_image:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Cover Image
+        catalog_images:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Catalog Images
+        static_attributes:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Static Attributes
+        weight_grams:
+          type: integer
+          title: Weight Grams
+          default: 0
+        category_name_fa:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Category Name Fa
+      type: object
+      required:
+        - seller_id
+        - sku
+        - found
+      title: BatchEnrichItemResponse
+      description: Single item in a batch enrichment response.
+    core__api__v1__internal__listings__schemas__BatchEnrichRequest:
+      properties:
+        items:
+          items:
+            $ref: >-
+              #/components/schemas/core__api__v1__customer__listings__schemas__BatchEnrichItemRequest
+          type: array
+          maxItems: 50
+          minItems: 1
+          title: Items
+      type: object
+      required:
+        - items
+      title: BatchEnrichRequest
+      description: Request body for batch listing enrichment.
+    core__api__v1__internal__listings__schemas__BatchEnrichResponse:
+      properties:
+        items:
+          items:
+            $ref: >-
+              #/components/schemas/core__api__v1__internal__listings__schemas__BatchEnrichItemResponse
+          type: array
+          title: Items
+      type: object
+      required:
+        - items
+      title: BatchEnrichResponse
+      description: Response body for batch listing enrichment.
+    core__api__v1__staff__product_groups__schemas__StaffProductGroupResponse:
+      properties:
+        group_id:
+          type: integer
+          title: Group Id
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        brand_name:
+          type: string
+          title: Brand Name
+        master_title:
+          type: string
+          title: Master Title
+        master_description:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Master Description
+        catalog_images:
+          items:
+            type: string
+          type: array
+          title: Catalog Images
+        cover_image:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Cover Image
+        is_deleted:
+          type: boolean
+          title: Is Deleted
+          default: false
+        deleted_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Deleted At
+        variant_count:
+          type: integer
+          title: Variant Count
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+        - group_id
+        - category_id
+        - brand_name
+        - master_title
+        - master_description
+        - catalog_images
+        - variant_count
+        - created_at
+        - updated_at
+      title: StaffProductGroupResponse
+      description: Response schema for staff product group data with variant count.
+    core__api__v1__staff__variants__schemas__StaffProductGroupResponse:
+      properties:
+        group_id:
+          type: integer
+          title: Group Id
+        category_id:
+          type: string
+          format: uuid
+          title: Category Id
+        brand_name:
+          type: string
+          title: Brand Name
+        master_title:
+          type: string
+          title: Master Title
+        master_description:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Master Description
+        catalog_images:
+          items:
+            type: string
+          type: array
+          title: Catalog Images
+        cover_image:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Cover Image
+        is_deleted:
+          type: boolean
+          title: Is Deleted
+          default: false
+        deleted_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Deleted At
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+        - group_id
+        - category_id
+        - brand_name
+        - master_title
+        - master_description
+        - catalog_images
+        - created_at
+        - updated_at
+      title: StaffProductGroupResponse
+      description: Response schema for nested product group in variant detail.
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    XDoretClientType:
+      name: x-doret-client-type
+      in: header
+      required: false
+      schema:
+        type: string
+        example: app
+      description: Client type identifier
+    XDoretMainSocialId:
+      name: x-doret-main-social-id
+      in: header
+      required: false
+      schema:
+        type: string
+        format: uuid
+        example: 019c7609-d734-76a0-9276-32183ac26e04
+      description: Main social ID
+    XDoretBusinessSocialId:
+      name: X-Doret-Business-Social-Id
+      in: header
+      required: false
+      schema:
+        type: string
+        format: uuid
+      description: Business social ID
+security:
+  - BearerAuth: []
+  - {}

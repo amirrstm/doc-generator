@@ -1,0 +1,184 @@
+<Endpoint
+title="Get shop (internal)"
+method="GET"
+category="internal"
+baseUrl="https://api.example.com"
+path="/api/v1/internal/shops/\{shop_id\}"
+summary="Get shop (internal)"
+description={`Get minimal shop details by ID. Internal service-to-service endpoint. Used for validating shop existence and status during order processing. Returns only essential fields: id, org_id, lifecycle_state, suspended. No authentication required - trusted internal network only.`}
+hasAuthentication={true}
+curl={`curl --request GET \
+  --url "{baseUrl}/api/v1/internal/shops/123" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value"`}
+languages={{
+javascript: `fetch("{baseUrl}/api/v1/internal/shops/\${shop_id}", {
+  "method": "GET"
+})
+  .then(response => response.json())
+  .then(data => console.log(data));`,
+python: `import requests
+
+url = "{baseUrl}/api/v1/internal/shops/{shop_id}"
+
+headers = {
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [
+    {
+      "description": "No description provided",
+      "required": true,
+      "title": "shop_id",
+      "type": "string (uuid)"
+    }
+  ],
+  "query": []
+}}
+requestBody={{
+  "properties": [],
+  "required": false
+}}
+responses={{
+  "200": [
+    {
+      "description": "Unique shop identifier",
+      "title": "id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Organization this shop belongs to",
+      "title": "org_id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Current lifecycle state",
+      "title": "lifecycle_state",
+      "type": "string"
+    },
+    {
+      "description": "Whether shop operations are suspended",
+      "title": "suspended",
+      "type": "boolean"
+    },
+    {
+      "description": "GreenBank merchant ID",
+      "title": "merchant_id",
+      "type": "unknown"
+    },
+    {
+      "description": "GreenBank contract number",
+      "title": "contract_no",
+      "type": "unknown"
+    },
+    {
+      "description": "Shop display name",
+      "title": "name",
+      "type": "unknown"
+    },
+    {
+      "description": "Doret social profile identifier",
+      "title": "doret_social_id",
+      "type": "string"
+    },
+    {
+      "description": "Default currency code",
+      "title": "default_currency_id",
+      "type": "string"
+    },
+    {
+      "description": "Currency instrument config (symbol, format, decimal_places)",
+      "title": "default_currency_instrument",
+      "type": "object"
+    },
+    {
+      "description": "Business category {id, name} or null",
+      "title": "business_category",
+      "type": "unknown"
+    },
+    {
+      "description": "List of ACTIVE BNPL plan objects",
+      "title": "bnpl_plans",
+      "type": "array"
+    },
+    {
+      "description": "List of shipping configuration objects",
+      "title": "shipping_configurations",
+      "type": "array"
+    }
+  ],
+  "404": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

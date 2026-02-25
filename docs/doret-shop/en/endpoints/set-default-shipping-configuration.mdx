@@ -1,0 +1,234 @@
+<Endpoint
+title="Set default shipping configuration"
+method="PUT"
+category="merchant"
+baseUrl="https://api.example.com"
+path="/api/v1/merchant/shipping-configurations/default"
+summary="Set default shipping configuration"
+description={`Set a shipping configuration as the default for checkout. The default configuration is used when customers don't select a specific option. Only one configuration can be default at a time.`}
+hasAuthentication={true}
+curl={`curl --request PUT \
+  --url "{baseUrl}/api/v1/merchant/shipping-configurations/default" \
+  --header "Content-Type: application/json" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value" \
+  --data '{
+  "config_id": "xxxxxxxx-xxxxx"
+}'`}
+languages={{
+javascript: `const requestBody = {
+"config_id": "xxxxxxxx-xxxxx"
+};
+
+fetch("{baseUrl}/api/v1/merchant/shipping-configurations/default", {
+"method": "PUT",
+"headers": {
+"Content-Type": "application/json"
+},
+"body": JSON.stringify(requestBody)
+})
+.then(response => response.json())
+.then(data => console.log(data));`,
+    python: `import requests
+
+url = "{baseUrl}/api/v1/merchant/shipping-configurations/default"
+
+payload = {
+"config_id": "xxxxxxxx-xxxxx"
+}
+
+headers = {
+"Content-Type": "application/json",
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+response = requests.put(url, json=payload, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [],
+  "query": []
+}}
+requestBody={{
+  "contentType": "application/json",
+  "properties": [
+    {
+      "description": "UUID of the shipping configuration to set as default. Must be an existing configuration belonging to this shop.",
+      "title": "config_id",
+      "type": "string (uuid)",
+      "required": true
+    }
+  ],
+  "required": true
+}}
+responses={{
+  "200": [
+    {
+      "description": "Response payload",
+      "title": "data",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "Shipping configuration identifier (UUID)",
+            "title": "config_id",
+            "type": "string"
+          },
+          {
+            "description": "Shop this configuration belongs to (UUID)",
+            "title": "shop_id",
+            "type": "string"
+          },
+          {
+            "description": "Origin country identifier (UUID)",
+            "title": "shipping_origin_country_id",
+            "type": "string"
+          },
+          {
+            "description": "List of origin province identifiers (UUIDs)",
+            "title": "shipping_origin_province_ids",
+            "type": "array"
+          },
+          {
+            "description": "Shipping type (e.g., STANDARD, EXPRESS)",
+            "title": "shipping_type",
+            "type": "string"
+          },
+          {
+            "description": "Base shipping price (decimal as string)",
+            "title": "base_shipping_price",
+            "type": "string"
+          },
+          {
+            "description": "Additional price per kg (decimal as string)",
+            "title": "additional_price_per_kg",
+            "type": "string"
+          },
+          {
+            "description": "Whether this is the default configuration (always true)",
+            "title": "is_default",
+            "type": "boolean"
+          },
+          {
+            "description": "Last update timestamp (ISO 8601)",
+            "title": "updated_at",
+            "type": "unknown"
+          }
+        ],
+        "title": "SetDefaultShippingConfigResponse"
+      }
+    },
+    {
+      "description": "Request metadata",
+      "title": "metadata",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "request_id",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "timestamp",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "processing_time_ms",
+            "type": "unknown"
+          }
+        ],
+        "title": "MetadataSchema"
+      }
+    }
+  ],
+  "404": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "409": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

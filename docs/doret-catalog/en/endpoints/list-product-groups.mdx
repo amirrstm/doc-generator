@@ -1,0 +1,143 @@
+<Endpoint
+title="List product groups"
+method="GET"
+category="seller"
+baseUrl="https://api.example.com"
+path="/api/v1/seller/product-groups"
+summary="List product groups"
+description={`Paginated list of product groups with optional filters (category, brand name). Includes variant count per group. Only shows active, non-deleted product groups. Results are ordered by creation date (newest first).`}
+hasAuthentication={true}
+curl={`curl --request GET \
+  --url "{baseUrl}/api/v1/seller/product-groups" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value"`}
+languages={{
+javascript: `fetch("{baseUrl}/api/v1/seller/product-groups?category_id=value&brand_name=value&page=123&page_size=123", {
+  "method": "GET"
+})
+  .then(response => response.json())
+  .then(data => console.log(data));`,
+python: `import requests
+
+url = "{baseUrl}/api/v1/seller/product-groups"
+
+headers = {
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+params = {
+"category_id": "value",
+"brand_name": "value",
+"page": 123,
+"page_size": 123
+}
+
+response = requests.get(url, headers=headers, params=params)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [],
+  "query": [
+    {
+      "description": "Filter by category ID",
+      "required": false,
+      "title": "category_id",
+      "type": "unknown"
+    },
+    {
+      "description": "Filter by brand name",
+      "required": false,
+      "title": "brand_name",
+      "type": "unknown"
+    },
+    {
+      "description": "Page number (1-indexed). Default: 1.",
+      "required": false,
+      "title": "page",
+      "type": "integer"
+    },
+    {
+      "description": "Number of items per page. Default: 20, Max: 100.",
+      "required": false,
+      "title": "page_size",
+      "type": "integer"
+    }
+  ]
+}}
+requestBody={{
+  "properties": [],
+  "required": false
+}}
+responses={{
+  "200": [],
+  "400": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

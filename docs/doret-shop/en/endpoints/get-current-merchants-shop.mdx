@@ -1,0 +1,254 @@
+<Endpoint
+title="Get current merchant's shop"
+method="GET"
+category="merchant"
+baseUrl="https://api.example.com"
+path="/api/v1/merchant/shop"
+summary="Get current merchant's shop"
+description={`Get full shop details for the current merchant. Shop is identified by the X-SOCIAL-MAIN-ID header. Returns shop in any lifecycle state with all fields.`}
+hasAuthentication={true}
+curl={`curl --request GET \
+  --url "{baseUrl}/api/v1/merchant/shop" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value"`}
+languages={{
+javascript: `fetch("{baseUrl}/api/v1/merchant/shop", {
+  "method": "GET"
+})
+  .then(response => response.json())
+  .then(data => console.log(data));`,
+python: `import requests
+
+url = "{baseUrl}/api/v1/merchant/shop"
+
+headers = {
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [],
+  "query": []
+}}
+requestBody={{
+  "properties": [],
+  "required": false
+}}
+responses={{
+  "200": [
+    {
+      "description": "Unique shop identifier (UUID)",
+      "title": "id",
+      "type": "string"
+    },
+    {
+      "description": "Organization this shop belongs to (UUID)",
+      "title": "org_id",
+      "type": "string"
+    },
+    {
+      "description": "Doret social profile ID for the shop",
+      "title": "doret_social_id",
+      "type": "string"
+    },
+    {
+      "description": "Current lifecycle state. Values: REQUESTED, CONTRACT_SIGNED, SHOP_INFO_ADDED, SHIPMENT_INFO_ADDED, PAID, ACTIVE, ADDENDUM_PENDING, SUSPENDED, CLOSED",
+      "title": "lifecycle_state",
+      "type": "string"
+    },
+    {
+      "description": "Whether shop operations are suspended",
+      "title": "suspended",
+      "type": "boolean"
+    },
+    {
+      "description": "ISO 4217 currency code (e.g., IRR)",
+      "title": "default_currency_id",
+      "type": "string"
+    },
+    {
+      "description": "Currency instrument identifier",
+      "title": "default_currency_instrument",
+      "type": "string"
+    },
+    {
+      "description": "Shop creation timestamp (ISO 8601)",
+      "title": "created_at",
+      "type": "unknown"
+    },
+    {
+      "description": "Last update timestamp (ISO 8601)",
+      "title": "updated_at",
+      "type": "unknown"
+    },
+    {
+      "description": "Shop display name",
+      "title": "shop_name",
+      "type": "unknown"
+    },
+    {
+      "description": "Shop English name",
+      "title": "shop_english_name",
+      "type": "unknown"
+    },
+    {
+      "description": "Shop website URL",
+      "title": "website_address",
+      "type": "unknown"
+    },
+    {
+      "description": "Shop phone number",
+      "title": "phone",
+      "type": "unknown"
+    },
+    {
+      "description": "Business category UUID",
+      "title": "business_category_id",
+      "type": "unknown"
+    },
+    {
+      "description": "Logo image UUID from Media Service",
+      "title": "logo_image_id",
+      "type": "unknown"
+    },
+    {
+      "description": "Signed URL for shop logo image",
+      "title": "logo_url",
+      "type": "unknown"
+    },
+    {
+      "description": "Shop owner's first name",
+      "title": "owner_name",
+      "type": "unknown"
+    },
+    {
+      "description": "Shop owner's family name",
+      "title": "owner_family_name",
+      "type": "unknown"
+    },
+    {
+      "description": "City identifier",
+      "title": "city_id",
+      "type": "unknown"
+    },
+    {
+      "description": "Province identifier",
+      "title": "province_id",
+      "type": "unknown"
+    },
+    {
+      "description": "Postal/ZIP code",
+      "title": "postal_code",
+      "type": "unknown"
+    },
+    {
+      "description": "Physical address",
+      "title": "physical_address",
+      "type": "unknown"
+    },
+    {
+      "description": "Address description or directions",
+      "title": "address_description",
+      "type": "unknown"
+    },
+    {
+      "description": "Latitude coordinate",
+      "title": "latitude",
+      "type": "unknown"
+    },
+    {
+      "description": "Longitude coordinate",
+      "title": "longitude",
+      "type": "unknown"
+    }
+  ],
+  "400": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "404": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

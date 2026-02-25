@@ -1,0 +1,202 @@
+<Endpoint
+title="Update a variant"
+method="PUT"
+category="staff"
+baseUrl="https://api.example.com"
+path="/api/v1/staff/variants/\{variant_id\}"
+summary="Update a variant"
+description={`Only provided fields will be updated.`}
+hasAuthentication={true}
+curl={`curl --request PUT \
+  --url "{baseUrl}/api/v1/staff/variants/123" \
+  --header "Content-Type: application/json" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value" \
+  --data '{
+  "gtin": null,
+  "mpn": null,
+  "brand_name": null,
+  "static_attributes": null,
+  "weight_grams": null
+}'`}
+languages={{
+javascript: `const requestBody = {
+"gtin": null,
+"mpn": null,
+"brand_name": null,
+"static_attributes": null,
+"weight_grams": null
+};
+
+fetch("{baseUrl}/api/v1/staff/variants/\${variant_id}", {
+"method": "PUT",
+"headers": {
+"Content-Type": "application/json"
+},
+"body": JSON.stringify(requestBody)
+})
+.then(response => response.json())
+.then(data => console.log(data));`,
+    python: `import requests
+
+url = "{baseUrl}/api/v1/staff/variants/{variant_id}"
+
+payload = {
+"gtin": null,
+"mpn": null,
+"brand_name": null,
+"static_attributes": null,
+"weight_grams": null
+}
+
+headers = {
+"Content-Type": "application/json",
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+response = requests.put(url, json=payload, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [
+    {
+      "description": "No description provided",
+      "required": true,
+      "title": "variant_id",
+      "type": "string"
+    }
+  ],
+  "query": []
+}}
+requestBody={{
+  "contentType": "application/json",
+  "properties": [
+    {
+      "description": "No description provided",
+      "title": "gtin",
+      "type": "unknown",
+      "required": false
+    },
+    {
+      "description": "No description provided",
+      "title": "mpn",
+      "type": "unknown",
+      "required": false
+    },
+    {
+      "description": "No description provided",
+      "title": "brand_name",
+      "type": "unknown",
+      "required": false
+    },
+    {
+      "description": "No description provided",
+      "title": "static_attributes",
+      "type": "unknown",
+      "required": false
+    },
+    {
+      "description": "No description provided",
+      "title": "weight_grams",
+      "type": "unknown",
+      "required": false
+    }
+  ],
+  "required": true
+}}
+responses={{
+  "200": [
+    {
+      "description": "No description provided",
+      "title": "variant_id",
+      "type": "string"
+    }
+  ],
+  "400": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "404": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

@@ -1,0 +1,298 @@
+<Endpoint
+title="Get store contract for shop"
+method="GET"
+category="customer"
+baseUrl="https://api.example.com"
+path="/api/v1/customer/shops/\{shop_id\}/contract"
+summary="Get store contract for shop"
+description={`Get the store contract/agreement for a shop in REQUESTED state. Returns contract clauses and external contracts for display before signing. Must be called before sign-contract to show the contract to the user.`}
+hasAuthentication={true}
+curl={`curl --request GET \
+  --url "{baseUrl}/api/v1/customer/shops/123/contract" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value"`}
+languages={{
+javascript: `fetch("{baseUrl}/api/v1/customer/shops/\${shop_id}/contract", {
+  "method": "GET"
+})
+  .then(response => response.json())
+  .then(data => console.log(data));`,
+python: `import requests
+
+url = "{baseUrl}/api/v1/customer/shops/{shop_id}/contract"
+
+headers = {
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [
+    {
+      "description": "No description provided",
+      "required": true,
+      "title": "shop_id",
+      "type": "string (uuid)"
+    }
+  ],
+  "query": []
+}}
+requestBody={{
+  "properties": [],
+  "required": false
+}}
+responses={{
+  "200": [
+    {
+      "description": "Store agreement identifier (UUID)",
+      "title": "agreement_id",
+      "type": "string"
+    },
+    {
+      "description": "Store identifier (UUID)",
+      "title": "store_id",
+      "type": "string"
+    },
+    {
+      "description": "Organization identifier (UUID)",
+      "title": "organization_id",
+      "type": "string"
+    },
+    {
+      "description": "Agreement status",
+      "title": "status",
+      "type": "string"
+    },
+    {
+      "description": "Signing timestamp (ISO 8601)",
+      "title": "signed_at",
+      "type": "unknown"
+    },
+    {
+      "description": "Contract template details",
+      "title": "contract",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "Contract template identifier",
+            "title": "id",
+            "type": "string"
+          },
+          {
+            "description": "Contract template name",
+            "title": "name",
+            "type": "string"
+          },
+          {
+            "description": "Version identifier",
+            "title": "version_id",
+            "type": "string"
+          },
+          {
+            "description": "Version number",
+            "title": "version_number",
+            "type": "string"
+          },
+          {
+            "description": "Contract clauses",
+            "title": "clauses",
+            "type": "array",
+            "children": {
+              "items": [
+                {
+                  "description": "Clause identifier",
+                  "title": "id",
+                  "type": "string"
+                },
+                {
+                  "description": "Clause title",
+                  "title": "title",
+                  "type": "string"
+                },
+                {
+                  "description": "Clause content text",
+                  "title": "content",
+                  "type": "string"
+                },
+                {
+                  "description": "Display order",
+                  "title": "order",
+                  "type": "integer"
+                }
+              ],
+              "title": "ContractClauseResponse"
+            }
+          },
+          {
+            "description": "Contract template variables",
+            "title": "variables",
+            "type": "unknown"
+          },
+          {
+            "description": "Effective date (ISO 8601)",
+            "title": "effective_from",
+            "type": "unknown"
+          },
+          {
+            "description": "Expiration date (ISO 8601)",
+            "title": "valid_to",
+            "type": "unknown"
+          }
+        ],
+        "title": "ContractDetailResponse"
+      }
+    },
+    {
+      "description": "Associated external contracts",
+      "title": "external_contracts",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "External contract identifier",
+            "title": "id",
+            "type": "string"
+          },
+          {
+            "description": "Template code",
+            "title": "template_code",
+            "type": "string"
+          },
+          {
+            "description": "Template display name",
+            "title": "template_name",
+            "type": "string"
+          },
+          {
+            "description": "Full contract text",
+            "title": "contract_text",
+            "type": "string"
+          },
+          {
+            "description": "Contract version",
+            "title": "version",
+            "type": "string"
+          },
+          {
+            "description": "Valid from date",
+            "title": "valid_from",
+            "type": "unknown"
+          },
+          {
+            "description": "Valid to date",
+            "title": "valid_to",
+            "type": "unknown"
+          }
+        ],
+        "title": "ExternalContractResponse"
+      }
+    }
+  ],
+  "404": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "409": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ],
+  "503": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ]
+}}
+/>

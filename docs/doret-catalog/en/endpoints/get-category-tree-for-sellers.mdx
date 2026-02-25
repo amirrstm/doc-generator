@@ -1,0 +1,150 @@
+<Endpoint
+title="Get category tree for sellers"
+method="GET"
+category="seller"
+baseUrl="https://api.example.com"
+path="/api/v1/seller/categories/tree"
+summary="Get category tree for sellers"
+description={`Get the complete category hierarchy with rule fields for variant/listing creation.`}
+hasAuthentication={true}
+curl={`curl --request GET \
+  --url "{baseUrl}/api/v1/seller/categories/tree" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value"`}
+languages={{
+javascript: `fetch("{baseUrl}/api/v1/seller/categories/tree", {
+  "method": "GET"
+})
+  .then(response => response.json())
+  .then(data => console.log(data));`,
+python: `import requests
+
+url = "{baseUrl}/api/v1/seller/categories/tree"
+
+headers = {
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [],
+  "query": []
+}}
+requestBody={{
+  "properties": [],
+  "required": false
+}}
+responses={{
+  "200": [
+    {
+      "description": "No description provided",
+      "title": "category_id (array item)",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "No description provided",
+      "title": "parent_id (array item)",
+      "type": "unknown"
+    },
+    {
+      "description": "No description provided",
+      "title": "name_fa (array item)",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "name_en (array item)",
+      "type": "unknown"
+    },
+    {
+      "description": "No description provided",
+      "title": "slug (array item)",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "is_leaf_node (array item)",
+      "type": "boolean"
+    },
+    {
+      "description": "No description provided",
+      "title": "icon (array item)",
+      "type": "unknown"
+    },
+    {
+      "description": "No description provided",
+      "title": "required_attributes (array item)",
+      "type": "unknown"
+    },
+    {
+      "description": "No description provided",
+      "title": "variation_themes (array item)",
+      "type": "unknown"
+    },
+    {
+      "description": "No description provided",
+      "title": "is_gtin_required (array item)",
+      "type": "boolean"
+    },
+    {
+      "description": "No description provided",
+      "title": "children (array item)",
+      "type": "array"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

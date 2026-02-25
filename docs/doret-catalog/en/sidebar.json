@@ -1,0 +1,832 @@
+[
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "health-check",
+        "title": "Health Check"
+      }
+    ],
+    "section": "common"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "get-root-categories",
+        "title": "Get root categories"
+      },
+      {
+        "method": "GET",
+        "slug": "get-category-children",
+        "title": "Get category children"
+      },
+      {
+        "method": "GET",
+        "slug": "get-category-tree",
+        "title": "Get category tree"
+      },
+      {
+        "method": "GET",
+        "slug": "get-category-rules",
+        "title": "Get category rules"
+      },
+      {
+        "method": "GET",
+        "slug": "list-variants-paginated-optional-category-filter",
+        "title": "List variants (paginated, optional category filter)"
+      },
+      {
+        "method": "GET",
+        "slug": "get-variants-by-product-group",
+        "title": "Get variants by product group"
+      },
+      {
+        "method": "GET",
+        "slug": "get-variant-by-id",
+        "title": "Get variant by ID"
+      },
+      {
+        "method": "GET",
+        "slug": "browse-listings",
+        "title": "Browse listings"
+      },
+      {
+        "method": "GET",
+        "slug": "get-listings-by-variant",
+        "title": "Get listings by variant"
+      },
+      {
+        "method": "POST",
+        "slug": "batch-enrich-listings",
+        "title": "Batch enrich listings"
+      },
+      {
+        "method": "GET",
+        "slug": "get-listing-detail",
+        "title": "Get listing detail"
+      },
+      {
+        "method": "GET",
+        "slug": "search-product-groups",
+        "title": "Search product groups"
+      },
+      {
+        "method": "GET",
+        "slug": "get-product-group-filters-for-a-category",
+        "title": "Get product group filters for a category"
+      },
+      {
+        "method": "GET",
+        "slug": "get-product-group-by-id",
+        "title": "Get product group by ID"
+      },
+      {
+        "method": "GET",
+        "slug": "list-product-groups",
+        "title": "List product groups"
+      },
+      {
+        "method": "GET",
+        "slug": "get-shop-categories-with-listings",
+        "title": "Get shop categories with listings"
+      }
+    ],
+    "section": "customer"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "get-root-categories",
+        "title": "Get root categories"
+      },
+      {
+        "method": "GET",
+        "slug": "get-category-children",
+        "title": "Get category children"
+      },
+      {
+        "method": "GET",
+        "slug": "get-category-tree",
+        "title": "Get category tree"
+      },
+      {
+        "method": "GET",
+        "slug": "get-category-rules",
+        "title": "Get category rules"
+      }
+    ],
+    "section": "customer-categories"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "list-variants-paginated-optional-category-filter",
+        "title": "List variants (paginated, optional category filter)"
+      },
+      {
+        "method": "GET",
+        "slug": "get-variants-by-product-group",
+        "title": "Get variants by product group"
+      },
+      {
+        "method": "GET",
+        "slug": "get-variant-by-id",
+        "title": "Get variant by ID"
+      }
+    ],
+    "section": "customer-variants"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "browse-listings",
+        "title": "Browse listings"
+      },
+      {
+        "method": "GET",
+        "slug": "get-listings-by-variant",
+        "title": "Get listings by variant"
+      },
+      {
+        "method": "POST",
+        "slug": "batch-enrich-listings",
+        "title": "Batch enrich listings"
+      },
+      {
+        "method": "GET",
+        "slug": "get-listing-detail",
+        "title": "Get listing detail"
+      }
+    ],
+    "section": "customer-listings"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "search-product-groups",
+        "title": "Search product groups"
+      },
+      {
+        "method": "GET",
+        "slug": "get-product-group-filters-for-a-category",
+        "title": "Get product group filters for a category"
+      },
+      {
+        "method": "GET",
+        "slug": "get-product-group-by-id",
+        "title": "Get product group by ID"
+      },
+      {
+        "method": "GET",
+        "slug": "list-product-groups",
+        "title": "List product groups"
+      }
+    ],
+    "section": "customer-product-groups"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "get-shop-categories-with-listings",
+        "title": "Get shop categories with listings"
+      }
+    ],
+    "section": "customer-shops"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "search-categories",
+        "title": "Search categories"
+      },
+      {
+        "method": "GET",
+        "slug": "get-category-tree-for-sellers",
+        "title": "Get category tree for sellers"
+      },
+      {
+        "method": "GET",
+        "slug": "search-variants",
+        "title": "Search variants"
+      },
+      {
+        "method": "GET",
+        "slug": "list-my-variant-requests",
+        "title": "List my variant requests"
+      },
+      {
+        "method": "GET",
+        "slug": "get-variant-by-id",
+        "title": "Get variant by ID"
+      },
+      {
+        "method": "GET",
+        "slug": "list-variants",
+        "title": "List variants"
+      },
+      {
+        "method": "POST",
+        "slug": "create-variant-with-new-product-group",
+        "title": "Create variant with new product group"
+      },
+      {
+        "method": "POST",
+        "slug": "add-variant-to-existing-product-group",
+        "title": "Add variant to existing product group"
+      },
+      {
+        "method": "POST",
+        "slug": "bulk-add-variants-to-existing-product-group",
+        "title": "Bulk add variants to existing product group"
+      },
+      {
+        "method": "GET",
+        "slug": "list-seller-listings",
+        "title": "List seller listings"
+      },
+      {
+        "method": "POST",
+        "slug": "create-listing",
+        "title": "Create listing"
+      },
+      {
+        "method": "GET",
+        "slug": "get-seller-listing-detail",
+        "title": "Get seller listing detail"
+      },
+      {
+        "method": "PATCH",
+        "slug": "update-listing",
+        "title": "Update listing"
+      },
+      {
+        "method": "POST",
+        "slug": "deactivate-listing",
+        "title": "Deactivate listing"
+      },
+      {
+        "method": "POST",
+        "slug": "activate-listing",
+        "title": "Activate listing"
+      },
+      {
+        "method": "GET",
+        "slug": "get-product-group-by-id",
+        "title": "Get product group by ID"
+      },
+      {
+        "method": "GET",
+        "slug": "search-product-groups",
+        "title": "Search product groups"
+      },
+      {
+        "method": "GET",
+        "slug": "list-product-groups",
+        "title": "List product groups"
+      },
+      {
+        "method": "GET",
+        "slug": "get-filter-values",
+        "title": "Get filter values"
+      }
+    ],
+    "section": "seller"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "search-categories",
+        "title": "Search categories"
+      },
+      {
+        "method": "GET",
+        "slug": "get-category-tree-for-sellers",
+        "title": "Get category tree for sellers"
+      }
+    ],
+    "section": "seller-categories"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "search-variants",
+        "title": "Search variants"
+      },
+      {
+        "method": "GET",
+        "slug": "list-my-variant-requests",
+        "title": "List my variant requests"
+      },
+      {
+        "method": "GET",
+        "slug": "get-variant-by-id",
+        "title": "Get variant by ID"
+      },
+      {
+        "method": "GET",
+        "slug": "list-variants",
+        "title": "List variants"
+      },
+      {
+        "method": "POST",
+        "slug": "create-variant-with-new-product-group",
+        "title": "Create variant with new product group"
+      },
+      {
+        "method": "POST",
+        "slug": "add-variant-to-existing-product-group",
+        "title": "Add variant to existing product group"
+      },
+      {
+        "method": "POST",
+        "slug": "bulk-add-variants-to-existing-product-group",
+        "title": "Bulk add variants to existing product group"
+      }
+    ],
+    "section": "seller-variants"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "list-seller-listings",
+        "title": "List seller listings"
+      },
+      {
+        "method": "POST",
+        "slug": "create-listing",
+        "title": "Create listing"
+      },
+      {
+        "method": "GET",
+        "slug": "get-seller-listing-detail",
+        "title": "Get seller listing detail"
+      },
+      {
+        "method": "PATCH",
+        "slug": "update-listing",
+        "title": "Update listing"
+      },
+      {
+        "method": "POST",
+        "slug": "deactivate-listing",
+        "title": "Deactivate listing"
+      },
+      {
+        "method": "POST",
+        "slug": "activate-listing",
+        "title": "Activate listing"
+      }
+    ],
+    "section": "seller-listings"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "get-product-group-by-id",
+        "title": "Get product group by ID"
+      },
+      {
+        "method": "GET",
+        "slug": "search-product-groups",
+        "title": "Search product groups"
+      },
+      {
+        "method": "GET",
+        "slug": "list-product-groups",
+        "title": "List product groups"
+      },
+      {
+        "method": "GET",
+        "slug": "get-filter-values",
+        "title": "Get filter values"
+      }
+    ],
+    "section": "seller-product-groups"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "list-all-categories",
+        "title": "List all categories"
+      },
+      {
+        "method": "POST",
+        "slug": "create-a-new-category",
+        "title": "Create a new category"
+      },
+      {
+        "method": "GET",
+        "slug": "get-category-by-id",
+        "title": "Get category by ID"
+      },
+      {
+        "method": "PUT",
+        "slug": "update-a-category",
+        "title": "Update a category"
+      },
+      {
+        "method": "DELETE",
+        "slug": "disable-a-category",
+        "title": "Disable a category"
+      },
+      {
+        "method": "GET",
+        "slug": "list-product-groups-with-filters",
+        "title": "List product groups with filters"
+      },
+      {
+        "method": "POST",
+        "slug": "create-a-new-product-group",
+        "title": "Create a new product group"
+      },
+      {
+        "method": "GET",
+        "slug": "get-product-group-details",
+        "title": "Get product group details"
+      },
+      {
+        "method": "PUT",
+        "slug": "update-a-product-group",
+        "title": "Update a product group"
+      },
+      {
+        "method": "DELETE",
+        "slug": "soft-delete-a-product-group",
+        "title": "Soft-delete a product group"
+      },
+      {
+        "method": "GET",
+        "slug": "list-variants-with-filters",
+        "title": "List variants with filters"
+      },
+      {
+        "method": "POST",
+        "slug": "create-a-new-variant",
+        "title": "Create a new variant"
+      },
+      {
+        "method": "GET",
+        "slug": "list-pending-variants-for-moderation",
+        "title": "List pending variants for moderation"
+      },
+      {
+        "method": "POST",
+        "slug": "bulk-approve-variants",
+        "title": "Bulk approve variants"
+      },
+      {
+        "method": "POST",
+        "slug": "bulk-create-variants-for-existing-product-group",
+        "title": "Bulk create variants for existing product group"
+      },
+      {
+        "method": "GET",
+        "slug": "get-variant-details",
+        "title": "Get variant details"
+      },
+      {
+        "method": "PUT",
+        "slug": "update-a-variant",
+        "title": "Update a variant"
+      },
+      {
+        "method": "DELETE",
+        "slug": "soft-delete-a-variant",
+        "title": "Soft-delete a variant"
+      },
+      {
+        "method": "POST",
+        "slug": "approve-a-pending-variant",
+        "title": "Approve a pending variant"
+      },
+      {
+        "method": "POST",
+        "slug": "reject-a-pending-variant",
+        "title": "Reject a pending variant"
+      },
+      {
+        "method": "GET",
+        "slug": "list-pending-listings-for-moderation",
+        "title": "List pending listings for moderation"
+      },
+      {
+        "method": "POST",
+        "slug": "bulk-approve-pending-listings",
+        "title": "Bulk approve pending listings"
+      },
+      {
+        "method": "GET",
+        "slug": "list-listings-with-filters",
+        "title": "List listings with filters"
+      },
+      {
+        "method": "DELETE",
+        "slug": "soft-delete-a-listing",
+        "title": "Soft-delete a listing"
+      },
+      {
+        "method": "POST",
+        "slug": "approve-a-pending-listing",
+        "title": "Approve a pending listing"
+      },
+      {
+        "method": "POST",
+        "slug": "reject-a-pending-listing",
+        "title": "Reject a pending listing"
+      },
+      {
+        "method": "POST",
+        "slug": "deactivate-a-listing",
+        "title": "Deactivate a listing"
+      },
+      {
+        "method": "POST",
+        "slug": "activate-a-listing",
+        "title": "Activate a listing"
+      },
+      {
+        "method": "GET",
+        "slug": "get-pending-moderation-statistics",
+        "title": "Get pending moderation statistics"
+      }
+    ],
+    "section": "staff"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "list-all-categories",
+        "title": "List all categories"
+      },
+      {
+        "method": "POST",
+        "slug": "create-a-new-category",
+        "title": "Create a new category"
+      },
+      {
+        "method": "GET",
+        "slug": "get-category-by-id",
+        "title": "Get category by ID"
+      },
+      {
+        "method": "PUT",
+        "slug": "update-a-category",
+        "title": "Update a category"
+      },
+      {
+        "method": "DELETE",
+        "slug": "disable-a-category",
+        "title": "Disable a category"
+      }
+    ],
+    "section": "staff-categories"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "list-product-groups-with-filters",
+        "title": "List product groups with filters"
+      },
+      {
+        "method": "POST",
+        "slug": "create-a-new-product-group",
+        "title": "Create a new product group"
+      },
+      {
+        "method": "GET",
+        "slug": "get-product-group-details",
+        "title": "Get product group details"
+      },
+      {
+        "method": "PUT",
+        "slug": "update-a-product-group",
+        "title": "Update a product group"
+      },
+      {
+        "method": "DELETE",
+        "slug": "soft-delete-a-product-group",
+        "title": "Soft-delete a product group"
+      }
+    ],
+    "section": "staff-product-groups"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "list-variants-with-filters",
+        "title": "List variants with filters"
+      },
+      {
+        "method": "POST",
+        "slug": "create-a-new-variant",
+        "title": "Create a new variant"
+      },
+      {
+        "method": "GET",
+        "slug": "list-pending-variants-for-moderation",
+        "title": "List pending variants for moderation"
+      },
+      {
+        "method": "POST",
+        "slug": "bulk-approve-variants",
+        "title": "Bulk approve variants"
+      },
+      {
+        "method": "POST",
+        "slug": "bulk-create-variants-for-existing-product-group",
+        "title": "Bulk create variants for existing product group"
+      },
+      {
+        "method": "GET",
+        "slug": "get-variant-details",
+        "title": "Get variant details"
+      },
+      {
+        "method": "PUT",
+        "slug": "update-a-variant",
+        "title": "Update a variant"
+      },
+      {
+        "method": "DELETE",
+        "slug": "soft-delete-a-variant",
+        "title": "Soft-delete a variant"
+      },
+      {
+        "method": "POST",
+        "slug": "approve-a-pending-variant",
+        "title": "Approve a pending variant"
+      },
+      {
+        "method": "POST",
+        "slug": "reject-a-pending-variant",
+        "title": "Reject a pending variant"
+      }
+    ],
+    "section": "staff-variants"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "list-pending-listings-for-moderation",
+        "title": "List pending listings for moderation"
+      },
+      {
+        "method": "POST",
+        "slug": "bulk-approve-pending-listings",
+        "title": "Bulk approve pending listings"
+      },
+      {
+        "method": "GET",
+        "slug": "list-listings-with-filters",
+        "title": "List listings with filters"
+      },
+      {
+        "method": "DELETE",
+        "slug": "soft-delete-a-listing",
+        "title": "Soft-delete a listing"
+      },
+      {
+        "method": "POST",
+        "slug": "approve-a-pending-listing",
+        "title": "Approve a pending listing"
+      },
+      {
+        "method": "POST",
+        "slug": "reject-a-pending-listing",
+        "title": "Reject a pending listing"
+      },
+      {
+        "method": "POST",
+        "slug": "deactivate-a-listing",
+        "title": "Deactivate a listing"
+      },
+      {
+        "method": "POST",
+        "slug": "activate-a-listing",
+        "title": "Activate a listing"
+      }
+    ],
+    "section": "staff-listings"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "get-pending-moderation-statistics",
+        "title": "Get pending moderation statistics"
+      }
+    ],
+    "section": "staff-stats"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "get-category-tree",
+        "title": "Get category tree"
+      },
+      {
+        "method": "GET",
+        "slug": "check-if-listing-exists",
+        "title": "Check if listing exists"
+      },
+      {
+        "method": "POST",
+        "slug": "batch-enrich-listings",
+        "title": "Batch enrich listings"
+      },
+      {
+        "method": "POST",
+        "slug": "batch-enrich-listings-by-ids",
+        "title": "Batch enrich listings by IDs"
+      },
+      {
+        "method": "GET",
+        "slug": "list-all-variants",
+        "title": "List all variants"
+      },
+      {
+        "method": "POST",
+        "slug": "batch-resolve-variants",
+        "title": "Batch resolve variants"
+      }
+    ],
+    "section": "internal"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "get-category-tree",
+        "title": "Get category tree"
+      }
+    ],
+    "section": "internal-categories"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "check-if-listing-exists",
+        "title": "Check if listing exists"
+      },
+      {
+        "method": "POST",
+        "slug": "batch-enrich-listings",
+        "title": "Batch enrich listings"
+      },
+      {
+        "method": "POST",
+        "slug": "batch-enrich-listings-by-ids",
+        "title": "Batch enrich listings by IDs"
+      }
+    ],
+    "section": "internal-listings"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "list-all-variants",
+        "title": "List all variants"
+      },
+      {
+        "method": "POST",
+        "slug": "batch-resolve-variants",
+        "title": "Batch resolve variants"
+      }
+    ],
+    "section": "internal-variants"
+  },
+  {
+    "items": [
+      {
+        "method": "GET",
+        "slug": "root",
+        "title": "Root"
+      },
+      {
+        "method": "GET",
+        "slug": "health",
+        "title": "Health"
+      }
+    ],
+    "section": "General"
+  }
+]

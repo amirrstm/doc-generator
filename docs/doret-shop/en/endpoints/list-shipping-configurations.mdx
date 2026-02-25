@@ -1,0 +1,250 @@
+<Endpoint
+title="List shipping configurations"
+method="GET"
+category="merchant"
+baseUrl="https://api.example.com"
+path="/api/v1/merchant/shipping-configurations"
+summary="List shipping configurations"
+description={`List all shipping configurations for the current shop. Returns configurations with their type, pricing, and default status.`}
+hasAuthentication={true}
+curl={`curl --request GET \
+  --url "{baseUrl}/api/v1/merchant/shipping-configurations" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value"`}
+languages={{
+javascript: `fetch("{baseUrl}/api/v1/merchant/shipping-configurations", {
+  "method": "GET"
+})
+  .then(response => response.json())
+  .then(data => console.log(data));`,
+python: `import requests
+
+url = "{baseUrl}/api/v1/merchant/shipping-configurations"
+
+headers = {
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [],
+  "query": []
+}}
+requestBody={{
+  "properties": [],
+  "required": false
+}}
+responses={{
+  "200": [
+    {
+      "description": "List of items",
+      "title": "data",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "Shipping configuration identifier (UUID)",
+            "title": "config_id",
+            "type": "string"
+          },
+          {
+            "description": "Shop this configuration belongs to (UUID)",
+            "title": "shop_id",
+            "type": "string"
+          },
+          {
+            "description": "Origin country identifier (UUID)",
+            "title": "shipping_origin_country_id",
+            "type": "string"
+          },
+          {
+            "description": "Origin country display name",
+            "title": "shipping_origin_country_name",
+            "type": "string"
+          },
+          {
+            "description": "List of origin province identifiers (UUIDs)",
+            "title": "shipping_origin_province_ids",
+            "type": "array"
+          },
+          {
+            "description": "List of origin province display names",
+            "title": "shipping_origin_province_names",
+            "type": "array"
+          },
+          {
+            "description": "Shipping type (e.g., STANDARD, EXPRESS)",
+            "title": "shipping_type",
+            "type": "string"
+          },
+          {
+            "description": "Base shipping price (decimal as string)",
+            "title": "base_shipping_price",
+            "type": "string"
+          },
+          {
+            "description": "Additional price per kg (decimal as string)",
+            "title": "additional_price_per_kg",
+            "type": "string"
+          },
+          {
+            "description": "Whether this is the default configuration",
+            "title": "is_default",
+            "type": "boolean"
+          },
+          {
+            "description": "Shop lifecycle state (present on creation)",
+            "title": "lifecycle_state",
+            "type": "unknown"
+          },
+          {
+            "description": "Creation timestamp (ISO 8601)",
+            "title": "created_at",
+            "type": "unknown"
+          },
+          {
+            "description": "Last update timestamp (ISO 8601)",
+            "title": "updated_at",
+            "type": "unknown"
+          }
+        ],
+        "title": "ShippingConfigurationResponse"
+      }
+    },
+    {
+      "description": "Pagination metadata",
+      "title": "pagination",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "page",
+            "type": "integer"
+          },
+          {
+            "description": "No description provided",
+            "title": "page_size",
+            "type": "integer"
+          },
+          {
+            "description": "No description provided",
+            "title": "total_items",
+            "type": "integer"
+          },
+          {
+            "description": "No description provided",
+            "title": "total_pages",
+            "type": "integer"
+          }
+        ],
+        "title": "PaginationSchema"
+      }
+    },
+    {
+      "description": "Applied filters",
+      "title": "filters",
+      "type": "object"
+    },
+    {
+      "description": "Sort configuration",
+      "title": "sort",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "fields",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "orders",
+            "type": "array"
+          }
+        ],
+        "title": "SortSchema"
+      }
+    },
+    {
+      "description": "Request metadata",
+      "title": "metadata",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "request_id",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "timestamp",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "processing_time_ms",
+            "type": "unknown"
+          }
+        ],
+        "title": "MetadataSchema"
+      }
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

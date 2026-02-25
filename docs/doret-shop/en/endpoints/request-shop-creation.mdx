@@ -1,0 +1,204 @@
+<Endpoint
+title="Request shop creation"
+method="POST"
+category="customer"
+baseUrl="https://api.example.com"
+path="/api/v1/customer/shops"
+summary="Request shop creation"
+description={`Create a new shop in REQUESTED state. The shop must complete the onboarding flow: contract -> shop info -> shipping config -> payment -> activation. Organization ID and social profile are extracted from request headers. Returns the created shop with initial REQUESTED lifecycle state.`}
+hasAuthentication={true}
+curl={`curl --request POST \
+  --url "{baseUrl}/api/v1/customer/shops" \
+  --header "Content-Type: application/json" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value" \
+  --data '{
+  "default_currency_id": "string"
+}'`}
+languages={{
+javascript: `const requestBody = {
+"default_currency_id": "string"
+};
+
+fetch("{baseUrl}/api/v1/customer/shops", {
+"method": "POST",
+"headers": {
+"Content-Type": "application/json"
+},
+"body": JSON.stringify(requestBody)
+})
+.then(response => response.json())
+.then(data => console.log(data));`,
+    python: `import requests
+
+url = "{baseUrl}/api/v1/customer/shops"
+
+payload = {
+"default_currency_id": "string"
+}
+
+headers = {
+"Content-Type": "application/json",
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [],
+  "query": []
+}}
+requestBody={{
+  "contentType": "application/json",
+  "properties": [
+    {
+      "description": "ISO 4217 currency code for the shop's default currency. Example: 'IRR' for Iranian Rial, 'USD' for US Dollar. This determines the currency used for pricing and settlements.",
+      "title": "default_currency_id",
+      "type": "string",
+      "required": true
+    }
+  ],
+  "required": true
+}}
+responses={{
+  "201": [
+    {
+      "description": "Response payload",
+      "title": "data",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "Created shop identifier (UUID)",
+            "title": "shop_id",
+            "type": "string"
+          },
+          {
+            "description": "Initial lifecycle state (REQUESTED)",
+            "title": "lifecycle_state",
+            "type": "string"
+          },
+          {
+            "description": "Creation timestamp (ISO 8601)",
+            "title": "created_at",
+            "type": "string"
+          }
+        ],
+        "title": "ShopCreatedResponse"
+      }
+    },
+    {
+      "description": "Request metadata",
+      "title": "metadata",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "request_id",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "timestamp",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "processing_time_ms",
+            "type": "unknown"
+          }
+        ],
+        "title": "MetadataSchema"
+      }
+    }
+  ],
+  "400": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "409": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

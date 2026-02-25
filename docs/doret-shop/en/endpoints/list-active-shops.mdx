@@ -1,0 +1,368 @@
+<Endpoint
+title="List active shops"
+method="GET"
+category="generic"
+baseUrl="https://api.example.com"
+path="/api/v1/generic/shops"
+summary="List active shops"
+description={`List active, non-suspended shops with optional filtering and sorting. Supports filtering by business_category_id, province_id, city_id, and text search on shop name (q). Sorting: 'newest' (default) or 'name'. Returns paginated results with the same shape as shop public profile.`}
+hasAuthentication={true}
+curl={`curl --request GET \
+  --url "{baseUrl}/api/v1/generic/shops" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value"`}
+languages={{
+javascript: `fetch("{baseUrl}/api/v1/generic/shops?business_category_id=value&province_id=value&city_id=value&q=value&sort_by=value&page=123&page_size=123", {
+  "method": "GET"
+})
+  .then(response => response.json())
+  .then(data => console.log(data));`,
+python: `import requests
+
+url = "{baseUrl}/api/v1/generic/shops"
+
+headers = {
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+params = {
+"business_category_id": "value",
+"province_id": "value",
+"city_id": "value",
+"q": "value",
+"sort_by": "value",
+"page": 123,
+"page_size": 123
+}
+
+response = requests.get(url, headers=headers, params=params)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [],
+  "query": [
+    {
+      "description": "No description provided",
+      "required": false,
+      "title": "business_category_id",
+      "type": "unknown"
+    },
+    {
+      "description": "No description provided",
+      "required": false,
+      "title": "province_id",
+      "type": "unknown"
+    },
+    {
+      "description": "No description provided",
+      "required": false,
+      "title": "city_id",
+      "type": "unknown"
+    },
+    {
+      "description": "No description provided",
+      "required": false,
+      "title": "q",
+      "type": "unknown"
+    },
+    {
+      "description": "No description provided",
+      "required": false,
+      "title": "sort_by",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "required": false,
+      "title": "page",
+      "type": "integer"
+    },
+    {
+      "description": "No description provided",
+      "required": false,
+      "title": "page_size",
+      "type": "integer"
+    }
+  ]
+}}
+requestBody={{
+  "properties": [],
+  "required": false
+}}
+responses={{
+  "200": [
+    {
+      "description": "List of items",
+      "title": "data",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "Shop identifier (UUID)",
+            "title": "id",
+            "type": "string"
+          },
+          {
+            "description": "Organization identifier (UUID)",
+            "title": "org_id",
+            "type": "string"
+          },
+          {
+            "description": "Doret social page identifier",
+            "title": "doret_social_id",
+            "type": "string"
+          },
+          {
+            "description": "Doret business entity identifier (UUID)",
+            "title": "doret_business_id",
+            "type": "unknown"
+          },
+          {
+            "description": "Shop display name",
+            "title": "shop_name",
+            "type": "unknown"
+          },
+          {
+            "description": "Shop English name",
+            "title": "shop_english_name",
+            "type": "unknown"
+          },
+          {
+            "description": "Business category info",
+            "title": "business_category",
+            "type": "unknown"
+          },
+          {
+            "description": "Shop website URL",
+            "title": "website_address",
+            "type": "unknown"
+          },
+          {
+            "description": "Shop contact phone",
+            "title": "phone",
+            "type": "unknown"
+          },
+          {
+            "description": "Latitude coordinate",
+            "title": "latitude",
+            "type": "unknown"
+          },
+          {
+            "description": "Longitude coordinate",
+            "title": "longitude",
+            "type": "unknown"
+          },
+          {
+            "description": "Physical street address",
+            "title": "physical_address",
+            "type": "unknown"
+          },
+          {
+            "description": "Additional address details",
+            "title": "address_description",
+            "type": "unknown"
+          },
+          {
+            "description": "City identifier",
+            "title": "city_id",
+            "type": "unknown"
+          },
+          {
+            "description": "Province identifier",
+            "title": "province_id",
+            "type": "unknown"
+          },
+          {
+            "description": "Signed URL for shop logo image",
+            "title": "logo_url",
+            "type": "unknown"
+          },
+          {
+            "description": "Default currency code (e.g., IRR)",
+            "title": "default_currency_id",
+            "type": "string"
+          },
+          {
+            "description": "Currency formatting instrument (symbol, format, decimal_places)",
+            "title": "default_currency_instrument",
+            "type": "object"
+          },
+          {
+            "description": "Active BNPL plans for this shop",
+            "title": "bnpl_plans",
+            "type": "array",
+            "children": {
+              "items": [
+                {
+                  "description": "Plan identifier",
+                  "title": "plan_id",
+                  "type": "string"
+                },
+                {
+                  "description": "Plan display name",
+                  "title": "plan_name",
+                  "type": "unknown"
+                },
+                {
+                  "description": "Plan display name (Farsi)",
+                  "title": "plan_name_fa",
+                  "type": "unknown"
+                },
+                {
+                  "description": "Number of installments",
+                  "title": "installment_count",
+                  "type": "unknown"
+                },
+                {
+                  "description": "Minimum purchase amount (decimal as string)",
+                  "title": "min_purchase_amount",
+                  "type": "unknown"
+                },
+                {
+                  "description": "Maximum purchase amount (decimal as string)",
+                  "title": "max_purchase_amount",
+                  "type": "unknown"
+                }
+              ],
+              "title": "BnplPlanInfo"
+            }
+          }
+        ],
+        "title": "ShopPublicProfileResponse"
+      }
+    },
+    {
+      "description": "Pagination metadata",
+      "title": "pagination",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "page",
+            "type": "integer"
+          },
+          {
+            "description": "No description provided",
+            "title": "page_size",
+            "type": "integer"
+          },
+          {
+            "description": "No description provided",
+            "title": "total_items",
+            "type": "integer"
+          },
+          {
+            "description": "No description provided",
+            "title": "total_pages",
+            "type": "integer"
+          }
+        ],
+        "title": "PaginationSchema"
+      }
+    },
+    {
+      "description": "Applied filters",
+      "title": "filters",
+      "type": "object"
+    },
+    {
+      "description": "Sort configuration",
+      "title": "sort",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "fields",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "orders",
+            "type": "array"
+          }
+        ],
+        "title": "SortSchema"
+      }
+    },
+    {
+      "description": "Request metadata",
+      "title": "metadata",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "request_id",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "timestamp",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "processing_time_ms",
+            "type": "unknown"
+          }
+        ],
+        "title": "MetadataSchema"
+      }
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

@@ -1,5 +1,6 @@
 import { IconCheck, IconCopy, IconLoader2, IconPlayerPlayFilled } from "@tabler/icons-react";
 import { useCallback, useEffect, useId, useMemo, useState } from "react";
+import Markdown from "react-markdown";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -402,7 +403,11 @@ export function Execute({
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-5xl">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
+          <DialogDescription asChild>
+            <div className="prose prose-sm max-w-none text-muted-foreground dark:prose-invert">
+              <Markdown>{description}</Markdown>
+            </div>
+          </DialogDescription>
         </DialogHeader>
 
         <div className="flex min-h-[90vh] flex-col gap-4" dir="ltr">
@@ -457,7 +462,7 @@ export function Execute({
                     {parameters.header.map((param) => (
                       <div className="space-y-1 pt-2" key={param.title}>
                         <Label className="text-xs">
-                          {param.title}
+                          {param.title.toUpperCase()}
                           {param.required && <span className="text-red-500">*</span>}
                         </Label>
                         {param.description && param.description !== "No description provided" && (

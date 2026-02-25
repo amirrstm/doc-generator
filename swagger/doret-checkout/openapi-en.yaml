@@ -1,0 +1,2675 @@
+openapi: 3.1.0
+info:
+  title: Checkout Service
+  version: 1.0.0
+paths:
+  /api/v1/common/health:
+    get:
+      tags:
+        - common
+      summary: Health Check
+      description: Health check endpoint
+      operationId: health_check_api_v1_common_health_get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/customer/checkouts:
+    post:
+      tags:
+        - customer
+      summary: Initiate checkout
+      description: Initiate a new checkout session from customer's cart.
+      operationId: initiate_checkout_api_v1_customer_checkouts_post
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommandResponseSchema_InitiateCheckoutResponse_"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/customer/checkouts/{checkout_id}:
+    get:
+      tags:
+        - customer
+      summary: Get checkout status
+      description: Get full checkout session status and details.
+      operationId: get_checkout_status_api_v1_customer_checkouts__checkout_id__get
+      parameters:
+        - name: checkout_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Checkout Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckoutStatusResponse"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/checkouts/{checkout_id}:validate-products:
+    post:
+      tags:
+        - customer
+      summary: Validate products
+      description: Validate all products in the checkout session against catalog.
+      operationId: validate_products_api_v1_customer_checkouts__checkout_id__validate_products_post
+      parameters:
+        - name: checkout_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Checkout Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommandResponseSchema_ValidateProductsResponse_"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/checkouts/{checkout_id}/address:
+    post:
+      tags:
+        - customer
+      summary: Select shipping address
+      description: Select and validate shipping address for checkout.
+      operationId: select_address_api_v1_customer_checkouts__checkout_id__address_post
+      parameters:
+        - name: checkout_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Checkout Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SelectAddressRequest"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommandResponseSchema_SelectAddressResponse_"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/checkouts/{checkout_id}/shipping-options:
+    get:
+      tags:
+        - customer
+      summary: Get shipping options
+      description: Get available shipping methods for each shop in checkout.
+      operationId: get_shipping_options_api_v1_customer_checkouts__checkout_id__shipping_options_get
+      parameters:
+        - name: checkout_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Checkout Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShippingOptionsResponse"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/checkouts/{checkout_id}/shipping-methods:
+    post:
+      tags:
+        - customer
+      summary: Select shipping methods
+      description: Select shipping method for each shop in checkout.
+      operationId: select_shipping_methods_api_v1_customer_checkouts__checkout_id__shipping_methods_post
+      parameters:
+        - name: checkout_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Checkout Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SelectShippingMethodsRequest"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommandResponseSchema_SelectShippingMethodsResponse_"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/checkouts/{checkout_id}/totals:
+    post:
+      tags:
+        - customer
+      summary: Calculate checkout totals
+      description: Calculate and return checkout totals with optional coupon.
+      operationId: calculate_totals_api_v1_customer_checkouts__checkout_id__totals_post
+      parameters:
+        - name: checkout_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Checkout Id
+        - name: coupon_code
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            description: Optional coupon code to apply
+            title: Coupon Code
+          description: Optional coupon code to apply
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommandResponseSchema_TotalsResponse_"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/checkouts/{checkout_id}:confirm-changes:
+    post:
+      tags:
+        - customer
+      summary: Confirm cart changes
+      description: Detect and confirm cart changes during checkout.
+      operationId: confirm_changes_api_v1_customer_checkouts__checkout_id__confirm_changes_post
+      parameters:
+        - name: checkout_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Checkout Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfirmChangesRequest"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommandResponseSchema_ConfirmChangesResponse_"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/checkouts/{checkout_id}:pay:
+    post:
+      tags:
+        - customer
+      summary: Initiate payment
+      description: Initiate payment workflow for checkout.
+      operationId: pay_api_v1_customer_checkouts__checkout_id__pay_post
+      parameters:
+        - name: checkout_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Checkout Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PayRequest"
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommandResponseSchema_PayResponse_"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/checkouts/{checkout_id}/bnpl-plans:
+    get:
+      tags:
+        - customer
+      summary: Get BNPL plans for all shops
+      description: Get available BNPL plans for all shops in the checkout.
+      operationId: get_checkout_bnpl_plans_api_v1_customer_checkouts__checkout_id__bnpl_plans_get
+      parameters:
+        - name: checkout_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Checkout Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckoutBnplPlansResponse"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/checkouts/{checkout_id}/shops/{shop_id}:pay-bnpl:
+    post:
+      tags:
+        - customer
+      summary: Pay shop via BNPL
+      description: Pay a single shop via BNPL within a multi-shop checkout.
+      operationId: pay_bnpl_shop_api_v1_customer_checkouts__checkout_id__shops__shop_id__pay_bnpl_post
+      parameters:
+        - name: checkout_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Checkout Id
+        - name: shop_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Shop Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PayBnplShopRequest"
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommandResponseSchema_PayBnplShopResponse_"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/customer/checkouts/{checkout_id}/shops/{shop_id}/bnpl-calculate:
+    post:
+      tags:
+        - customer
+      summary: Calculate BNPL installments
+      description: Calculate BNPL installment breakdown for a shop in checkout.
+      operationId: >-
+        calculate_bnpl_purchase_api_v1_customer_checkouts__checkout_id__shops__shop_id__bnpl_calculate_post
+      parameters:
+        - name: checkout_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Checkout Id
+        - name: shop_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Shop Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CalculateBnplRequest"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommandResponseSchema_BnplCalculateResponse_"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/generic/health:
+    get:
+      tags:
+        - generic
+      summary: Health Check
+      description: Health check endpoint.
+      operationId: health_check_api_v1_generic_health_get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Health Check Api V1 Generic Health Get
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/generic/readiness:
+    get:
+      tags:
+        - generic
+      summary: Readiness Check
+      description: Readiness check endpoint.
+      operationId: readiness_check_api_v1_generic_readiness_get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Readiness Check Api V1 Generic Readiness Get
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+  /api/v1/internal/checkouts/{checkout_id}:continue-saga:
+    post:
+      tags:
+        - internal
+      summary: Continue saga after payment success
+      description: Signal the workflow to continue after successful payment callback.
+      operationId: continue_saga_api_v1_internal_checkouts__checkout_id__continue_saga_post
+      parameters:
+        - name: checkout_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Checkout Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContinueSagaRequest"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommandResponseSchema_ContinueSagaResponse_"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/internal/checkouts/{checkout_id}:payment-failed:
+    post:
+      tags:
+        - internal
+      summary: Handle payment failure
+      description: Signal the workflow to trigger compensation after payment failure.
+      operationId: payment_failed_api_v1_internal_checkouts__checkout_id__payment_failed_post
+      parameters:
+        - name: checkout_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Checkout Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentFailedRequest"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommandResponseSchema_PaymentFailedResponse_"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/checkouts:
+    get:
+      tags:
+        - staff
+      summary: List checkouts (staff)
+      description: List checkout sessions with optional filters for staff users.
+      operationId: list_checkouts_api_v1_staff_checkouts_get
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            title: Status
+        - name: social_main_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            title: Social Main Id
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            default: 20
+            title: Limit
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+            title: Offset
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionResponseSchema_CheckoutSummarySchema_"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/checkouts/{checkout_id}:
+    get:
+      tags:
+        - staff
+      summary: Get checkout details (staff)
+      description: Get full checkout session details with items and shop summaries.
+      operationId: get_checkout_details_api_v1_staff_checkouts__checkout_id__get
+      parameters:
+        - name: checkout_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Checkout Id
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckoutDetailsSchema"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/staff/abuse-reports:
+    get:
+      tags:
+        - staff
+      summary: List abuse reports (staff)
+      description: List customer abuse status records for staff review.
+      operationId: list_abuse_reports_api_v1_staff_abuse_reports_get
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            title: Status
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            default: 20
+            title: Limit
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+            title: Offset
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionResponseSchema_AbuseReportSchema_"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /:
+    get:
+      summary: Root
+      description: Root endpoint
+      operationId: root__get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      parameters:
+        - $ref: "#/components/parameters/XDoretClientType"
+        - $ref: "#/components/parameters/XDoretMainSocialId"
+        - $ref: "#/components/parameters/XDoretBusinessSocialId"
+components:
+  schemas:
+    AbuseReportSchema:
+      properties:
+        social_main_id:
+          type: string
+          title: Social Main Id
+        status:
+          type: string
+          title: Status
+        expired_checkouts_24h:
+          type: integer
+          title: Expired Checkouts 24H
+        expired_checkouts_7d:
+          type: integer
+          title: Expired Checkouts 7D
+        inventory_reservation_minutes_24h:
+          type: integer
+          title: Inventory Reservation Minutes 24H
+        cancelled_orders_7d:
+          type: integer
+          title: Cancelled Orders 7D
+        cancelled_orders_30d:
+          type: integer
+          title: Cancelled Orders 30D
+        last_checkout_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Last Checkout At
+        last_abuse_event_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Last Abuse Event At
+        blocked_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Blocked At
+        blocked_until:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Blocked Until
+        blocked_reason:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Blocked Reason
+        reviewed_by:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Reviewed By
+        reviewed_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Reviewed At
+        review_notes:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Review Notes
+        created_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Created At
+        updated_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Updated At
+      type: object
+      required:
+        - social_main_id
+        - status
+        - expired_checkouts_24h
+        - expired_checkouts_7d
+        - inventory_reservation_minutes_24h
+        - cancelled_orders_7d
+        - cancelled_orders_30d
+      title: AbuseReportSchema
+      description: Customer abuse status record for staff.
+    AddressSummarySchema:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        city_name:
+          type: string
+          title: City Name
+        province:
+          type: string
+          title: Province
+        full_address:
+          type: string
+          title: Full Address
+      type: object
+      required:
+        - id
+        - name
+        - city_name
+        - province
+        - full_address
+      title: AddressSummarySchema
+      description: Summary of selected address.
+    BnplCalculateResponse:
+      properties:
+        checkout_id:
+          type: string
+          title: Checkout Id
+        shop_id:
+          type: string
+          title: Shop Id
+        eligible:
+          type: boolean
+          title: Eligible
+        purchase_amount_minor:
+          type: integer
+          title: Purchase Amount Minor
+        installment_count:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Installment Count
+        installments:
+          items:
+            $ref: "#/components/schemas/BnplInstallmentSchema"
+          type: array
+          title: Installments
+          default: []
+        cash_payment_required_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Cash Payment Required Minor
+        shortage_amount_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Shortage Amount Minor
+      type: object
+      required:
+        - checkout_id
+        - shop_id
+        - eligible
+        - purchase_amount_minor
+      title: BnplCalculateResponse
+      description: Response for BNPL installment calculation.
+    BnplInstallmentSchema:
+      properties:
+        installment_number:
+          type: integer
+          title: Installment Number
+        amount_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Amount Minor
+        due_date:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Due Date
+      type: object
+      required:
+        - installment_number
+      title: BnplInstallmentSchema
+      description: Single installment in a BNPL plan.
+    BnplPlanSchema:
+      properties:
+        plan_id:
+          type: string
+          title: Plan Id
+        plan_name:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Plan Name
+        plan_name_fa:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Plan Name Fa
+        installment_count:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Installment Count
+        min_purchase_amount:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Min Purchase Amount
+        max_purchase_amount:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Max Purchase Amount
+      type: object
+      required:
+        - plan_id
+      title: BnplPlanSchema
+      description: BNPL plan available for a shop.
+    CalculateBnplRequest:
+      properties:
+        bnpl_plan_id:
+          type: string
+          title: Bnpl Plan Id
+          description: ID of the BNPL plan to calculate installments for
+      type: object
+      required:
+        - bnpl_plan_id
+      title: CalculateBnplRequest
+      description: Request to calculate BNPL installment breakdown for a shop.
+    ChangesSummarySchema:
+      properties:
+        items_added:
+          type: integer
+          title: Items Added
+        items_removed:
+          type: integer
+          title: Items Removed
+        items_modified:
+          type: integer
+          title: Items Modified
+        new_shops:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: New Shops
+      type: object
+      required:
+        - items_added
+        - items_removed
+        - items_modified
+        - new_shops
+      title: ChangesSummarySchema
+      description: Summary of cart changes detected.
+    CheckoutBnplPlansResponse:
+      properties:
+        checkout_id:
+          type: string
+          title: Checkout Id
+        shops:
+          items:
+            $ref: "#/components/schemas/ShopBnplPlansSchema"
+          type: array
+          title: Shops
+      type: object
+      required:
+        - checkout_id
+        - shops
+      title: CheckoutBnplPlansResponse
+      description: Response for batch BNPL plans query.
+    CheckoutDetailsSchema:
+      properties:
+        checkout_id:
+          type: string
+          title: Checkout Id
+        social_main_id:
+          type: string
+          title: Social Main Id
+        cart_id:
+          type: string
+          title: Cart Id
+        status:
+          type: string
+          title: Status
+        is_expired:
+          type: boolean
+          title: Is Expired
+        expires_at:
+          type: string
+          title: Expires At
+        currency_code:
+          type: string
+          title: Currency Code
+        subtotal_minor:
+          type: integer
+          title: Subtotal Minor
+        discount_minor:
+          type: integer
+          title: Discount Minor
+        shipping_minor:
+          type: integer
+          title: Shipping Minor
+        tax_minor:
+          type: integer
+          title: Tax Minor
+        total_minor:
+          type: integer
+          title: Total Minor
+        shipping_address_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Shipping Address Id
+        shipping_address_snapshot:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Shipping Address Snapshot
+        payment_reference:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Payment Reference
+        payment_group_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Payment Group Id
+        payment_redirect_url:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Payment Redirect Url
+        payment_transaction_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Payment Transaction Id
+        payment_initiated_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Payment Initiated At
+        workflow_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Workflow Id
+        workflow_run_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Workflow Run Id
+        reservation_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Reservation Id
+        compensation_cart_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Compensation Cart Id
+        cart_changed:
+          type: boolean
+          title: Cart Changed
+        new_shops_added:
+          type: boolean
+          title: New Shops Added
+        failure_reason:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Failure Reason
+        failure_stage:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Failure Stage
+        items_count:
+          type: integer
+          title: Items Count
+        shops_count:
+          type: integer
+          title: Shops Count
+        next_step:
+          type: string
+          title: Next Step
+        notes:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Notes
+        archived_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Archived At
+        items:
+          items:
+            $ref: "#/components/schemas/CheckoutItemDetailSchema"
+          type: array
+          title: Items
+        shops:
+          items:
+            $ref: "#/components/schemas/CheckoutShopDetailSchema"
+          type: array
+          title: Shops
+        created_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Created At
+        updated_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Updated At
+      type: object
+      required:
+        - checkout_id
+        - social_main_id
+        - cart_id
+        - status
+        - is_expired
+        - expires_at
+        - currency_code
+        - subtotal_minor
+        - discount_minor
+        - shipping_minor
+        - tax_minor
+        - total_minor
+        - cart_changed
+        - new_shops_added
+        - items_count
+        - shops_count
+        - next_step
+        - items
+        - shops
+      title: CheckoutDetailsSchema
+      description: Full checkout session details for staff.
+    CheckoutItemDetailSchema:
+      properties:
+        item_id:
+          type: string
+          title: Item Id
+        shop_id:
+          type: string
+          title: Shop Id
+        listing_id:
+          type: string
+          title: Listing Id
+        variant_id:
+          type: string
+          title: Variant Id
+        sku:
+          type: string
+          title: Sku
+        product_name:
+          type: string
+          title: Product Name
+        product_image_url:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Product Image Url
+        product_attributes:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Product Attributes
+        quantity:
+          type: integer
+          title: Quantity
+        unit_price_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Unit Price Minor
+        discount_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Discount Minor
+        line_total_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Line Total Minor
+        is_valid:
+          anyOf:
+            - type: boolean
+            - type: "null"
+          title: Is Valid
+        validation_error:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Validation Error
+      type: object
+      required:
+        - item_id
+        - shop_id
+        - listing_id
+        - variant_id
+        - sku
+        - product_name
+        - quantity
+      title: CheckoutItemDetailSchema
+      description: Checkout item with full detail for staff view.
+    CheckoutItemSchema:
+      properties:
+        item_id:
+          type: string
+          title: Item Id
+        shop_id:
+          type: string
+          title: Shop Id
+        listing_id:
+          type: string
+          title: Listing Id
+        sku:
+          type: string
+          title: Sku
+        product_name:
+          type: string
+          title: Product Name
+        product_image_url:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Product Image Url
+        quantity:
+          type: integer
+          title: Quantity
+        unit_price_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Unit Price Minor
+        discount_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Discount Minor
+        line_total_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Line Total Minor
+        is_valid:
+          anyOf:
+            - type: boolean
+            - type: "null"
+          title: Is Valid
+        validation_error:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Validation Error
+      type: object
+      required:
+        - item_id
+        - shop_id
+        - listing_id
+        - sku
+        - product_name
+        - quantity
+      title: CheckoutItemSchema
+      description: Checkout item in response.
+    CheckoutShopDetailSchema:
+      properties:
+        shop_id:
+          type: string
+          title: Shop Id
+        shop_name:
+          type: string
+          title: Shop Name
+        status:
+          type: string
+          title: Status
+        items_count:
+          type: integer
+          title: Items Count
+        subtotal_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Subtotal Minor
+        discount_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Discount Minor
+        shipping_fee_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Shipping Fee Minor
+        total_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Total Minor
+        shipping_method_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Shipping Method Id
+        shipping_method_name:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Shipping Method Name
+        estimated_delivery_days:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Estimated Delivery Days
+        needs_shipping:
+          type: boolean
+          title: Needs Shipping
+        is_ready:
+          type: boolean
+          title: Is Ready
+        order_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Order Id
+        order_created:
+          type: boolean
+          title: Order Created
+          default: false
+        order_creation_error:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Order Creation Error
+        refund_amount_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Refund Amount Minor
+        refunded:
+          type: boolean
+          title: Refunded
+          default: false
+      type: object
+      required:
+        - shop_id
+        - shop_name
+        - status
+        - items_count
+        - needs_shipping
+        - is_ready
+      title: CheckoutShopDetailSchema
+      description: Shop summary with full detail for staff view.
+    CheckoutShopSchema:
+      properties:
+        shop_id:
+          type: string
+          title: Shop Id
+        shop_name:
+          type: string
+          title: Shop Name
+        status:
+          type: string
+          title: Status
+        items_count:
+          type: integer
+          title: Items Count
+        subtotal_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Subtotal Minor
+        discount_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Discount Minor
+        shipping_fee_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Shipping Fee Minor
+        total_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Total Minor
+        shipping_method_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Shipping Method Id
+        shipping_method_name:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Shipping Method Name
+        estimated_delivery_days:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Estimated Delivery Days
+        needs_shipping:
+          type: boolean
+          title: Needs Shipping
+        is_ready:
+          type: boolean
+          title: Is Ready
+        bnpl_plans:
+          items:
+            $ref: "#/components/schemas/BnplPlanSchema"
+          type: array
+          title: Bnpl Plans
+          default: []
+      type: object
+      required:
+        - shop_id
+        - shop_name
+        - status
+        - items_count
+        - needs_shipping
+        - is_ready
+      title: CheckoutShopSchema
+      description: Shop summary in checkout response.
+    CheckoutStatusResponse:
+      properties:
+        checkout_id:
+          type: string
+          title: Checkout Id
+        social_main_id:
+          type: string
+          title: Social Main Id
+        cart_id:
+          type: string
+          title: Cart Id
+        status:
+          type: string
+          title: Status
+        is_expired:
+          type: boolean
+          title: Is Expired
+        expires_at:
+          type: string
+          title: Expires At
+        currency_code:
+          type: string
+          title: Currency Code
+        subtotal_minor:
+          type: integer
+          title: Subtotal Minor
+        discount_minor:
+          type: integer
+          title: Discount Minor
+        shipping_minor:
+          type: integer
+          title: Shipping Minor
+        tax_minor:
+          type: integer
+          title: Tax Minor
+        total_minor:
+          type: integer
+          title: Total Minor
+        shipping_address_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Shipping Address Id
+        shipping_address_snapshot:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Shipping Address Snapshot
+        payment_reference:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Payment Reference
+        payment_group_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Payment Group Id
+        cart_changed:
+          type: boolean
+          title: Cart Changed
+        new_shops_added:
+          type: boolean
+          title: New Shops Added
+        failure_reason:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Failure Reason
+        failure_stage:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Failure Stage
+        items_count:
+          type: integer
+          title: Items Count
+        shops_count:
+          type: integer
+          title: Shops Count
+        next_step:
+          type: string
+          title: Next Step
+        items:
+          items:
+            $ref: "#/components/schemas/CheckoutItemSchema"
+          type: array
+          title: Items
+        shops:
+          items:
+            $ref: "#/components/schemas/CheckoutShopSchema"
+          type: array
+          title: Shops
+        created_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Created At
+        updated_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Updated At
+      type: object
+      required:
+        - checkout_id
+        - social_main_id
+        - cart_id
+        - status
+        - is_expired
+        - expires_at
+        - currency_code
+        - subtotal_minor
+        - discount_minor
+        - shipping_minor
+        - tax_minor
+        - total_minor
+        - cart_changed
+        - new_shops_added
+        - items_count
+        - shops_count
+        - next_step
+        - items
+        - shops
+      title: CheckoutStatusResponse
+      description: Full checkout session status response.
+    CheckoutSummarySchema:
+      properties:
+        checkout_id:
+          type: string
+          title: Checkout Id
+        social_main_id:
+          type: string
+          title: Social Main Id
+        cart_id:
+          type: string
+          title: Cart Id
+        status:
+          type: string
+          title: Status
+        currency_code:
+          type: string
+          title: Currency Code
+        total_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Total Minor
+        items_count:
+          type: integer
+          title: Items Count
+        shops_count:
+          type: integer
+          title: Shops Count
+        payment_reference:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Payment Reference
+        expires_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Expires At
+        created_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Created At
+        updated_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Updated At
+        archived_at:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Archived At
+      type: object
+      required:
+        - checkout_id
+        - social_main_id
+        - cart_id
+        - status
+        - currency_code
+        - items_count
+        - shops_count
+      title: CheckoutSummarySchema
+      description: Checkout session summary for staff list view.
+    CollectionResponseSchema_AbuseReportSchema_:
+      properties:
+        data:
+          items:
+            $ref: "#/components/schemas/AbuseReportSchema"
+          type: array
+          title: Data
+        pagination:
+          $ref: "#/components/schemas/PaginationSchema"
+        filters:
+          additionalProperties: true
+          type: object
+          title: Filters
+          default: {}
+        sort:
+          $ref: "#/components/schemas/SortSchema"
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+      type: object
+      required:
+        - data
+        - pagination
+        - sort
+        - metadata
+      title: CollectionResponseSchema[AbuseReportSchema]
+    CollectionResponseSchema_CheckoutSummarySchema_:
+      properties:
+        data:
+          items:
+            $ref: "#/components/schemas/CheckoutSummarySchema"
+          type: array
+          title: Data
+        pagination:
+          $ref: "#/components/schemas/PaginationSchema"
+        filters:
+          additionalProperties: true
+          type: object
+          title: Filters
+          default: {}
+        sort:
+          $ref: "#/components/schemas/SortSchema"
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+      type: object
+      required:
+        - data
+        - pagination
+        - sort
+        - metadata
+      title: CollectionResponseSchema[CheckoutSummarySchema]
+    CommandResponseSchema_BnplCalculateResponse_:
+      properties:
+        data:
+          $ref: "#/components/schemas/BnplCalculateResponse"
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+      type: object
+      required:
+        - data
+        - metadata
+      title: CommandResponseSchema[BnplCalculateResponse]
+    CommandResponseSchema_ConfirmChangesResponse_:
+      properties:
+        data:
+          $ref: "#/components/schemas/ConfirmChangesResponse"
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+      type: object
+      required:
+        - data
+        - metadata
+      title: CommandResponseSchema[ConfirmChangesResponse]
+    CommandResponseSchema_ContinueSagaResponse_:
+      properties:
+        data:
+          $ref: "#/components/schemas/ContinueSagaResponse"
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+      type: object
+      required:
+        - data
+        - metadata
+      title: CommandResponseSchema[ContinueSagaResponse]
+    CommandResponseSchema_InitiateCheckoutResponse_:
+      properties:
+        data:
+          $ref: "#/components/schemas/InitiateCheckoutResponse"
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+      type: object
+      required:
+        - data
+        - metadata
+      title: CommandResponseSchema[InitiateCheckoutResponse]
+    CommandResponseSchema_PayBnplShopResponse_:
+      properties:
+        data:
+          $ref: "#/components/schemas/PayBnplShopResponse"
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+      type: object
+      required:
+        - data
+        - metadata
+      title: CommandResponseSchema[PayBnplShopResponse]
+    CommandResponseSchema_PayResponse_:
+      properties:
+        data:
+          $ref: "#/components/schemas/PayResponse"
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+      type: object
+      required:
+        - data
+        - metadata
+      title: CommandResponseSchema[PayResponse]
+    CommandResponseSchema_PaymentFailedResponse_:
+      properties:
+        data:
+          $ref: "#/components/schemas/PaymentFailedResponse"
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+      type: object
+      required:
+        - data
+        - metadata
+      title: CommandResponseSchema[PaymentFailedResponse]
+    CommandResponseSchema_SelectAddressResponse_:
+      properties:
+        data:
+          $ref: "#/components/schemas/SelectAddressResponse"
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+      type: object
+      required:
+        - data
+        - metadata
+      title: CommandResponseSchema[SelectAddressResponse]
+    CommandResponseSchema_SelectShippingMethodsResponse_:
+      properties:
+        data:
+          $ref: "#/components/schemas/SelectShippingMethodsResponse"
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+      type: object
+      required:
+        - data
+        - metadata
+      title: CommandResponseSchema[SelectShippingMethodsResponse]
+    CommandResponseSchema_TotalsResponse_:
+      properties:
+        data:
+          $ref: "#/components/schemas/TotalsResponse"
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+      type: object
+      required:
+        - data
+        - metadata
+      title: CommandResponseSchema[TotalsResponse]
+    CommandResponseSchema_ValidateProductsResponse_:
+      properties:
+        data:
+          $ref: "#/components/schemas/ValidateProductsResponse"
+        metadata:
+          $ref: "#/components/schemas/MetadataSchema"
+      type: object
+      required:
+        - data
+        - metadata
+      title: CommandResponseSchema[ValidateProductsResponse]
+    ConfirmChangesRequest:
+      properties:
+        acknowledge_changes:
+          type: boolean
+          title: Acknowledge Changes
+          description: Acknowledge and apply cart changes to checkout
+          default: true
+      type: object
+      title: ConfirmChangesRequest
+      description: Request to confirm cart changes.
+    ConfirmChangesResponse:
+      properties:
+        checkout_id:
+          type: string
+          title: Checkout Id
+        changes_detected:
+          type: boolean
+          title: Changes Detected
+        status:
+          type: string
+          title: Status
+        changes_summary:
+          anyOf:
+            - $ref: "#/components/schemas/ChangesSummarySchema"
+            - type: "null"
+        requires_shipping_selection:
+          type: boolean
+          title: Requires Shipping Selection
+          default: false
+        next_step:
+          type: string
+          title: Next Step
+      type: object
+      required:
+        - checkout_id
+        - changes_detected
+        - status
+        - next_step
+      title: ConfirmChangesResponse
+      description: Response for cart changes confirmation.
+    ContinueSagaRequest:
+      properties:
+        payment_transaction_id:
+          type: string
+          title: Payment Transaction Id
+          description: Transaction ID from payment gateway
+        amount_paid_minor:
+          type: integer
+          minimum: 0
+          title: Amount Paid Minor
+          description: Amount paid in minor currency units
+        currency_code:
+          type: string
+          maxLength: 3
+          minLength: 3
+          title: Currency Code
+          description: Currency code (e.g., IRR)
+        paid_at:
+          type: string
+          title: Paid At
+          description: ISO datetime when payment was completed
+      type: object
+      required:
+        - payment_transaction_id
+        - amount_paid_minor
+        - currency_code
+        - paid_at
+      title: ContinueSagaRequest
+      description: Request to continue saga after successful payment callback.
+    ContinueSagaResponse:
+      properties:
+        checkout_id:
+          type: string
+          title: Checkout Id
+        workflow_id:
+          type: string
+          title: Workflow Id
+        payment_transaction_id:
+          type: string
+          title: Payment Transaction Id
+        status:
+          type: string
+          title: Status
+        signal_sent:
+          type: boolean
+          title: Signal Sent
+      type: object
+      required:
+        - checkout_id
+        - workflow_id
+        - payment_transaction_id
+        - status
+        - signal_sent
+      title: ContinueSagaResponse
+      description: Response for continue saga request.
+    CouponInfoSchema:
+      properties:
+        code:
+          type: string
+          title: Code
+        discount_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Discount Minor
+      type: object
+      required:
+        - code
+      title: CouponInfoSchema
+      description: Coupon information if applied.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: "#/components/schemas/ValidationError"
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    HealthResponse:
+      properties:
+        status:
+          type: string
+          title: Status
+        service:
+          type: string
+          title: Service
+        version:
+          type: string
+          title: Version
+      type: object
+      required:
+        - status
+        - service
+        - version
+      title: HealthResponse
+      description: Health check response
+    InitiateCheckoutResponse:
+      properties:
+        checkout_id:
+          type: string
+          title: Checkout Id
+        status:
+          type: string
+          title: Status
+        items_count:
+          type: integer
+          title: Items Count
+        shops_count:
+          type: integer
+          title: Shops Count
+        expires_at:
+          type: string
+          title: Expires At
+        next_step:
+          type: string
+          title: Next Step
+        idempotent:
+          type: boolean
+          title: Idempotent
+          default: false
+      type: object
+      required:
+        - checkout_id
+        - status
+        - items_count
+        - shops_count
+        - expires_at
+        - next_step
+      title: InitiateCheckoutResponse
+      description: Response for checkout initiation.
+    ItemTotalSchema:
+      properties:
+        item_id:
+          type: string
+          title: Item Id
+        shop_id:
+          type: string
+          title: Shop Id
+        product_name:
+          type: string
+          title: Product Name
+        quantity:
+          type: integer
+          title: Quantity
+        unit_price_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Unit Price Minor
+        original_price_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Original Price Minor
+        discount_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Discount Minor
+        line_total_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Line Total Minor
+      type: object
+      required:
+        - item_id
+        - shop_id
+        - product_name
+        - quantity
+        - unit_price_minor
+        - original_price_minor
+        - discount_minor
+        - line_total_minor
+      title: ItemTotalSchema
+      description: Totals for an item.
+    MetadataSchema:
+      properties:
+        request_id:
+          type: string
+          title: Request Id
+        timestamp:
+          type: string
+          title: Timestamp
+        processing_time_ms:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Processing Time Ms
+      type: object
+      required:
+        - request_id
+        - timestamp
+      title: MetadataSchema
+      description: |-
+        Response metadata per API Design Standard.
+
+        Fields: request_id, timestamp, processing_time_ms (optional)
+    PaginationSchema:
+      properties:
+        page:
+          type: integer
+          title: Page
+        page_size:
+          type: integer
+          title: Page Size
+        total_items:
+          type: integer
+          title: Total Items
+        total_pages:
+          type: integer
+          title: Total Pages
+      type: object
+      required:
+        - page
+        - page_size
+        - total_items
+        - total_pages
+      title: PaginationSchema
+      description: |-
+        Pagination metadata per API Design Standard.
+
+        Fields: page, page_size, total_items, total_pages
+        (No has_next/has_previous - can be calculated client-side)
+    PayBnplShopRequest:
+      properties:
+        bnpl_plan_id:
+          type: string
+          title: Bnpl Plan Id
+          description: ID of the BNPL plan to use for payment
+      type: object
+      required:
+        - bnpl_plan_id
+      title: PayBnplShopRequest
+      description: Request to pay a single shop via BNPL.
+    PayBnplShopResponse:
+      properties:
+        checkout_id:
+          type: string
+          title: Checkout Id
+        bnpl_checkout_id:
+          type: string
+          title: Bnpl Checkout Id
+        shop_id:
+          type: string
+          title: Shop Id
+        order_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Order Id
+        order_number:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Order Number
+        status:
+          type: string
+          title: Status
+        remaining_shops:
+          items:
+            $ref: "#/components/schemas/RemainingShopSchema"
+          type: array
+          title: Remaining Shops
+        checkout_completed:
+          type: boolean
+          title: Checkout Completed
+      type: object
+      required:
+        - checkout_id
+        - bnpl_checkout_id
+        - shop_id
+        - status
+        - remaining_shops
+        - checkout_completed
+      title: PayBnplShopResponse
+      description: Response for BNPL shop payment.
+    PayRequest:
+      properties:
+        payment_callback_url:
+          type: string
+          title: Payment Callback Url
+          description: URL where payment gateway will redirect after payment
+        payment_method:
+          $ref: "#/components/schemas/PaymentMethod"
+          description: "Payment method: GREEN_WALLET, GREEN_IPG, or GREEN_BNPL"
+          default: GREEN_WALLET
+      type: object
+      required:
+        - payment_callback_url
+      title: PayRequest
+      description: Request to initiate payment for checkout.
+    PayResponse:
+      properties:
+        checkout_id:
+          type: string
+          title: Checkout Id
+        workflow_id:
+          type: string
+          title: Workflow Id
+        status:
+          type: string
+          title: Status
+        message:
+          type: string
+          title: Message
+        idempotent:
+          type: boolean
+          title: Idempotent
+          default: false
+      type: object
+      required:
+        - checkout_id
+        - workflow_id
+        - status
+        - message
+      title: PayResponse
+      description: Response for payment initiation.
+    PaymentFailedRequest:
+      properties:
+        failure_reason:
+          type: string
+          title: Failure Reason
+          description: Reason for payment failure
+        payment_transaction_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Payment Transaction Id
+          description: Transaction ID if available
+      type: object
+      required:
+        - failure_reason
+      title: PaymentFailedRequest
+      description: Request to handle payment failure.
+    PaymentFailedResponse:
+      properties:
+        checkout_id:
+          type: string
+          title: Checkout Id
+        status:
+          type: string
+          title: Status
+        workflow_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Workflow Id
+        signal_sent:
+          type: boolean
+          title: Signal Sent
+          default: false
+        compensation_triggered:
+          type: boolean
+          title: Compensation Triggered
+          default: false
+      type: object
+      required:
+        - checkout_id
+        - status
+      title: PaymentFailedResponse
+      description: Response for payment failed request.
+    PaymentMethod:
+      type: string
+      enum:
+        - GREEN_WALLET
+        - GREEN_IPG
+        - GREEN_BNPL
+      title: PaymentMethod
+      description: |-
+        Payment method for transaction processing.
+
+        All payment pipes go through GreenBank infrastructure.
+        This enum is the cross-service source of truth.
+    RemainingShopSchema:
+      properties:
+        shop_id:
+          type: string
+          title: Shop Id
+        shop_name:
+          type: string
+          title: Shop Name
+        total_minor:
+          type: integer
+          title: Total Minor
+        items_count:
+          type: integer
+          title: Items Count
+      type: object
+      required:
+        - shop_id
+        - shop_name
+        - total_minor
+        - items_count
+      title: RemainingShopSchema
+      description: Summary of a shop still remaining in the parent checkout.
+    SelectAddressRequest:
+      properties:
+        address_id:
+          type: string
+          title: Address Id
+          description: UUID of the address to select from customer's saved addresses
+      type: object
+      required:
+        - address_id
+      title: SelectAddressRequest
+      description: Request to select shipping address.
+    SelectAddressResponse:
+      properties:
+        checkout_id:
+          type: string
+          title: Checkout Id
+        status:
+          type: string
+          title: Status
+        address:
+          $ref: "#/components/schemas/AddressSummarySchema"
+        next_step:
+          type: string
+          title: Next Step
+      type: object
+      required:
+        - checkout_id
+        - status
+        - address
+        - next_step
+      title: SelectAddressResponse
+      description: Response for address selection.
+    SelectShippingMethodsRequest:
+      properties:
+        selections:
+          items:
+            $ref: "#/components/schemas/ShopShippingSelectionRequest"
+          type: array
+          minItems: 1
+          title: Selections
+          description: Shipping method selection for each shop
+      type: object
+      required:
+        - selections
+      title: SelectShippingMethodsRequest
+      description: Request to select shipping methods for all shops.
+    SelectShippingMethodsResponse:
+      properties:
+        checkout_id:
+          type: string
+          title: Checkout Id
+        status:
+          type: string
+          title: Status
+        shipping_total_minor:
+          type: integer
+          title: Shipping Total Minor
+        currency_code:
+          type: string
+          title: Currency Code
+        shops:
+          items:
+            $ref: "#/components/schemas/ShopShippingConfirmationSchema"
+          type: array
+          title: Shops
+        next_step:
+          type: string
+          title: Next Step
+      type: object
+      required:
+        - checkout_id
+        - status
+        - shipping_total_minor
+        - currency_code
+        - shops
+        - next_step
+      title: SelectShippingMethodsResponse
+      description: Response for shipping methods selection.
+    ShippingOptionSchema:
+      properties:
+        method_id:
+          type: string
+          title: Method Id
+        name:
+          type: string
+          title: Name
+        fee_minor:
+          type: integer
+          title: Fee Minor
+        estimated_days:
+          type: integer
+          title: Estimated Days
+        is_default:
+          type: boolean
+          title: Is Default
+          default: false
+      type: object
+      required:
+        - method_id
+        - name
+        - fee_minor
+        - estimated_days
+      title: ShippingOptionSchema
+      description: Single shipping option.
+    ShippingOptionsResponse:
+      properties:
+        checkout_id:
+          type: string
+          title: Checkout Id
+        destination:
+          additionalProperties: true
+          type: object
+          title: Destination
+        shops:
+          items:
+            $ref: "#/components/schemas/ShopShippingOptionsSchema"
+          type: array
+          title: Shops
+        currency_code:
+          type: string
+          title: Currency Code
+      type: object
+      required:
+        - checkout_id
+        - destination
+        - shops
+        - currency_code
+      title: ShippingOptionsResponse
+      description: Response for shipping options query.
+    ShopBnplPlansSchema:
+      properties:
+        shop_id:
+          type: string
+          title: Shop Id
+        shop_name:
+          type: string
+          title: Shop Name
+        bnpl_plans:
+          items:
+            $ref: "#/components/schemas/BnplPlanSchema"
+          type: array
+          title: Bnpl Plans
+          default: []
+      type: object
+      required:
+        - shop_id
+        - shop_name
+      title: ShopBnplPlansSchema
+      description: BNPL plans for a single shop.
+    ShopShippingConfirmationSchema:
+      properties:
+        shop_id:
+          type: string
+          title: Shop Id
+        shop_name:
+          type: string
+          title: Shop Name
+        method_name:
+          type: string
+          title: Method Name
+        fee_minor:
+          type: integer
+          title: Fee Minor
+        estimated_days:
+          type: integer
+          title: Estimated Days
+      type: object
+      required:
+        - shop_id
+        - shop_name
+        - method_name
+        - fee_minor
+        - estimated_days
+      title: ShopShippingConfirmationSchema
+      description: Confirmation of shipping selection for a shop.
+    ShopShippingOptionsSchema:
+      properties:
+        shop_id:
+          type: string
+          title: Shop Id
+        shop_name:
+          type: string
+          title: Shop Name
+        total_weight_grams:
+          type: integer
+          title: Total Weight Grams
+        shipping_available:
+          type: boolean
+          title: Shipping Available
+        options:
+          items:
+            $ref: "#/components/schemas/ShippingOptionSchema"
+          type: array
+          title: Options
+      type: object
+      required:
+        - shop_id
+        - shop_name
+        - total_weight_grams
+        - shipping_available
+        - options
+      title: ShopShippingOptionsSchema
+      description: Shipping options for a shop.
+    ShopShippingSelectionRequest:
+      properties:
+        shop_id:
+          type: string
+          title: Shop Id
+        method_id:
+          type: string
+          title: Method Id
+      type: object
+      required:
+        - shop_id
+        - method_id
+      title: ShopShippingSelectionRequest
+      description: Shipping method selection for a single shop.
+    ShopTotalSchema:
+      properties:
+        shop_id:
+          type: string
+          title: Shop Id
+        shop_name:
+          type: string
+          title: Shop Name
+        subtotal_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Subtotal Minor
+        discount_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Discount Minor
+        shipping_fee_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Shipping Fee Minor
+        total_minor:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Total Minor
+        bnpl_plans:
+          items:
+            $ref: "#/components/schemas/BnplPlanSchema"
+          type: array
+          title: Bnpl Plans
+          default: []
+      type: object
+      required:
+        - shop_id
+        - shop_name
+        - subtotal_minor
+        - discount_minor
+        - shipping_fee_minor
+        - total_minor
+      title: ShopTotalSchema
+      description: Totals for a shop.
+    SortSchema:
+      properties:
+        fields:
+          items:
+            type: string
+          type: array
+          title: Fields
+        orders:
+          items:
+            type: string
+          type: array
+          title: Orders
+      type: object
+      required:
+        - fields
+        - orders
+      title: SortSchema
+      description: |-
+        Sort metadata per API Design Standard.
+
+        Fields: fields (array), orders (array)
+    TotalsBreakdownSchema:
+      properties:
+        subtotal_minor:
+          type: integer
+          title: Subtotal Minor
+        discount_minor:
+          type: integer
+          title: Discount Minor
+        shipping_minor:
+          type: integer
+          title: Shipping Minor
+        tax_minor:
+          type: integer
+          title: Tax Minor
+        total_minor:
+          type: integer
+          title: Total Minor
+      type: object
+      required:
+        - subtotal_minor
+        - discount_minor
+        - shipping_minor
+        - tax_minor
+        - total_minor
+      title: TotalsBreakdownSchema
+      description: Breakdown of checkout totals.
+    TotalsResponse:
+      properties:
+        checkout_id:
+          type: string
+          title: Checkout Id
+        status:
+          type: string
+          title: Status
+        currency_code:
+          type: string
+          title: Currency Code
+        totals:
+          $ref: "#/components/schemas/TotalsBreakdownSchema"
+        coupon:
+          anyOf:
+            - $ref: "#/components/schemas/CouponInfoSchema"
+            - type: "null"
+        shops:
+          items:
+            $ref: "#/components/schemas/ShopTotalSchema"
+          type: array
+          title: Shops
+        items:
+          items:
+            $ref: "#/components/schemas/ItemTotalSchema"
+          type: array
+          title: Items
+        next_step:
+          type: string
+          title: Next Step
+      type: object
+      required:
+        - checkout_id
+        - status
+        - currency_code
+        - totals
+        - shops
+        - items
+        - next_step
+      title: TotalsResponse
+      description: Response for totals calculation.
+    ValidateProductsResponse:
+      properties:
+        checkout_id:
+          type: string
+          title: Checkout Id
+        status:
+          type: string
+          title: Status
+        valid_items:
+          type: integer
+          title: Valid Items
+        invalid_items:
+          type: integer
+          title: Invalid Items
+        validation_errors:
+          items:
+            $ref: "#/components/schemas/ValidationErrorSchema"
+          type: array
+          title: Validation Errors
+          default: []
+        next_step:
+          type: string
+          title: Next Step
+      type: object
+      required:
+        - checkout_id
+        - status
+        - valid_items
+        - invalid_items
+        - next_step
+      title: ValidateProductsResponse
+      description: Response for product validation.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+        - loc
+        - msg
+        - type
+      title: ValidationError
+    ValidationErrorSchema:
+      properties:
+        item_id:
+          type: string
+          title: Item Id
+        sku:
+          type: string
+          title: Sku
+        error:
+          type: string
+          title: Error
+      type: object
+      required:
+        - item_id
+        - sku
+        - error
+      title: ValidationErrorSchema
+      description: Validation error for an item.
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    XDoretClientType:
+      name: x-doret-client-type
+      in: header
+      required: false
+      schema:
+        type: string
+        example: app
+      description: Client type identifier
+    XDoretMainSocialId:
+      name: x-doret-main-social-id
+      in: header
+      required: false
+      schema:
+        type: string
+        format: uuid
+        example: 019c7609-d734-76a0-9276-32183ac26e04
+      description: Main social ID
+    XDoretBusinessSocialId:
+      name: X-Doret-Business-Social-Id
+      in: header
+      required: false
+      schema:
+        type: string
+        format: uuid
+      description: Business social ID
+security:
+  - BearerAuth: []
+  - {}

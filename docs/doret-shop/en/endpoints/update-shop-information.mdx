@@ -1,0 +1,352 @@
+<Endpoint
+title="Update shop information"
+method="PUT"
+category="merchant"
+baseUrl="https://api.example.com"
+path="/api/v1/merchant/shop/info"
+summary="Update shop information"
+description={`Update shop information for an active shop. Shop ID is extracted from X-COMMERCE-SHOP-ID header. Includes shop name, business category, and address details.`}
+hasAuthentication={true}
+curl={`curl --request PUT \
+  --url "{baseUrl}/api/v1/merchant/shop/info" \
+  --header "Content-Type: application/json" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value" \
+  --data '{
+  "shop_name": "string",
+  "business_category_id": "xxxxxxxx-xxxxx",
+  "city_id": "string",
+  "province_id": "string",
+  "postal_code": "string",
+  "physical_address": "string",
+  "shop_english_name": null,
+  "website_address": null,
+  "phone": null,
+  "address_description": null,
+  "logo_image_id": null,
+  "latitude": null,
+  "longitude": null
+}'`}
+languages={{
+javascript: `const requestBody = {
+"shop_name": "string",
+"business_category_id": "xxxxxxxx-xxxxx",
+"city_id": "string",
+"province_id": "string",
+"postal_code": "string",
+"physical_address": "string",
+"shop_english_name": null,
+"website_address": null,
+"phone": null,
+"address_description": null,
+"logo_image_id": null,
+"latitude": null,
+"longitude": null
+};
+
+fetch("{baseUrl}/api/v1/merchant/shop/info", {
+"method": "PUT",
+"headers": {
+"Content-Type": "application/json"
+},
+"body": JSON.stringify(requestBody)
+})
+.then(response => response.json())
+.then(data => console.log(data));`,
+    python: `import requests
+
+url = "{baseUrl}/api/v1/merchant/shop/info"
+
+payload = {
+"shop_name": "string",
+"business_category_id": "xxxxxxxx-xxxxx",
+"city_id": "string",
+"province_id": "string",
+"postal_code": "string",
+"physical_address": "string",
+"shop_english_name": null,
+"website_address": null,
+"phone": null,
+"address_description": null,
+"logo_image_id": null,
+"latitude": null,
+"longitude": null
+}
+
+headers = {
+"Content-Type": "application/json",
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+response = requests.put(url, json=payload, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [],
+  "query": []
+}}
+requestBody={{
+  "contentType": "application/json",
+  "properties": [
+    {
+      "description": "Shop display name shown to customers.",
+      "title": "shop_name",
+      "type": "string",
+      "required": true
+    },
+    {
+      "description": "Business category UUID from the categories list. Use GET /generic/v1/business-categories to get available options.",
+      "title": "business_category_id",
+      "type": "string (uuid)",
+      "required": true
+    },
+    {
+      "description": "City identifier from Location Service. Must be a valid city ID that exists in the location registry.",
+      "title": "city_id",
+      "type": "string",
+      "required": true
+    },
+    {
+      "description": "Province identifier from Location Service. Must match the province containing the specified city_id.",
+      "title": "province_id",
+      "type": "string",
+      "required": true
+    },
+    {
+      "description": "Postal/ZIP code for the shop's physical address.",
+      "title": "postal_code",
+      "type": "string",
+      "required": true
+    },
+    {
+      "description": "Complete physical address of the shop. Include street name, building number, unit number if applicable.",
+      "title": "physical_address",
+      "type": "string",
+      "required": true
+    },
+    {
+      "description": "Optional English name for the shop (for international customers).",
+      "title": "shop_english_name",
+      "type": "unknown",
+      "required": false
+    },
+    {
+      "description": "Optional website URL for the shop.",
+      "title": "website_address",
+      "type": "unknown",
+      "required": false
+    },
+    {
+      "description": "Optional phone number for the shop.",
+      "title": "phone",
+      "type": "unknown",
+      "required": false
+    },
+    {
+      "description": "Optional address description or directions.",
+      "title": "address_description",
+      "type": "unknown",
+      "required": false
+    },
+    {
+      "description": "Optional logo image UUID from Media Service. Upload the image via Media Service first, then pass the returned UUID here.",
+      "title": "logo_image_id",
+      "type": "unknown",
+      "required": false
+    },
+    {
+      "description": "Optional latitude coordinate for map display.",
+      "title": "latitude",
+      "type": "unknown",
+      "required": false
+    },
+    {
+      "description": "Optional longitude coordinate for map display.",
+      "title": "longitude",
+      "type": "unknown",
+      "required": false
+    }
+  ],
+  "required": true
+}}
+responses={{
+  "200": [
+    {
+      "description": "Response payload",
+      "title": "data",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "Shop identifier (UUID)",
+            "title": "shop_id",
+            "type": "string"
+          },
+          {
+            "description": "Current lifecycle state",
+            "title": "lifecycle_state",
+            "type": "string"
+          },
+          {
+            "description": "Shop display name",
+            "title": "shop_name",
+            "type": "string"
+          },
+          {
+            "description": "Business category details",
+            "title": "business_category",
+            "type": "object",
+            "children": {
+              "items": [
+                {
+                  "description": "Business category identifier (UUID)",
+                  "title": "id",
+                  "type": "string"
+                },
+                {
+                  "description": "Business category display name",
+                  "title": "name",
+                  "type": "string"
+                }
+              ],
+              "title": "core__api__v1__customer__schemas__BusinessCategoryInfo"
+            }
+          },
+          {
+            "description": "Logo image UUID from Media Service",
+            "title": "logo_image_id",
+            "type": "unknown"
+          },
+          {
+            "description": "Shop owner's first name",
+            "title": "owner_name",
+            "type": "string"
+          },
+          {
+            "description": "Shop owner's family name",
+            "title": "owner_family_name",
+            "type": "string"
+          },
+          {
+            "description": "Update timestamp (ISO 8601)",
+            "title": "updated_at",
+            "type": "string"
+          }
+        ],
+        "title": "AddShopInfoResponse"
+      }
+    },
+    {
+      "description": "Request metadata",
+      "title": "metadata",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "request_id",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "timestamp",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "processing_time_ms",
+            "type": "unknown"
+          }
+        ],
+        "title": "MetadataSchema"
+      }
+    }
+  ],
+  "404": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "409": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

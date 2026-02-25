@@ -1,0 +1,251 @@
+<Endpoint
+title="Request settlement (withdrawal)"
+method="POST"
+category="merchant"
+baseUrl="https://api.example.com"
+path="/api/v1/merchant/settlements"
+summary="Request settlement (withdrawal)"
+description={`Request withdrawal of funds from shop wallet to merchant bank account. Requires X-COMMERCE-SHOP-ID header to specify the shop context. Shop must be in ACTIVE state and not suspended. Uses the merchant's Green wallet account for transfer. Settlement is processed asynchronously; check status via GET /settlements/{id}.`}
+hasAuthentication={true}
+curl={`curl --request POST \
+  --url "{baseUrl}/api/v1/merchant/settlements" \
+  --header "Content-Type: application/json" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value" \
+  --data '{
+  "amount_minor": 123
+}'`}
+languages={{
+javascript: `const requestBody = {
+"amount_minor": 123
+};
+
+fetch("{baseUrl}/api/v1/merchant/settlements", {
+"method": "POST",
+"headers": {
+"Content-Type": "application/json"
+},
+"body": JSON.stringify(requestBody)
+})
+.then(response => response.json())
+.then(data => console.log(data));`,
+    python: `import requests
+
+url = "{baseUrl}/api/v1/merchant/settlements"
+
+payload = {
+"amount_minor": 123
+}
+
+headers = {
+"Content-Type": "application/json",
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [],
+  "query": []
+}}
+requestBody={{
+  "contentType": "application/json",
+  "properties": [
+    {
+      "description": "Amount to withdraw in minor currency units (e.g., Rials for IRR). Must be positive and not exceed available wallet balance. Example: 1000000 = 1,000,000 Rials.",
+      "title": "amount_minor",
+      "type": "integer",
+      "required": true
+    }
+  ],
+  "required": true
+}}
+responses={{
+  "202": [
+    {
+      "description": "Response payload",
+      "title": "data",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "Unique settlement request identifier",
+            "title": "id",
+            "type": "string (uuid)"
+          },
+          {
+            "description": "Shop this settlement belongs to",
+            "title": "shop_id",
+            "type": "string (uuid)"
+          },
+          {
+            "description": "Settlement amount in minor currency units",
+            "title": "amount_minor",
+            "type": "integer"
+          },
+          {
+            "description": "Currency code (e.g., IRR)",
+            "title": "currency",
+            "type": "string"
+          },
+          {
+            "description": "Settlement status: PENDING (awaiting processing), COMPLETED (funds transferred), FAILED (transfer failed) Possible values: [PENDING, COMPLETED, FAILED]",
+            "title": "status",
+            "type": "enum<string>"
+          },
+          {
+            "description": "Request creation timestamp",
+            "title": "created_at",
+            "type": "string (date-time)"
+          },
+          {
+            "description": "Completion timestamp (null if not completed)",
+            "title": "completed_at",
+            "type": "unknown"
+          },
+          {
+            "description": "Failure timestamp (null if not failed)",
+            "title": "failed_at",
+            "type": "unknown"
+          },
+          {
+            "description": "Reason for failure (null if not failed)",
+            "title": "failure_reason",
+            "type": "unknown"
+          }
+        ],
+        "title": "SettlementResponse"
+      }
+    },
+    {
+      "description": "Request metadata",
+      "title": "metadata",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "request_id",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "timestamp",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "processing_time_ms",
+            "type": "unknown"
+          }
+        ],
+        "title": "MetadataSchema"
+      }
+    }
+  ],
+  "400": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "404": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "409": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

@@ -1,0 +1,224 @@
+<Endpoint
+title="Batch enrich listings"
+method="POST"
+category="internal"
+baseUrl="https://api.example.com"
+path="/api/v1/internal/listings/batch-enrich"
+summary="Batch enrich listings"
+description={`Batch lookup of listings with enriched product display data.`}
+hasAuthentication={true}
+curl={`curl --request POST \
+  --url "{baseUrl}/api/v1/internal/listings/batch-enrich" \
+  --header "Content-Type: application/json" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value" \
+  --data '{
+  "items": [
+    {
+      "seller_id": "string",
+      "sku": "string"
+    }
+  ]
+}'`}
+languages={{
+javascript: `const requestBody = {
+"items": [
+{
+"seller_id": "string",
+"sku": "string"
+}
+]
+};
+
+fetch("{baseUrl}/api/v1/internal/listings/batch-enrich", {
+"method": "POST",
+"headers": {
+"Content-Type": "application/json"
+},
+"body": JSON.stringify(requestBody)
+})
+.then(response => response.json())
+.then(data => console.log(data));`,
+    python: `import requests
+
+url = "{baseUrl}/api/v1/internal/listings/batch-enrich"
+
+payload = {
+"items": [
+{"seller_id":"string","sku":"string"}
+]
+}
+
+headers = {
+"Content-Type": "application/json",
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [],
+  "query": []
+}}
+requestBody={{
+  "contentType": "application/json",
+  "properties": [
+    {
+      "description": "No description provided",
+      "title": "items",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "seller_id",
+            "type": "string",
+            "required": false
+          },
+          {
+            "description": "No description provided",
+            "title": "sku",
+            "type": "string",
+            "required": false
+          }
+        ],
+        "title": "core__api__v1__customer__listings__schemas__BatchEnrichItemRequest"
+      },
+      "required": true
+    }
+  ],
+  "required": true
+}}
+responses={{
+  "200": [
+    {
+      "description": "No description provided",
+      "title": "items",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "seller_id",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "sku",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "found",
+            "type": "boolean"
+          },
+          {
+            "description": "No description provided",
+            "title": "listing_id",
+            "type": "unknown"
+          },
+          {
+            "description": "No description provided",
+            "title": "variant_id",
+            "type": "unknown"
+          },
+          {
+            "description": "No description provided",
+            "title": "condition",
+            "type": "unknown"
+          },
+          {
+            "description": "No description provided",
+            "title": "master_title",
+            "type": "unknown"
+          },
+          {
+            "description": "No description provided",
+            "title": "brand_name",
+            "type": "unknown"
+          },
+          {
+            "description": "No description provided",
+            "title": "cover_image",
+            "type": "unknown"
+          },
+          {
+            "description": "No description provided",
+            "title": "catalog_images",
+            "type": "unknown"
+          },
+          {
+            "description": "No description provided",
+            "title": "static_attributes",
+            "type": "unknown"
+          },
+          {
+            "description": "No description provided",
+            "title": "weight_grams",
+            "type": "integer"
+          },
+          {
+            "description": "No description provided",
+            "title": "category_name_fa",
+            "type": "unknown"
+          }
+        ],
+        "title": "core__api__v1__internal__listings__schemas__BatchEnrichItemResponse"
+      }
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

@@ -1,0 +1,226 @@
+<Endpoint
+title="Suspend shop"
+method="POST"
+category="staff"
+baseUrl="https://api.example.com"
+path="/api/v1/staff/shops/\{shop_id\}/suspend"
+summary="Suspend shop"
+description={`Suspend a shop's operations. Suspended shops cannot process new orders or settlements. Existing data is preserved; shop can be unsuspended later. Requires a reason which is recorded for audit and shown to owner. Publishes commerce.shop.suspended event.`}
+hasAuthentication={true}
+curl={`curl --request POST \
+  --url "{baseUrl}/api/v1/staff/shops/123/suspend" \
+  --header "Content-Type: application/json" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value" \
+  --data '{
+  "reason": "string"
+}'`}
+languages={{
+javascript: `const requestBody = {
+"reason": "string"
+};
+
+fetch("{baseUrl}/api/v1/staff/shops/\${shop_id}/suspend", {
+"method": "POST",
+"headers": {
+"Content-Type": "application/json"
+},
+"body": JSON.stringify(requestBody)
+})
+.then(response => response.json())
+.then(data => console.log(data));`,
+    python: `import requests
+
+url = "{baseUrl}/api/v1/staff/shops/{shop_id}/suspend"
+
+payload = {
+"reason": "string"
+}
+
+headers = {
+"Content-Type": "application/json",
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [
+    {
+      "description": "No description provided",
+      "required": true,
+      "title": "shop_id",
+      "type": "string (uuid)"
+    }
+  ],
+  "query": []
+}}
+requestBody={{
+  "contentType": "application/json",
+  "properties": [
+    {
+      "description": "Reason for suspending the shop. This is recorded for audit purposes and shown to the shop owner. Examples: 'Policy violation', 'Fraudulent activity', 'Owner request'.",
+      "title": "reason",
+      "type": "string",
+      "required": true
+    }
+  ],
+  "required": true
+}}
+responses={{
+  "200": [
+    {
+      "description": "Response payload",
+      "title": "data",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "Shop identifier (UUID)",
+            "title": "shop_id",
+            "type": "string"
+          },
+          {
+            "description": "Current suspension status",
+            "title": "suspended",
+            "type": "boolean"
+          },
+          {
+            "description": "Suspension timestamp (ISO 8601)",
+            "title": "suspended_at",
+            "type": "unknown"
+          },
+          {
+            "description": "User who suspended (UUID)",
+            "title": "suspended_by",
+            "type": "unknown"
+          },
+          {
+            "description": "Reason for suspension",
+            "title": "suspension_reason",
+            "type": "unknown"
+          },
+          {
+            "description": "Last update timestamp (ISO 8601)",
+            "title": "updated_at",
+            "type": "string"
+          }
+        ],
+        "title": "ShopSuspendResponse"
+      }
+    },
+    {
+      "description": "Request metadata",
+      "title": "metadata",
+      "type": "object",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "request_id",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "timestamp",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "processing_time_ms",
+            "type": "unknown"
+          }
+        ],
+        "title": "MetadataSchema"
+      }
+    }
+  ],
+  "404": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "409": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>

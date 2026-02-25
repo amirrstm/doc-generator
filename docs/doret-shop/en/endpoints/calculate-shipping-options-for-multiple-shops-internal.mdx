@@ -1,0 +1,248 @@
+<Endpoint
+title="Calculate shipping options for multiple shops (internal)"
+method="POST"
+category="internal"
+baseUrl="https://api.example.com"
+path="/api/v1/internal/shipping/calculate-batch"
+summary="Calculate shipping options for multiple shops (internal)"
+description={`Batch calculate shipping options and fees for multiple shops. Internal service-to-service endpoint. Accepts a destination province (UUID as string) and list of shops with weights. Returns available shipping methods and calculated fees per shop based on province coverage in each shop's shipping configurations. Max 20 shops per request. No authentication required - trusted internal network only.`}
+hasAuthentication={true}
+curl={`curl --request POST \
+  --url "{baseUrl}/api/v1/internal/shipping/calculate-batch" \
+  --header "Content-Type: application/json" \
+  --header "x-doret-client-type: app" \
+  --header "x-doret-main-social-id: 019c7609-d734-76a0-9276-32183ac26e04" \
+  --header "X-Doret-Business-Social-Id: value" \
+  --data '{
+  "province_id": "string",
+  "shops": [
+    {
+      "shop_id": "xxxxxxxx-xxxxx",
+      "shop_name": "string",
+      "total_weight_grams": 123
+    }
+  ]
+}'`}
+languages={{
+javascript: `const requestBody = {
+"province_id": "string",
+"shops": [
+{
+"shop_id": "xxxxxxxx-xxxxx",
+"shop_name": "string",
+"total_weight_grams": 123
+}
+]
+};
+
+fetch("{baseUrl}/api/v1/internal/shipping/calculate-batch", {
+"method": "POST",
+"headers": {
+"Content-Type": "application/json"
+},
+"body": JSON.stringify(requestBody)
+})
+.then(response => response.json())
+.then(data => console.log(data));`,
+    python: `import requests
+
+url = "{baseUrl}/api/v1/internal/shipping/calculate-batch"
+
+payload = {
+"province_id": "string",
+"shops": [
+{"shop_id":"xxxxxxxx-xxxxx","shop_name":"string","total_weight_grams":123}
+]
+}
+
+headers = {
+"Content-Type": "application/json",
+"x-doret-client-type": "app",
+"x-doret-main-social-id": "019c7609-d734-76a0-9276-32183ac26e04",
+"X-Doret-Business-Social-Id": "<token>"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.json())`
+}}
+parameters={{
+  "cookie": [],
+  "header": [
+    {
+      "description": "Client type identifier",
+      "required": false,
+      "title": "x-doret-client-type",
+      "type": "string"
+    },
+    {
+      "description": "Main social ID",
+      "required": false,
+      "title": "x-doret-main-social-id",
+      "type": "string (uuid)"
+    },
+    {
+      "description": "Business social ID",
+      "required": false,
+      "title": "X-Doret-Business-Social-Id",
+      "type": "string (uuid)"
+    }
+  ],
+  "path": [],
+  "query": []
+}}
+requestBody={{
+  "contentType": "application/json",
+  "properties": [
+    {
+      "description": "Destination province UUID as string",
+      "title": "province_id",
+      "type": "string",
+      "required": true
+    },
+    {
+      "description": "List of shops with their total weights (max 20)",
+      "title": "shops",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "Shop identifier (UUID)",
+            "title": "shop_id",
+            "type": "string (uuid)",
+            "required": false
+          },
+          {
+            "description": "Shop display name",
+            "title": "shop_name",
+            "type": "string",
+            "required": false
+          },
+          {
+            "description": "Total weight of items in grams",
+            "title": "total_weight_grams",
+            "type": "integer",
+            "required": false
+          }
+        ],
+        "title": "ShopWeightRequest"
+      },
+      "required": true
+    }
+  ],
+  "required": true
+}}
+responses={{
+  "200": [
+    {
+      "description": "Shipping options per shop",
+      "title": "shops",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "Shop identifier (UUID)",
+            "title": "shop_id",
+            "type": "string"
+          },
+          {
+            "description": "Shop display name",
+            "title": "shop_name",
+            "type": "string"
+          },
+          {
+            "description": "Total weight in grams",
+            "title": "total_weight_grams",
+            "type": "integer"
+          },
+          {
+            "description": "Available shipping options",
+            "title": "options",
+            "type": "array",
+            "children": {
+              "items": [
+                {
+                  "description": "Shipping method identifier (e.g. tipax)",
+                  "title": "method_id",
+                  "type": "string"
+                },
+                {
+                  "description": "Shipping method name",
+                  "title": "name",
+                  "type": "string"
+                },
+                {
+                  "description": "Shipping fee in minor currency units",
+                  "title": "fee_minor",
+                  "type": "integer"
+                },
+                {
+                  "description": "Estimated delivery days (0 = unknown)",
+                  "title": "estimated_days",
+                  "type": "integer"
+                },
+                {
+                  "description": "Whether this is the default shipping method",
+                  "title": "is_default",
+                  "type": "boolean"
+                }
+              ],
+              "title": "ShippingOptionResponse"
+            }
+          },
+          {
+            "description": "Whether shipping is available to the destination",
+            "title": "shipping_available",
+            "type": "boolean"
+          }
+        ],
+        "title": "ShopShippingOptionsResponse"
+      }
+    }
+  ],
+  "400": [
+    {
+      "description": "No description provided",
+      "title": "code",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "message",
+      "type": "string"
+    },
+    {
+      "description": "No description provided",
+      "title": "details",
+      "type": "unknown"
+    }
+  ],
+  "422": [
+    {
+      "description": "No description provided",
+      "title": "detail",
+      "type": "array",
+      "children": {
+        "items": [
+          {
+            "description": "No description provided",
+            "title": "loc",
+            "type": "array"
+          },
+          {
+            "description": "No description provided",
+            "title": "msg",
+            "type": "string"
+          },
+          {
+            "description": "No description provided",
+            "title": "type",
+            "type": "string"
+          }
+        ],
+        "title": "ValidationError"
+      }
+    }
+  ]
+}}
+/>
