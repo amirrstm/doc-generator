@@ -50,6 +50,7 @@ export default async function ProjectPage({
             Info: ContentAlert,
             Title: ContentTitle
           }}
+          options={{ blockJS: false }}
           source={content}
         />
       </div>

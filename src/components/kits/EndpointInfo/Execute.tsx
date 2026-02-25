@@ -5,11 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useProject } from "@/providers/Project";
+import { useEnvVarsStore } from "@/stores/envVarsStore";
 import { cn } from "@/utils/cn";
 import { formatCurlCommand, generateDynamicCurl, normalizeCurlCommand } from "@/utils/curl";
+import { resolveVariables } from "@/utils/envVars";
 
 import { CodeBlock } from "../CodeBlocks";
 import { EndpointUrl } from "./Url";
+import { VariableHint } from "./VariableHint";
+import { VariableInput } from "./VariableInput";
 
 type ParameterInfo = { title: string; type: string; description: string; required: boolean };
 type Parameters = { path: ParameterInfo[]; query: ParameterInfo[]; header: ParameterInfo[]; cookie: ParameterInfo[] };
@@ -49,6 +54,11 @@ export function Execute({
   const authTokenId = useId();
   const pathParamId = useId();
   const queryParamId = useId();
+
+  const { projectSlug } = useProject();
+  const getVarsMap = useEnvVarsStore((s) => s.getVarsMap);
+  const varsMap = useMemo(() => (projectSlug ? getVarsMap(projectSlug) : {}), [projectSlug, getVarsMap]);
+  const variableNames = useMemo(() => Object.keys(varsMap), [varsMap]);
 
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -131,16 +141,16 @@ export function Execute({
     }
 
     if (hasAuthentication && authToken) {
-      headers.Authorization = `Bearer ${authToken}`;
+      headers.Authorization = `Bearer ${resolveVariables(authToken, varsMap)}`;
     }
 
     // Add custom header parameters
     for (const [key, value] of Object.entries(headerParams)) {
-      if (value) headers[key] = value;
+      if (value) headers[key] = resolveVariables(value, varsMap);
     }
 
     return headers;
-  }, [hasAuthentication, authToken, headerParams, isMultipart]);
+  }, [hasAuthentication, authToken, headerParams, isMultipart, varsMap]);
 
   // Convert form data to JSON
   const formDataToJson = useCallback(() => {
@@ -166,7 +176,8 @@ export function Execute({
       method: type,
       pathParams,
       queryParams,
-      url
+      url,
+      varsMap
     });
   }, [
     baseUrl,
@@ -179,7 +190,8 @@ export function Execute({
     isRawJsonMode,
     authToken,
     hasAuthentication,
-    formDataToJson
+    formDataToJson,
+    varsMap
   ]);
 
   // Execute the API request
@@ -424,13 +436,15 @@ export function Execute({
                     <Label className="text-xs" htmlFor="auth-token">
                       Bearer Token
                     </Label>
-                    <Input
+                    <VariableInput
                       id={authTokenId}
-                      onChange={(e) => setAuthToken(e.target.value)}
-                      placeholder="Enter your bearer token"
+                      onChange={setAuthToken}
+                      placeholder="Enter token or use {{variableName}}"
                       type="password"
                       value={authToken}
+                      variables={variableNames}
                     />
+                    <VariableHint value={authToken} varsMap={varsMap} />
                   </div>
                 </div>
               )}
@@ -449,16 +463,18 @@ export function Execute({
                         {param.description && param.description !== "No description provided" && (
                           <p className="text-gray-500 text-xs">{param.description}</p>
                         )}
-                        <Input
-                          onChange={(e) =>
+                        <VariableInput
+                          onChange={(val) =>
                             setHeaderParams((prev) => ({
                               ...prev,
-                              [param.title]: e.target.value
+                              [param.title]: val
                             }))
                           }
-                          placeholder={`Enter ${param.title}`}
+                          placeholder={`Enter ${param.title} or use {{variableName}}`}
                           value={headerParams[param.title] || ""}
+                          variables={variableNames}
                         />
+                        <VariableHint value={headerParams[param.title] || ""} varsMap={varsMap} />
                       </div>
                     ))}
                   </div>

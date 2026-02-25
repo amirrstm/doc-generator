@@ -43,7 +43,7 @@ export default async function EndpointPage({ params }: EndpointPageProps): Promi
   const mdxContent = fs.readFileSync(mdxPath, "utf-8");
   return (
     <div className="prose dark:prose-invert">
-      <MDXRemote components={{ Endpoint }} source={mdxContent} />
+      <MDXRemote components={{ Endpoint }} options={{ blockJS: false }} source={mdxContent} />
     </div>
   );
 }

@@ -45,11 +45,11 @@ type Props = {
 
 export default function EndpointContainer({
   path,
-  curl,
+  curl = "",
   title,
   method,
   category,
-  languages,
+  languages = { javascript: "", python: "" },
   responses,
   parameters,
   description,

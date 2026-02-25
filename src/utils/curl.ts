@@ -1,9 +1,12 @@
+import { resolveVariables } from "./envVars";
+
 /**
  * Normalizes a curl command string for copying to clipboard
  * @param curlCommand Raw curl command string
  * @returns Clean curl command ready for terminal execution
  */
 export function normalizeCurlCommand(curlCommand: string): string {
+  if (!curlCommand) return "";
   // Remove any existing line breaks and normalize spaces
   return curlCommand
     .replace(/\s*\\\s*/g, " ") // Remove backslashes and normalize spaces
@@ -17,6 +20,7 @@ export function normalizeCurlCommand(curlCommand: string): string {
  * @returns Formatted curl command with line breaks and proper spacing
  */
 export function formatCurlCommand(curlCommand: string): string {
+  if (!curlCommand) return "";
   // Remove any existing line breaks and extra spaces
   let formatted = curlCommand.trim();
 
@@ -57,7 +61,8 @@ export function generateDynamicCurl({
   queryParams = [],
   headers = {},
   body,
-  authToken
+  authToken,
+  varsMap
 }: {
   baseUrl: string;
   url: string;
@@ -67,6 +72,7 @@ export function generateDynamicCurl({
   headers?: Record<string, string>;
   body?: string;
   authToken?: string;
+  varsMap?: Record<string, string>;
 }): string {
   // Build the final URL with path parameters (same logic as buildRequestUrl)
   let finalUrl = url;
@@ -126,6 +132,10 @@ export function generateDynamicCurl({
       // If not valid JSON, use as-is
       curlCommand += `   -d '${body}'`;
     }
+  }
+
+  if (varsMap) {
+    curlCommand = resolveVariables(curlCommand, varsMap);
   }
 
   return curlCommand;

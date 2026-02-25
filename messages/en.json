@@ -50,6 +50,16 @@
     "searching": "Searching...",
     "title": "Search Documentation"
   },
+  "envVars": {
+    "addVariable": "Add Variable",
+    "description": "Define variables to use in header and auth fields with '{{variableName}}' syntax.",
+    "noVariables": "No variables defined. Add one to get started.",
+    "resolved": "Resolved",
+    "title": "Environment Variables",
+    "undefined": "Undefined",
+    "variableName": "Variable Name",
+    "variableValue": "Value"
+  },
   "sidebar": {
     "endpoints": "Endpoints",
     "sections": "Sections"

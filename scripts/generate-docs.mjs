@@ -929,9 +929,7 @@ function generateEndpointMDXContent(method, pathKey, operation, spec, category =
   // Get baseUrl from global variable or spec fallback
   const baseUrl = globalBaseUrl || spec.servers?.[0]?.url || "https://api.example.com";
 
-  return `import Endpoint from '@/components/Endpoint'
-
-<Endpoint
+  return `<Endpoint
   title="${title.replace(/"/g, '\\"')}"
   method="${method.toUpperCase()}"
   category="${category.replace(/"/g, '\\"')}"

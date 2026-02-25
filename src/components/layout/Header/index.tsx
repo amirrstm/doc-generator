@@ -3,6 +3,7 @@ import { useTranslations } from "next-intl";
 import Logo from "@/components/kits/Logo";
 
 import BaseUrlSelector from "./BaseUrlSelector";
+import EnvVarsButton from "./EnvVarsButton";
 import HeaderSearch from "./Search";
 import HeaderTheme from "./Theme";
 
@@ -27,6 +28,7 @@ export default function Header(): ReactElement {
         <div className="flex w-fit items-center gap-4">
           <HeaderSearch />
           <BaseUrlSelector />
+          <EnvVarsButton />
           <HeaderTheme />
         </div>
       </nav>

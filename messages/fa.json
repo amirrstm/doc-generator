@@ -50,6 +50,16 @@
     "searching": "در حال جستجو...",
     "title": "جستجو در مستندات"
   },
+  "envVars": {
+    "addVariable": "افزودن متغیر",
+    "description": "متغیرهایی را برای استفاده در فیلدهای هدر و احراز هویت با دستور '{{variableName}}' تعریف کنید.",
+    "noVariables": "هیچ متغیری تعریف نشده است. یکی اضافه کنید.",
+    "resolved": "تفسیر شده",
+    "title": "متغیرهای محیطی",
+    "undefined": "تعریف نشده",
+    "variableName": "نام متغیر",
+    "variableValue": "مقدار"
+  },
   "sidebar": {
     "endpoints": "نقاط پایانی",
     "sections": "بخش‌ها"
